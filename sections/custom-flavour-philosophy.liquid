@@ -1,0 +1,277 @@
+{% schema %}
+{
+  "name": "Flavour Philosophy",
+  "settings": [
+    {
+      "type": "text",
+      "id": "main_heading",
+      "label": "Main Section Heading",
+      "default": "Flavour Philosophy"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#FFF5E6"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "row_gap",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Gap Between Rows",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "content_row",
+      "name": "Content Row",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "svg_filename",
+          "label": "SVG Filename (from Assets)",
+          "info": "e.g. 'my-icon.svg'. Overrides 'Image' if set."
+        },
+        {
+          "type": "select",
+          "id": "layout",
+          "label": "Image Position",
+          "options": [
+            { "value": "left", "label": "Image Left, Text Right" },
+            { "value": "right", "label": "Image Right, Text Left" }
+          ],
+          "default": "left"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Crafted, Not Complicated"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Every flavour is built around one idea: how it should feel. Crisp where it needs to be. Smooth when it matters. Bold, but never heavy."
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Text Color",
+          "default": "#000000"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Flavour Philosophy",
+      "blocks": [
+        {
+          "type": "content_row",
+          "settings": {
+            "layout": "right",
+            "heading": "Crafted, Not Complicated",
+            "description": "Every flavour is built around one idea: how it should feel. Crisp where it needs to be. Smooth when it matters. Bold, but never heavy."
+          }
+        },
+        {
+          "type": "content_row",
+          "settings": {
+            "layout": "left",
+            "heading": "This Is Soda Just Done Better.",
+            "description": "SoulSurf is here to evolve soda, not replace it. For people who still love fizz, flavour, and the moment a can opens."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<div class="flavour-philosophy-section">
+  <div class="page-width">
+    {% if section.settings.main_heading != blank %}
+      <h2 class="main-section-heading">{{ section.settings.main_heading }}</h2>
+    {% endif %}
+
+    <div class="philosophy-rows">
+      {% for block in section.blocks %}
+        <div class="philosophy-row layout-{{ block.settings.layout }}" {{ block.shopify_attributes }}>
+          
+          <div class="philosophy-image-wrapper">
+             {% if block.settings.svg_filename != blank %}
+               <img src="{{ block.settings.svg_filename | asset_url }}" loading="lazy" class="philosophy-image" alt="{{ block.settings.heading | escape }}">
+             {% elsif block.settings.image != blank %}
+               {{ block.settings.image | image_url: width: 800 | image_tag: loading: 'lazy', class: 'philosophy-image' }}
+             {% else %}
+               {{ 'image' | placeholder_svg_tag: 'philosophy-image placeholder-svg' }}
+             {% endif %}
+          </div>
+
+          <div class="philosophy-content-wrapper">
+            <h3 class="philosophy-heading" style="color: {{ block.settings.text_color }}">{{ block.settings.heading }}</h3>
+            <div class="philosophy-description" style="color: {{ block.settings.text_color }}">
+              {%- assign lines = block.settings.description | newline_to_br | split: "<br />" -%}
+              {%- for line in lines -%}
+                {%- assign trimmed_line = line | strip -%}
+                {%- if trimmed_line != "" -%}
+                  {%- if forloop.first -%}
+                    {{ trimmed_line }}
+                  {%- else -%}
+                    <br><strong>{{ trimmed_line }}</strong>
+                  {%- endif -%}
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          </div>
+
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<style>
+  .flavour-philosophy-section {
+    background-color: {{ section.settings.background_color }};
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    overflow: hidden;
+  }
+
+  .main-section-heading {
+    text-align: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 56px;
+    margin-bottom: 80px;
+    color: #000;
+    font-weight: 500;
+  }
+
+  .philosophy-rows {
+    display: flex;
+    flex-direction: column;
+    gap: {{ section.settings.row_gap }}px;
+  }
+
+  .philosophy-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 80px;
+  }
+
+  .philosophy-row.layout-right {
+    flex-direction: row-reverse;
+  }
+  
+  /* When layout is 'right' (Image Right), the image wrapper is 2nd child naturally by row-reverse? 
+     No, row-reverse swaps visual order. 
+     DOM order: Image Wrapper (1), Content Wrapper (2).
+     layout-left: Image (Left), Content (Right).
+     layout-right (row-reverse): Content (Left), Image (Right).
+     Correct.
+  */
+
+  .philosophy-image-wrapper {
+    flex: 1;
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .philosophy-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 20px;
+    object-fit: cover;
+    aspect-ratio: 1 / 1; /* Square-ish as per reference */
+  }
+
+  .philosophy-content-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 20px;
+    transform: translateY(-40px);
+  }
+
+  .philosophy-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    line-height: 1.2;
+    margin-bottom: 24px;
+    font-weight: 500;
+  }
+
+  .philosophy-description {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 18px;
+    line-height: 1.6;
+    opacity: 0.8;
+  }
+
+  @media screen and (max-width: 990px) {
+    .philosophy-row {
+      flex-direction: column !important; /* Stack vertically on mobile */
+      gap: 30px;
+    }
+
+    .main-section-heading {
+      font-size: 36px;
+      margin-bottom: 40px;
+      text-align: center; /* Keep main heading centered */
+    }
+    
+    .philosophy-heading {
+      font-size: 32px;
+    }
+
+    .philosophy-content-wrapper {
+      padding: 0 10px;
+      align-items: flex-start; /* Left align */
+      text-align: left; /* Left align text */
+      transform: translateY(0);
+    }
+    
+    .philosophy-description {
+      font-size: 16px;
+    }
+  }
+</style>

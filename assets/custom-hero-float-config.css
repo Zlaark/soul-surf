@@ -1,0 +1,530 @@
+/* 
+  CUSTOM HERO SLIDER - FLOATING ELEMENTS CONFIGURATION
+  4 Slides Configuration
+  
+  HOW TO USE:
+  - Each slide (1-4) has its own section below.
+  - You can edit 'top', 'bottom', 'left', 'right', 'width'.
+  - You can also adjust animation duration (e.g., 5s, 6s).
+*/
+
+/* ==========================================================================
+   SLIDE 1 CONFIGURATION (Data Index 0)
+   ========================================================================== */
+
+/* Left Side (1-3) */
+.chs-slide[data-index="0"].active .float-1 {
+    top: 20%;
+    left: calc(22% - 5px);
+    width: 97px;
+    animation: chs-float 5s ease-in-out infinite;
+}
+
+.chs-slide[data-index="0"].active .float-2 {
+    top: 50%;
+    left: calc(18% - 5px);
+    width: 117px;
+    transform: translateY(-50%);
+    /* Keeps centered */
+    animation: chs-float-centered 6s ease-in-out infinite 1s both;
+}
+
+.chs-slide[data-index="0"].active .float-3 {
+    bottom: 20%;
+    top: auto;
+    left: calc(22% - 5px);
+    width: 102px;
+    animation: chs-float 5.5s ease-in-out infinite 0.5s;
+}
+
+/* Right Side (4-6) */
+.chs-slide[data-index="0"].active .float-4 {
+    top: 20%;
+    right: calc(22% - 5px);
+    width: 102px;
+    animation: chs-float 5.2s ease-in-out infinite 0.2s;
+}
+
+.chs-slide[data-index="0"].active .float-5 {
+    top: 50%;
+    bottom: auto;
+    right: calc(18% - 5px);
+    width: 122px;
+    transform: translateY(-50%);
+    /* Keeps centered */
+    animation: chs-float-centered 6.3s ease-in-out infinite 1.2s both;
+}
+
+.chs-slide[data-index="0"].active .float-6 {
+    bottom: 20%;
+    top: auto;
+    right: calc(22% - 5px);
+    width: 97px;
+    animation: chs-float 5.8s ease-in-out infinite 0.7s;
+}
+
+/* Slide 1 - Gradient Drop Shadow on Right Side of Product Image */
+.chs-slide[data-index="0"] .chs-product-image {
+    position: relative;
+}
+
+.chs-slide[data-index="0"]::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: calc(50% + 15px);
+    width: 80px;
+    height: 400px;
+    /* Adjusted height */
+    background: linear-gradient(180deg, #E16826 0%, #BD3E1C 50%, #E16826 100%);
+    filter: blur(40px);
+    opacity: 0;
+    z-index: 1;
+    /* Behind product image */
+    pointer-events: none;
+    border-radius: 50%;
+    /* Animation - exact sync with product image */
+    transition: transform 0.7s ease-in-out, opacity 0.7s ease-in-out;
+    transform: translateY(-50%) translateX(70vw);
+}
+
+.chs-slide[data-index="0"].active::after {
+    opacity: 0.6;
+    transform: translateY(-50%) translateX(0);
+}
+
+.chs-slide[data-index="0"].exit::after {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-70vw);
+    transition: transform 0.7s ease-in-out, opacity 0.7s ease-in-out;
+}
+
+
+/* ==========================================================================
+   SLIDE 2 CONFIGURATION (Data Index 1)
+   ========================================================================== */
+
+/* Left Side (1-3) */
+.chs-slide[data-index="1"].active .float-1 {
+    top: 20%;
+    left: calc(22% - 5px);
+    width: 105px;
+    /* Custom Size */
+    animation: chs-float 5s ease-in-out infinite;
+}
+
+.chs-slide[data-index="1"].active .float-2 {
+    top: 50%;
+    left: calc(18% - 5px);
+    width: 125px;
+    /* Custom Size */
+    transform: translateY(-50%);
+    animation: chs-float-centered 6s ease-in-out infinite 1s both;
+}
+
+.chs-slide[data-index="1"].active .float-3 {
+    bottom: 20%;
+    top: auto;
+    left: calc(22% - 5px);
+    width: 115px;
+    /* Custom Size */
+    animation: chs-float 5.5s ease-in-out infinite 0.5s;
+}
+
+/* Right Side (4-6) */
+.chs-slide[data-index="1"].active .float-4 {
+    top: 20%;
+    right: calc(22% - 5px);
+    width: 135px;
+    /* Custom Size */
+    animation: chs-float 5.2s ease-in-out infinite 0.2s;
+}
+
+.chs-slide[data-index="1"].active .float-5 {
+    top: 50%;
+    bottom: auto;
+    right: calc(18% - 5px);
+    width: 110px;
+    /* Custom Size */
+    transform: translateY(-50%);
+    animation: chs-float-centered 6.3s ease-in-out infinite 1.2s both;
+}
+
+.chs-slide[data-index="1"].active .float-6 {
+    bottom: 20%;
+    top: auto;
+    right: calc(22% - 5px);
+    width: 125px;
+    /* Custom Size */
+    animation: chs-float 5.8s ease-in-out infinite 0.7s;
+}
+
+/* Slide 2 - Gradient Drop Shadow on Right Side of Product Image */
+.chs-slide[data-index="1"] .chs-product-image {
+    position: relative;
+}
+
+.chs-slide[data-index="1"]::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: calc(50% + 15px);
+    width: 80px;
+    height: 400px;
+    /* Adjusted height */
+    background: linear-gradient(180deg, #13785A 0%, #19B687 50%, #13785A 100%);
+    filter: blur(40px);
+    opacity: 0;
+    z-index: 1;
+    /* Behind product image */
+    pointer-events: none;
+    border-radius: 50%;
+    /* Animation - exact sync with product image */
+    transition: transform 0.7s ease-in-out, opacity 0.7s ease-in-out;
+    transform: translateY(-50%) translateX(70vw);
+}
+
+.chs-slide[data-index="1"].active::after {
+    opacity: 0.6;
+    transform: translateY(-50%) translateX(0);
+}
+
+.chs-slide[data-index="1"].exit::after {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-70vw);
+    transition: transform 0.7s ease-in-out, opacity 0.7s ease-in-out;
+}
+
+
+/* ==========================================================================
+   SLIDE 3 CONFIGURATION (Data Index 2)
+   ========================================================================== */
+
+/* Left Side (1-3) */
+.chs-slide[data-index="2"].active .float-1 {
+    top: 20%;
+    left: calc(22% - 5px);
+    width: 134px;
+    animation: chs-float 5s ease-in-out infinite;
+}
+
+.chs-slide[data-index="2"].active .float-2 {
+    top: 50%;
+    left: calc(18% - 5px);
+    width: 117px;
+    transform: translateY(-50%);
+    animation: chs-float-centered 6s ease-in-out infinite 1s both;
+}
+
+.chs-slide[data-index="2"].active .float-3 {
+    bottom: 20%;
+    top: auto;
+    left: calc(22% - 5px);
+    width: 130px;
+    /* Custom Size */
+    animation: chs-float 5.5s ease-in-out infinite 0.5s;
+}
+
+/* Right Side (4-6) */
+.chs-slide[data-index="2"].active .float-4 {
+    top: 20%;
+    right: calc(22% - 5px);
+    width: 135px;
+    /* Custom Size */
+    animation: chs-float 5.2s ease-in-out infinite 0.2s;
+}
+
+.chs-slide[data-index="2"].active .float-5 {
+    top: 50%;
+    bottom: auto;
+    right: calc(30% - 5px);
+    width: 50px;
+    /* Custom Size */
+    transform: translateY(-50%);
+    animation: chs-float-centered 6.3s ease-in-out infinite 1.2s both;
+}
+
+.chs-slide[data-index="2"].active .float-6 {
+    bottom: 20%;
+    top: auto;
+    right: calc(22% - 5px);
+    width: 135px;
+    /* Custom Size */
+    animation: chs-float 5.8s ease-in-out infinite 0.7s;
+}
+
+/* Slide 3 - Gradient Drop Shadow on Right Side of Product Image */
+.chs-slide[data-index="2"] .chs-product-image {
+    position: relative;
+}
+
+.chs-slide[data-index="2"]::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: calc(50% + 15px);
+    width: 80px;
+    height: 400px;
+    /* Adjusted height */
+    background: linear-gradient(180deg, #E4AE00 0%, #FFDC80 50%, #FFC74A 100%);
+    filter: blur(40px);
+    opacity: 0;
+    z-index: 1;
+    /* Behind product image (product is z-index: 3) */
+    pointer-events: none;
+    border-radius: 50%;
+    /* Animation - exact sync with product image, no delay */
+    transition: transform 0.7s ease-in-out, opacity 0.7s ease-in-out;
+    transform: translateY(-50%) translateX(70vw);
+}
+
+.chs-slide[data-index="2"].active::after {
+    opacity: 0.6;
+    transform: translateY(-50%) translateX(0);
+}
+
+.chs-slide[data-index="2"].exit::after {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-70vw);
+    transition: transform 0.7s ease-in-out, opacity 0.7s ease-in-out;
+}
+
+
+/* ==========================================================================
+   SLIDE 4 CONFIGURATION (Data Index 3)
+   ========================================================================== */
+
+/* Left Side (1-3) */
+.chs-slide[data-index="3"].active .float-1 {
+    top: 20%;
+    left: calc(22% - 5px);
+    width: 130px;
+    animation: chs-float 5s ease-in-out infinite;
+}
+
+.chs-slide[data-index="3"].active .float-2 {
+    top: 50%;
+    left: calc(18% - 5px);
+    width: 117px;
+    transform: translateY(-50%);
+    animation: chs-float-centered 6s ease-in-out infinite 1s both;
+}
+
+.chs-slide[data-index="3"].active .float-3 {
+    bottom: 20%;
+    top: auto;
+    left: calc(22% - 5px);
+    width: 130px;
+    animation: chs-float 5.5s ease-in-out infinite 0.5s;
+}
+
+/* Right Side (4-6) */
+.chs-slide[data-index="3"].active .float-4 {
+    top: 20%;
+    right: calc(22% - 5px);
+    width: 130px;
+    animation: chs-float 5.2s ease-in-out infinite 0.2s;
+}
+
+.chs-slide[data-index="3"].active .float-5 {
+    top: 50%;
+    bottom: auto;
+    right: calc(18% - 5px);
+    width: 122px;
+    transform: translateY(-50%);
+    animation: chs-float-centered 6.3s ease-in-out infinite 1.2s both;
+}
+
+.chs-slide[data-index="3"].active .float-6 {
+    bottom: 20%;
+    top: auto;
+    right: calc(22% - 5px);
+    width: 130px;
+    animation: chs-float 5.8s ease-in-out infinite 0.7s;
+}
+
+/* Slide 4 - Gradient Drop Shadow on Right Side of Product Image */
+.chs-slide[data-index="3"] .chs-product-image {
+    position: relative;
+}
+
+.chs-slide[data-index="3"]::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: calc(50% + 15px);
+    width: 80px;
+    height: 400px;
+    /* Adjusted height */
+    background: linear-gradient(180deg, #581F00 0%, #7F1B00 50%, #A3430F 100%);
+    filter: blur(40px);
+    opacity: 0;
+    z-index: 1;
+    /* Behind product image */
+    pointer-events: none;
+    border-radius: 50%;
+    /* Animation - exact sync with product image */
+    transition: transform 0.7s ease-in-out, opacity 0.7s ease-in-out;
+    transform: translateY(-50%) translateX(70vw);
+}
+
+.chs-slide[data-index="3"].active::after {
+    opacity: 0.6;
+    transform: translateY(-50%) translateX(0);
+}
+
+.chs-slide[data-index="3"].exit::after {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-70vw);
+    transition: transform 0.7s ease-in-out, opacity 0.7s ease-in-out;
+}
+
+/* Mobile Overrides to Spread Floating Elements */
+@media screen and (max-width: 500px) {
+
+    /* General Mobile Size Reductions */
+    .chs-floating-element {
+        transform-origin: center;
+    }
+
+    /* SLIDE 1 (Index 0) Mobile Positions */
+    .chs-slide[data-index="0"].active .float-1 {
+        left: 10%;
+        top: 15%;
+        width: 65px;
+    }
+
+    .chs-slide[data-index="0"].active .float-2 {
+        left: 8%;
+        width: 75px;
+    }
+
+    .chs-slide[data-index="0"].active .float-3 {
+        left: 10%;
+        bottom: 15%;
+        width: 70px;
+    }
+
+    .chs-slide[data-index="0"].active .float-4 {
+        right: 10%;
+        top: 15%;
+        width: 70px;
+    }
+
+    .chs-slide[data-index="0"].active .float-5 {
+        right: 8%;
+        width: 80px;
+    }
+
+    .chs-slide[data-index="0"].active .float-6 {
+        right: 10%;
+        bottom: 15%;
+        width: 65px;
+    }
+
+    /* SLIDE 2 (Index 1) Mobile Positions */
+    .chs-slide[data-index="1"].active .float-1 {
+        left: 10%;
+        top: 15%;
+        width: 70px;
+    }
+
+    .chs-slide[data-index="1"].active .float-2 {
+        left: 8%;
+        width: 80px;
+    }
+
+    .chs-slide[data-index="1"].active .float-3 {
+        left: 10%;
+        bottom: 15%;
+        width: 75px;
+    }
+
+    .chs-slide[data-index="1"].active .float-4 {
+        right: 10%;
+        top: 15%;
+        width: 85px;
+    }
+
+    .chs-slide[data-index="1"].active .float-5 {
+        right: 8%;
+        width: 75px;
+    }
+
+    .chs-slide[data-index="1"].active .float-6 {
+        right: 10%;
+        bottom: 15%;
+        width: 80px;
+    }
+
+    /* SLIDE 3 (Index 2) Mobile Positions */
+    .chs-slide[data-index="2"].active .float-1 {
+        left: 10%;
+        top: 15%;
+        width: 85px;
+    }
+
+    .chs-slide[data-index="2"].active .float-2 {
+        left: 8%;
+        width: 75px;
+    }
+
+    .chs-slide[data-index="2"].active .float-3 {
+        left: 10%;
+        bottom: 15%;
+        width: 85px;
+    }
+
+    .chs-slide[data-index="2"].active .float-4 {
+        right: 10%;
+        top: 15%;
+        width: 85px;
+    }
+
+    .chs-slide[data-index="2"].active .float-5 {
+        right: 8%;
+        width: 40px;
+    }
+
+    /* Small leaf */
+    .chs-slide[data-index="2"].active .float-6 {
+        right: 10%;
+        bottom: 15%;
+        width: 85px;
+    }
+
+    /* SLIDE 4 (Index 3) Mobile Positions */
+    .chs-slide[data-index="3"].active .float-1 {
+        left: 10%;
+        top: 15%;
+        width: 85px;
+    }
+
+    .chs-slide[data-index="3"].active .float-2 {
+        left: 8%;
+        width: 75px;
+    }
+
+    .chs-slide[data-index="3"].active .float-3 {
+        left: 10%;
+        bottom: 15%;
+        width: 85px;
+    }
+
+    .chs-slide[data-index="3"].active .float-4 {
+        right: 10%;
+        top: 15%;
+        width: 85px;
+    }
+
+    .chs-slide[data-index="3"].active .float-5 {
+        right: 8%;
+        width: 80px;
+    }
+
+    .chs-slide[data-index="3"].active .float-6 {
+        right: 10%;
+        bottom: 15%;
+        width: 85px;
+    }
+}

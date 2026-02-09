@@ -1,0 +1,442 @@
+{% schema %}
+{
+  "name": "Custom Reviews",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Taste worth raving about"
+    },
+    {
+      "type": "text",
+      "id": "review_count_text",
+      "label": "Review Count Text",
+      "default": "57 Reviews"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "WRITE A REVIEW"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "Section Background",
+      "default": "#FFF9F2"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card Background",
+      "default": "#FCDBA3"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review_card",
+      "name": "Review Card",
+      "settings": [
+        {
+          "type": "text",
+          "id": "author",
+          "label": "Author Name",
+          "default": "Aditi S"
+        },
+        {
+          "type": "checkbox",
+          "id": "verified",
+          "label": "Verified Buyer",
+          "default": true
+        },
+        {
+          "type": "range",
+          "id": "stars",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "label": "Stars",
+          "default": 5
+        },
+        {
+          "type": "textarea",
+          "id": "content",
+          "label": "Review Content",
+          "default": "I've never had a soda that feels this good. The flavour is bold and refreshing, and I love knowing it's good for my gut."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Reviews",
+      "blocks": [
+        { "type": "review_card" },
+        { "type": "review_card" },
+        { "type": "review_card" },
+        { "type": "review_card" }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+
+  .custom-reviews-section {
+    background-color: {{ section.settings.section_bg }};
+    padding: 80px 0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  .cr-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .cr-main-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    font-weight: 500;
+    text-align: center;
+    color: #000;
+    margin-bottom: 50px;
+    letter-spacing: -1px;
+  }
+
+  .cr-action-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+
+  .cr-count {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1A1A1A;
+    opacity: 0.8;
+  }
+
+  .cr-write-btn {
+    background-color: #000;
+    color: #fff;
+    padding: 12px 28px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: background-color 0.2s;
+  }
+
+  .cr-write-btn:hover {
+    background-color: #333;
+  }
+
+  .cr-reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .cr-card {
+    background-color: transparent; /* Handled by individual sides */
+    border-radius: 20px;
+    display: flex;
+    overflow: hidden;
+    min-height: 140px;
+  }
+
+  .cr-card-left {
+    width: 250px;
+    padding: 30px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-right: 5px solid #FFFFFF;
+    background-color: {{ section.settings.card_bg }}; /* Golden/yellow side */
+  }
+
+  .cr-card-right {
+    flex-grow: 1;
+    padding: 30px 40px;
+    display: flex;
+    align-items: center;
+    background-color: {{ section.settings.card_bg }}; /* Same golden color as left side */
+  }
+
+  .cr-author {
+    font-size: 16px;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 8px;
+  }
+
+  .cr-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px; /* Increased */
+    color: #A37600; /* Updated color */
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .cr-badge svg {
+    width: 20px; /* Increased size */
+    height: 20px;
+    fill: #A37600; /* Updated color */
+  }
+
+  .cr-stars {
+    color: #A37600; /* Updated color */
+    letter-spacing: 2px;
+    font-size: 20px; /* Increased size */
+  }
+
+  .cr-content {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #333;
+    font-weight: 500;
+  }
+
+  .cr-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 50px;
+    font-weight: 600;
+    font-size: 15px;
+  }
+
+  .cr-page-link {
+    text-decoration: none;
+    color: #000;
+    padding: 5px;
+  }
+  
+  .cr-page-link.active {
+    text-decoration: underline;
+  }
+
+  .cr-page-arrow {
+    cursor: pointer;
+    font-size: 18px;
+    padding: 0 5px;
+  }
+
+  .cr-page-link {
+    cursor: pointer;
+  }
+
+  .cr-page-arrow.disabled {
+    opacity: 0.3;
+    cursor: default;
+    pointer-events: none;
+  }
+
+  @media (max-width: 768px) {
+    .custom-reviews-section {
+      padding: 50px 0;
+    }
+
+    .cr-container {
+      padding: 0 15px;
+    }
+
+    .cr-main-heading {
+      font-size: 32px;
+      margin-bottom: 30px;
+    }
+
+    .cr-action-bar {
+      margin-bottom: 20px;
+    }
+
+    .cr-count {
+      font-size: 14px;
+    }
+
+    .cr-write-btn {
+      padding: 10px 20px;
+      font-size: 11px;
+    }
+
+    .cr-reviews-list {
+      gap: 15px;
+    }
+
+    .cr-card {
+      flex-direction: row; /* Side-by-side layout */
+      border-radius: 15px;
+      min-height: 100px;
+    }
+    
+    .cr-card-left {
+      width: 140px;
+      border-right: 3px solid #FFFFFF;
+      border-bottom: none;
+      padding: 15px;
+      flex-shrink: 0;
+    }
+    
+    .cr-card-right {
+      padding: 15px;
+      flex-grow: 1;
+      background-color: {{ section.settings.card_bg }}; /* Same golden color as left side */
+    }
+
+    .cr-author {
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    .cr-badge {
+      font-size: 11px;
+      margin-bottom: 8px;
+      gap: 5px;
+    }
+
+    .cr-badge svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .cr-stars {
+      font-size: 14px;
+      letter-spacing: 1px;
+    }
+    
+    .cr-content {
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .cr-pagination {
+      margin-top: 30px;
+      gap: 10px;
+      font-size: 14px;
+    }
+  }
+</style>
+
+<div class="custom-reviews-section" id="custom-reviews-{{ section.id }}">
+  <div class="cr-container">
+    <h2 class="cr-main-heading">{{ section.settings.heading }}</h2>
+    
+    <div class="cr-action-bar">
+      <div class="cr-count">{{ section.blocks.size }} Reviews</div>
+      <a href="{{ section.settings.button_link | default: '#' }}" class="cr-write-btn">{{ section.settings.button_text }}</a>
+    </div>
+
+    <div class="cr-reviews-list">
+      {% for block in section.blocks %}
+        <div class="cr-card">
+          <div class="cr-card-left">
+            <div class="cr-author">{{ block.settings.author }}</div>
+            {% if block.settings.verified %}
+              <div class="cr-badge">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                Verified buyer
+              </div>
+            {% endif %}
+            <div class="cr-stars">
+              {% for i in (1..block.settings.stars) %}★{% endfor %}
+            </div>
+          </div>
+          <div class="cr-card-right">
+            <div class="cr-content">{{ block.settings.content }}</div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="cr-pagination" id="cr-pagination-{{ section.id }}">
+      <!-- Pagination generated by JS -->
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const sectionId = "{{ section.id }}";
+    const container = document.querySelector(`#custom-reviews-${sectionId}`);
+    if (!container) return; // Should match the ID we added to the main wrapper
+
+    const cards = container.querySelectorAll('.cr-card');
+    const paginationContainer = container.querySelector('.cr-pagination');
+    const itemsPerPage = 4;
+    const totalPages = Math.ceil(cards.length / itemsPerPage);
+    
+    let currentPage = 1;
+
+    function showPage(page) {
+      if (page < 1) page = 1;
+      if (page > totalPages) page = totalPages;
+      currentPage = page;
+
+      // Hide all cards
+      cards.forEach(card => card.style.display = 'none');
+
+      // Show cards for current page
+      const start = (page - 1) * itemsPerPage;
+      const end = start + itemsPerPage;
+      
+      for (let i = start; i < end; i++) {
+        if (cards[i]) {
+          cards[i].style.display = 'flex'; // Restore flex display
+        }
+      }
+
+      renderPagination();
+    }
+
+    function renderPagination() {
+      paginationContainer.innerHTML = '';
+
+      if (totalPages <= 1) return;
+
+      // Prev Button
+      const prevBtn = document.createElement('span');
+      prevBtn.innerHTML = '&lt;';
+      prevBtn.className = 'cr-page-arrow';
+      if (currentPage === 1) prevBtn.classList.add('disabled');
+      prevBtn.onclick = () => showPage(currentPage - 1);
+      paginationContainer.appendChild(prevBtn);
+
+      // Page Numbers
+      for (let i = 1; i <= totalPages; i++) {
+        const pageLink = document.createElement('span');
+        pageLink.className = 'cr-page-link';
+        if (i === currentPage) pageLink.classList.add('active');
+        pageLink.textContent = i;
+        pageLink.onclick = () => showPage(i);
+        paginationContainer.appendChild(pageLink);
+      }
+
+      // Next Button
+      const nextBtn = document.createElement('span');
+      nextBtn.innerHTML = '&gt;';
+      nextBtn.className = 'cr-page-arrow';
+      if (currentPage === totalPages) nextBtn.classList.add('disabled');
+      nextBtn.onclick = () => showPage(currentPage + 1);
+      paginationContainer.appendChild(nextBtn);
+    }
+    
+    // Initial Render
+    showPage(1);
+  });
+</script>

@@ -1,0 +1,467 @@
+{% schema %}
+{
+  "name": "Product Grid",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Pick Your Mood"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Each flavour is crafted to feel different — but unmistakably SoulSurf."
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "VIEW ALL FLAVOURS"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "Section Background",
+      "default": "#FFF5E6"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product_card",
+      "name": "Product Card",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Custom Title",
+          "default": "Quirky Lemon Lime"
+        },
+        {
+          "type": "text",
+          "id": "tagline",
+          "label": "Tagline",
+          "default": "CRISP. SHARP. REFRESHING."
+        },
+        {
+           "type": "textarea",
+           "id": "description",
+           "label": "Description",
+           "default": "For everyday cravings and clean finishes."
+        },
+        {
+            "type": "color",
+            "id": "card_bg",
+            "label": "Card Background Color",
+            "default": "#FBD569"
+        },
+        {
+            "type": "text",
+            "id": "button_label",
+            "label": "Add to Cart Label",
+            "default": "ADD TO CART"
+        },
+        {
+             "type": "image_picker",
+             "id": "custom_image",
+             "label": "Custom Image (Optional)",
+             "info": "Overrides product image"
+        },
+        {
+             "type": "image_picker",
+             "id": "floating_icon",
+             "label": "Floating Icon (Fruit)",
+             "info": "Small icon top right"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Grid",
+      "blocks": [
+        {
+          "type": "product_card",
+          "settings": {
+              "title": "Quirky Lemon Lime",
+              "card_bg": "#FBD569"
+          }
+        },
+        {
+          "type": "product_card",
+          "settings": {
+              "title": "Refreshing Orange",
+              "card_bg": "#FFBF73"
+          }
+        },
+        {
+          "type": "product_card",
+          "settings": {
+              "title": "Fizzy Aam Panna",
+              "card_bg": "#96D3BB"
+          }
+        },
+        {
+          "type": "product_card",
+          "settings": {
+              "title": "Nostalgic Masala Cola",
+              "card_bg": "#DDBCA8"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+
+  .product-grid-section {
+    background-color: {{ section.settings.section_bg }};
+    padding-bottom: 80px;
+    position: relative;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  .pg-top-wave {
+    position: absolute;
+    top: -1px;
+    left: 0;
+    width: 100%;
+    line-height: 0;
+    z-index: 2;
+    transform: rotate(180deg);
+  }
+
+  .pg-top-wave svg {
+    display: block;
+    width: 100%;
+    height: 60px;
+  }
+  
+  /* Spacer to push content down below wave */
+  .pg-spacer {
+    height: 80px;
+  }
+
+  .pg-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  /* Header Section */
+  .pg-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 60px;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .pg-header-left {
+    max-width: 600px;
+  }
+
+  .pg-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: 64px;
+    font-weight: 500;
+    color: #000;
+    margin: 0 0 16px;
+    line-height: 1.1;
+  }
+
+  .pg-subheading {
+    font-size: 16px;
+    color: #333;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .pg-view-btn {
+    background-color: #000;
+    color: #fff;
+    padding: 18px 36px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+
+  .pg-view-btn:hover {
+    background-color: #333;
+    transform: translateY(-2px);
+  }
+
+  /* Grid */
+  .pg-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+  }
+
+  /* Card */
+  .pg-card {
+    border-radius: 24px;
+    padding: 30px 24px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 520px;
+    transition: transform 0.3s ease;
+    overflow: hidden;
+  }
+
+  .pg-card:hover {
+    transform: translateY(-8px);
+  }
+  
+  .pg-card-content {
+    flex: 1;
+    z-index: 2;
+  }
+
+  .pg-card-title-group {
+    margin-bottom: 20px;
+  }
+
+  .pg-card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 1.1;
+    margin: 0 0 16px;
+    color: #000;
+    min-height: 70px; /* Align titles */
+  }
+
+  .pg-card-tagline {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #000;
+    padding-left: 10px;
+    border-left: 2px solid #000000;
+    margin-bottom: 12px;
+    line-height: 1.4;
+  }
+
+  .pg-card-desc {
+    font-size: 13px;
+    line-height: 1.5;
+    color: #000;
+    margin: 0;
+    opacity: 0.9;
+  }
+
+  .pg-icon-float {
+    position: absolute;
+    top: 30px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    z-index: 2;
+  }
+  
+  .pg-icon-float img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transform: rotate(15deg);
+  }
+
+  .pg-image-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+    position: relative;
+  }
+
+  .pg-product-img {
+    width: 130px; /* Can size */
+    height: auto;
+    object-fit: contain;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.15));
+  }
+
+  .pg-card:hover .pg-product-img {
+    transform: scale(1.08) rotate(3deg);
+  }
+
+  /* Add to Cart Button */
+  .pg-atc-wrapper {
+    margin-top: auto;
+    display: flex;
+    justify-content: center;
+    z-index: 3;
+  }
+
+  .pg-atc-btn {
+    background-color: #fff;
+    color: #000;
+    border: 1.5px solid #000;
+    border-radius: 50px;
+    padding: 14px 40px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    max-width: 200px;
+    text-align: center;
+  }
+
+  .pg-atc-btn:hover {
+    background-color: #000;
+    color: #fff;
+    border-color: #000;
+  }
+  
+  /* Black button for lightest card if needed, or stick to consistent style */
+  /* The first card in the design (Yellow) has a black button */
+  .pg-card[data-index="1"] .pg-atc-btn {
+      background-color: #000;
+      color: #fff;
+  }
+  .pg-card[data-index="1"] .pg-atc-btn:hover {
+      background-color: #333;
+      border-color: #333;
+  }
+
+  @media (max-width: 1200px) {
+    .pg-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+    .pg-card {
+        min-height: 480px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .pg-grid {
+      grid-template-columns: 1fr;
+    }
+    .pg-header {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .pg-heading {
+      font-size: 42px;
+    }
+    .pg-card {
+        align-items: center;
+        text-align: center;
+    }
+    .pg-card-tagline {
+        border-left: none;
+        padding-left: 0;
+        margin-bottom: 20px;
+        position: relative;
+    }
+    /* Add a small line below tagline for mobile center check? Or leave it clean */
+    
+    .pg-icon-float {
+        right: 30px;
+    }
+  }
+
+</style>
+
+<div class="product-grid-section">
+  <!-- Top Wave: Inverted wave to create the curve effect from top -->
+  <div class="pg-top-wave">
+    <svg viewBox="0 0 1440 100" preserveAspectRatio="none">
+       <path d="M0,100 C60,100 60,40 120,40 S180,100 240,100 S300,40 360,40 S420,100 480,100 S540,40 600,40 S660,100 720,100 S780,40 840,40 S900,100 960,100 S1020,40 1080,40 S1140,100 1200,100 S1260,40 1320,40 S1380,100 1440,100 L1440,100 L0,100 Z" fill="#ffffff"></path>
+    </svg>
+  </div>
+  
+  <div class="pg-spacer"></div>
+
+  <div class="pg-container">
+    <div class="pg-header">
+      <div class="pg-header-left">
+        <h2 class="pg-heading">{{ section.settings.heading }}</h2>
+        <p class="pg-subheading">{{ section.settings.subheading }}</p>
+      </div>
+      {% if section.settings.button_link != blank %}
+      <a href="{{ section.settings.button_link }}" class="pg-view-btn">
+        {{ section.settings.button_text }}
+      </a>
+      {% endif %}
+    </div>
+
+    <div class="pg-grid">
+      {% for block in section.blocks %}
+        {% assign product = block.settings.product %}
+        <div class="pg-card" style="background-color: {{ block.settings.card_bg }};" data-index="{{ forloop.index }}">
+           
+           {% if block.settings.floating_icon != blank %}
+           <div class="pg-icon-float">
+               {{ block.settings.floating_icon | image_url: width: 100 | image_tag: loading: 'lazy' }}
+           </div>
+           {% endif %}
+
+           <div class="pg-card-content">
+              <div class="pg-card-title-group">
+                 <h3 class="pg-card-title">{{ block.settings.title }}</h3>
+                 <div class="pg-card-tagline">{{ block.settings.tagline }}</div>
+                 <p class="pg-card-desc">{{ block.settings.description }}</p>
+              </div>
+           </div>
+
+           <div class="pg-image-container">
+             {% if block.settings.custom_image != blank %}
+                {{ block.settings.custom_image | image_url: width: 400 | image_tag: class: 'pg-product-img', loading: 'lazy' }}
+             {% elsif product.featured_image != blank %}
+                {{ product.featured_image | image_url: width: 400 | image_tag: class: 'pg-product-img', loading: 'lazy' }}
+             {% else %}
+                <img src="https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-image_large.png" class="pg-product-img" alt="Placeholder">
+             {% endif %}
+           </div>
+
+           <div class="pg-atc-wrapper">
+             {% if product != blank and product.available %}
+             <form method="post" action="/cart/add" class="pg-atc-form">
+                <input type="hidden" name="id" value="{{ product.variants.first.id }}">
+                <button type="submit" class="pg-atc-btn">
+                  {{ block.settings.button_label }}
+                </button>
+             </form>
+             {% else %}
+               <button type="button" class="pg-atc-btn" disabled>
+                  {% if product != blank %}SOLD OUT{% else %}SELECT PRODUCT{% endif %}
+               </button>
+             {% endif %}
+           </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>

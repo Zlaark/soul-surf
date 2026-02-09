@@ -1,0 +1,103 @@
+{
+    "sections": {
+        "about_hero": {
+            "type": "custom-about-hero",
+            "settings": {}
+        },
+        "about_vision": {
+            "type": "custom-about-vision",
+            "settings": {
+                "wave_color": "#FFE4B5"
+            }
+        },
+        "about_gallery": {
+            "type": "custom-about-gallery",
+            "blocks": {
+                "block_1": {
+                    "type": "gallery_item",
+                    "settings": {
+                        "overlay_text": "Late nights",
+                        "svg_filename": "about2.svg"
+                    }
+                },
+                "block_2": {
+                    "type": "gallery_item",
+                    "settings": {
+                        "overlay_text": "Long Days",
+                        "svg_filename": "about2.svg"
+                    }
+                },
+                "block_3": {
+                    "type": "gallery_item",
+                    "settings": {
+                        "overlay_text": "Office Breaks",
+                        "svg_filename": "about2.svg"
+                    }
+                },
+                "block_4": {
+                    "type": "gallery_item",
+                    "settings": {
+                        "overlay_text": "Weekend Plans",
+                        "svg_filename": "about2.svg"
+                    }
+                },
+                "block_5": {
+                    "type": "gallery_item",
+                    "settings": {
+                        "overlay_text": "Road Trips",
+                        "svg_filename": "about2.svg"
+                    }
+                }
+            },
+            "block_order": [
+                "block_1",
+                "block_2",
+                "block_3",
+                "block_4",
+                "block_5"
+            ],
+            "settings": {}
+        },
+        "flavour_philosophy": {
+            "type": "custom-flavour-philosophy",
+            "blocks": {
+                "block_1": {
+                    "type": "content_row",
+                    "settings": {
+                        "svg_filename": "abou1.svg",
+                        "layout": "right",
+                        "heading": "Crafted, Not Complicated",
+                        "description": "Every flavour is built around one idea: how it should feel.\nCrisp where it needs to be.\nSmooth when it matters.\nBold, but never heavy."
+                    }
+                },
+                "block_2": {
+                    "type": "content_row",
+                    "settings": {
+                        "svg_filename": "about2.svg",
+                        "layout": "left",
+                        "heading": "This Is Soda Just Done Better.",
+                        "description": "SoulSurf is here to evolve soda, not replace it. For people who still love fizz, flavour, and the moment a can opens."
+                    }
+                }
+            },
+            "block_order": [
+                "block_1",
+                "block_2"
+            ],
+            "settings": {}
+        },
+        "text_banner": {
+            "type": "custom-text-banner",
+            "settings": {
+                "wave_color": "#D6A348"
+            }
+        }
+    },
+    "order": [
+        "about_hero",
+        "about_vision",
+        "about_gallery",
+        "flavour_philosophy",
+        "text_banner"
+    ]
+}

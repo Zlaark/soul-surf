@@ -1,0 +1,203 @@
+{% schema %}
+{
+  "name": "About Vision (Text/Img)",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Why SoulSurf Exists"
+    },
+    {
+      "type": "textarea",
+      "id": "text_content",
+      "label": "Text Content",
+      "default": "Somewhere along the way, soda became either too artificial to enjoy or too serious to love.\n\nWe wanted something in between.\nFamiliar, but refined. Fun, but considered."
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "svg_filename",
+      "label": "SVG Filename (from Assets)",
+      "info": "Overrides image picker. e.g. 'about2.svg'",
+      "default": "about2.svg"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#FFF5E6"
+    },
+    {
+      "type": "color",
+      "id": "wave_color",
+      "label": "Wave Color",
+      "default": "#FFE4B5",
+      "info": "This should match the background color of the section below (About Gallery)."
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#000000"
+    }
+  ],
+  "presets": [
+    {
+      "name": "About Vision (Text/Img)"
+    }
+  ]
+}
+{% endschema %}
+
+<div class="about-vision-section">
+  <div class="page-width">
+    <div class="vision-content-wrapper">
+      
+      <!-- Text Side -->
+      <div class="vision-text-wrapper">
+        {% if section.settings.heading != blank %}
+          <h2 class="vision-heading">{{ section.settings.heading }}</h2>
+        {% endif %}
+        {% if section.settings.text_content != blank %}
+          <div class="vision-description">{{ section.settings.text_content | newline_to_br | replace: 'Familiar, but refined. Fun, but considered.', '<strong>Familiar, but refined. Fun, but considered.</strong>' }}</div>
+        {% endif %}
+      </div>
+
+      <!-- Image Side -->
+      <div class="vision-image-wrapper">
+        {% if section.settings.svg_filename != blank %}
+          <img src="{{ section.settings.svg_filename | asset_url }}" loading="lazy" class="vision-image" alt="{{ section.settings.heading | escape }}">
+        {% elsif section.settings.image != blank %}
+          {{ section.settings.image | image_url: width: 800 | image_tag: loading: 'lazy', class: 'vision-image' }}
+        {% else %}
+          {{ 'image' | placeholder_svg_tag: 'vision-image placeholder-svg' }}
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bottom Wave -->
+  <div class="vision-bottom-wave">
+    <svg class="desktop-wave" viewBox="0 0 1440 100" preserveAspectRatio="none">
+      <path d="M0,100 C 40,100 40,40 80,40 S 120,100 160,100 S 200,40 240,40 S 280,100 320,100 S 360,40 400,40 S 440,100 480,100 S 520,40 560,40 S 600,100 640,100 S 680,40 720,40 S 760,100 800,100 S 840,40 880,40 S 920,100 960,100 S 1000,40 1040,40 S 1080,100 1120,100 S 1160,40 1200,40 S 1240,100 1280,100 S 1320,40 1360,40 S 1400,100 1440,100 L1440,100 L0,100 Z" fill="{{ section.settings.wave_color }}"></path>
+    </svg>
+    <svg class="mobile-wave" viewBox="0 0 400 60" preserveAspectRatio="none">
+      <path d="M0,55 C25,55 25,5 50,5 S75,55 100,55 S125,5 150,5 S175,55 200,55 S225,5 250,5 S275,55 300,55 S325,5 350,5 S375,55 400,55 L400,60 L0,60 Z" fill="{{ section.settings.wave_color }}"></path>
+    </svg>
+  </div>
+</div>
+
+<style>
+  .about-vision-section {
+    background-color: {{ section.settings.background_color }};
+    padding-top: 100px;
+    padding-bottom: 200px; /* Large space for wave overlap availability */
+    position: relative;
+    color: {{ section.settings.text_color }};
+    overflow: hidden;
+  }
+
+  .about-vision-section .page-width {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .vision-content-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 80px;
+  }
+
+  .vision-text-wrapper {
+    flex: 1;
+    padding-right: 20px;
+  }
+
+  .vision-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: 64px;
+    font-weight: 500;
+    line-height: 1.1;
+    margin-bottom: 30px;
+  }
+
+  .vision-description {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 20px;
+    line-height: 1.6;
+    color: rgba(0,0,0,0.8);
+  }
+  
+  .vision-description strong {
+    font-weight: 600;
+    color: #000;
+  }
+
+  .vision-image-wrapper {
+    width: 45%;
+    flex: none;
+    position: relative;
+  }
+
+  .vision-image {
+    width: 100%;
+    height: auto;
+    border-radius: 30px;
+    display: block;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+  }
+
+  .vision-bottom-wave {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    line-height: 0;
+    pointer-events: none;
+  }
+
+  .vision-bottom-wave svg {
+    width: 100%;
+    height: 60px;
+    display: block;
+  }
+  
+  .vision-bottom-wave .mobile-wave { display: none; }
+
+  @media screen and (max-width: 990px) {
+    .vision-content-wrapper {
+      flex-direction: column-reverse; /* Image top, Text bottom */
+      text-align: left; /* Left align text */
+      gap: 40px;
+    }
+
+    .vision-text-wrapper {
+      padding-right: 0;
+    }
+
+    .vision-heading {
+      font-size: 35px;
+    }
+
+    .vision-image-wrapper {
+      width: 100%;
+      max-width: 500px;
+    }
+  }
+
+  @media screen and (max-width: 550px) {
+    .vision-bottom-wave .desktop-wave { display: none; }
+    .vision-bottom-wave .mobile-wave { 
+      display: block;
+      height: 25px !important; /* Reduced height */
+    }
+  }
+</style>

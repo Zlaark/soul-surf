@@ -1,0 +1,697 @@
+{% schema %}
+{
+  "name": "Video Carousel",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Over 500,000 Customers have Spoken"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#FFF6E3"
+    },
+    {
+      "type": "range",
+      "id": "card_width",
+      "min": 200,
+      "max": 400,
+      "step": 10,
+      "unit": "px",
+      "label": "Card Width",
+      "default": 300
+    },
+    {
+      "type": "range",
+      "id": "card_height",
+      "min": 300,
+      "max": 600,
+      "step": 10,
+      "unit": "px",
+      "label": "Card Height",
+      "default": 500
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#000000"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "video_block",
+      "name": "Video Card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "poster_image",
+          "label": "Poster Image"
+        },
+        {
+          "type": "video",
+          "id": "video_file",
+          "label": "Video (Shopify Hosted)"
+        },
+        {
+          "type": "url",
+          "id": "video_url",
+          "label": "Video URL (External/backup)"
+        },
+        {
+          "type": "text",
+          "id": "product_name",
+          "label": "Product Name Overlay",
+          "default": "Refreshing Orange"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "Description Overlay",
+          "default": "MODERN CRAFTED SODA"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Video Carousel",
+      "blocks": [
+        {
+           "type": "video_block", 
+           "settings": {
+              "product_name": "Refreshing Orange"
+           }
+        },
+        {
+           "type": "video_block", 
+           "settings": {
+              "product_name": "Zesty Lemon"
+           }
+        },
+        {
+           "type": "video_block", 
+           "settings": {
+              "product_name": "Classic Cola"
+           }
+        },
+        {
+           "type": "video_block", 
+           "settings": {
+              "product_name": "Grape Fizz"
+           }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  .custom-video-section {
+    background-color: {{ section.settings.background_color }};
+    padding: 60px 0;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .video-section-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0; /* Removed padding as requested */
+    position: relative;
+  }
+
+  .video-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: 62px;
+    font-weight: 600;
+    text-align: center;
+    color: {{ section.settings.heading_color }};
+    margin-bottom: 50px;
+    line-height: 1.2;
+  }
+
+  .carousel-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center the track */
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  
+  /* Fade Gradients */
+  .carousel-wrapper::before,
+  .carousel-wrapper::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 150px; /* Width of the fade */
+      z-index: 2;
+      pointer-events: none; /* Allow clicking through */
+  }
+
+  .carousel-wrapper::before {
+      left: 0;
+      background: linear-gradient(to right, {{ section.settings.background_color }} 20%, transparent 100%);
+  }
+
+  .carousel-wrapper::after {
+      right: 0;
+      background: linear-gradient(to left, {{ section.settings.background_color }} 20%, transparent 100%);
+  }
+
+  .carousel-track {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    padding: 20px 0; /* Space for shadow */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+
+  .carousel-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .video-card {
+    flex: 0 0 {{ section.settings.card_width }}px;
+    height: {{ section.settings.card_height }}px;
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    scroll-snap-align: center;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .video-card:hover {
+      transform: translateY(-5px);
+  }
+
+  .video-poster {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .video-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 50%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+  }
+
+  .play-button {
+      width: 60px;
+      height: 60px;
+      background-color: #fff;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+  }
+  
+  .video-card:hover .play-button {
+      transform: scale(1.1);
+  }
+
+  .play-icon {
+      height: 24px;
+      width: auto;
+      display: block;
+      margin-left: 3px; /* Optical center for play triangle */
+  }
+
+  .video-info {
+      position: absolute;
+      bottom: 25px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      padding: 0 15px;
+  }
+
+  .product-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 5px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+
+  .product-desc {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.9);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .nav-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 10;
+    padding: 0;
+    transition: transform 0.2s;
+  }
+
+  .nav-button:hover {
+      transform: translateY(-50%) scale(1.1);
+      background: transparent;
+  }
+
+  .nav-prev { left: 0; }
+  .nav-next { right: 0; }
+  
+  .nav-icon {
+      width: auto;
+      height: 40px; /* Larger size for visibility */
+      display: block;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+  }
+
+  /* Video Active State */
+  .video-element {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+  }
+
+  @media screen and (max-width: 768px) {
+    .video-heading { font-size: 32px; }
+    .video-section-container { padding: 0 0px; }
+    .nav-button { display: none; } /* Hide arrows on mobile, rely on swipe */
+    .carousel-track { padding-left: 20px; padding-right: 20px; } /* Peek effect */
+    
+    .video-card {
+      flex: 0 0 240px;
+      height: 400px;
+    }
+
+    /* Remove fade effect on mobile */
+    .carousel-wrapper::before,
+    .carousel-wrapper::after {
+        display: none;
+    }
+  }
+
+  /* Small mobile devices */
+  @media screen and (max-width: 480px) {
+    .video-heading { 
+      font-size: 36px; 
+      margin-bottom: 30px;
+    }
+    .video-section-container { padding: 0 0px; }
+    .carousel-track { 
+      padding-left: 15px; 
+      padding-right: 15px;
+      gap: 15px;
+    }
+    
+    .video-card {
+      flex: 0 0 200px;
+      height: 340px;
+    }
+
+    .product-name {
+      font-size: 20px;
+    }
+
+    .product-desc {
+      font-size: 9px;
+    }
+
+    .play-button {
+      width: 50px;
+      height: 50px;
+    }
+
+    .play-icon {
+      height: 20px;
+    }
+    
+    .custom-video-section {
+      padding: 40px 0;
+    }
+  }
+  /* Modal Styles */
+  .video-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.95);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+  }
+
+  .video-modal-overlay.active {
+      display: flex;
+      opacity: 1;
+  }
+
+  .video-modal-content {
+      position: relative;
+      width: auto;
+      height: auto;
+      max-width: 90vw;
+      max-height: 90vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #000;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 0 50px rgba(0,0,0,0.8);
+  }
+
+  .modal-video-player {
+      max-width: 100%;
+      max-height: 90vh;
+      width: auto;
+      height: auto;
+      display: block;
+      outline: none;
+  }
+  
+  /* Custom Controls Overlay */
+  .modal-controls-overlay {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      justify-content: space-between;
+      pointer-events: none; /* Let clicks pass through to video/container area if needed, but buttons need events */
+      z-index: 2000; /* Increased z-index */
+  }
+  
+  .controls-group {
+      display: flex;
+      gap: 15px;
+      pointer-events: auto;
+  }
+
+  .control-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background-color: rgba(30,30,30, 0.6); /* Semi-transparent dark */
+      backdrop-filter: blur(5px);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s, background-color 0.2s;
+  }
+  
+  .control-btn:hover {
+      transform: scale(1.1);
+      background-color: rgba(50,50,50, 0.8);
+  }
+  
+  .control-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: #fff;
+      pointer-events: none; /* Ensure click passes to button */
+  }
+  
+  .control-icon-hidden {
+      display: none;
+  }
+</style>
+
+<div class="custom-video-section">
+  <div class="video-section-container">
+    <h2 class="video-heading">{{ section.settings.heading | newline_to_br }}</h2>
+
+    <div class="carousel-wrapper">
+      <button class="nav-button nav-prev" onclick="scrollVideoCarousel('{{ section.id }}', -1)">
+          <img src="{{ 'left.svg' | asset_url }}" alt="Previous" class="nav-icon" width="12" height="20">
+      </button>
+
+      <div class="carousel-track" id="videoCarouselTrack-{{ section.id }}">
+        {%- for i in (1..6) -%}
+          {%- for block in section.blocks -%}
+            <div class="video-card" onclick="playVideo(this)">
+              {%- if block.settings.poster_image != blank -%}
+                  {{ block.settings.poster_image | image_url: width: 400 | image_tag: loading: 'lazy', class: 'video-poster' }}
+              {%- else -%}
+                  <img src="{{ 'Rectangle 317.png' | asset_url }}" alt="Video Poster" class="video-poster" loading="lazy">
+              {%- endif -%}
+
+              <div class="video-overlay">
+                  <div class="play-button">
+                      <img src="{{ 'play.svg' | asset_url }}" alt="Play" class="play-icon" width="20" height="20" loading="lazy">
+                  </div>
+                  
+
+              </div>
+
+              <!-- Hidden Video Source Data -->
+               {%- if block.settings.video_file != blank -%}
+                  <template class="video-source">
+                      {{ block.settings.video_file | video_tag: autoplay: true, loop: true, muted: false, controls: true, class: 'video-element' }}
+                  </template>
+              {%- elsif block.settings.video_url != blank -%}
+                   <template class="video-source">
+                      <video class="video-element" controls autoplay loop playsinline>
+                          <source src="{{ block.settings.video_url }}" type="video/mp4">
+                      </video>
+                   </template>
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        {%- endfor -%}
+      </div>
+
+      <button class="nav-button nav-next" onclick="scrollVideoCarousel('{{ section.id }}', 1)">
+          <img src="{{ 'right.svg' | asset_url }}" alt="Next" class="nav-icon" width="12" height="20">
+      </button>
+    </div>
+  </div>
+
+  <!-- Video Modal -->
+  <div class="video-modal-overlay" id="videoModal">
+    <div class="video-modal-content" id="videoModalContent">
+      <div id="modalVideoContainer"></div>
+      
+      <!-- Custom Controls -->
+      <div class="modal-controls-overlay">
+          <!-- Top Left: Play/Pause & Mute -->
+          <div class="controls-group">
+            <button class="control-btn" id="modalPlayBtn" onclick="toggleModalPlay()">
+                <!-- Pause Icon (Default) -->
+                <svg class="icon-pause" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                <!-- Play Icon (Hidden) -->
+                <svg class="icon-play control-icon-hidden" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <button class="control-btn" id="modalMuteBtn" onclick="toggleModalMute()">
+                <!-- Volume Up (Default) -->
+                <svg class="icon-volume-up" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                <!-- Mute (Hidden) -->
+                <svg class="icon-volume-off control-icon-hidden" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73 4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+            </button>
+          </div>
+
+          <!-- Top Right: Close -->
+          <div class="controls-group">
+            <button class="control-btn" onclick="closeVideoModal()">
+                <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            </button>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function scrollVideoCarousel(sectionId, direction) {
+    const track = document.getElementById(`videoCarouselTrack-${sectionId}`);
+    if (!track) return;
+    
+    // Calculate actual card width + gap dynamically
+    const firstCard = track.querySelector('.video-card');
+    let scrollAmount = 320; // Default fallback
+    
+    if (firstCard) {
+        const style = window.getComputedStyle(track);
+        const gap = parseFloat(style.gap) || 20;
+        scrollAmount = firstCard.offsetWidth + gap;
+    }
+
+    track.scrollBy({
+        left: direction * scrollAmount,
+        behavior: 'smooth'
+    });
+  }
+
+  let currentModalVideo = null;
+
+  function playVideo(card) {
+      const template = card.querySelector('.video-source');
+      const modal = document.getElementById('videoModal');
+      const container = document.getElementById('modalVideoContainer');
+      const modalContent = document.getElementById('videoModalContent');
+      
+      // Controls UI
+      const playBtn = document.getElementById('modalPlayBtn');
+      const muteBtn = document.getElementById('modalMuteBtn');
+
+      if (modal && container) {
+          container.innerHTML = '';
+          currentModalVideo = null; // Reset
+          
+          let hasVideo = false;
+
+          // Try to get video content
+          if (template && template.content.querySelector('video')) {
+              const videoContent = template.content.cloneNode(true);
+              const videoElInTemplate = videoContent.querySelector('video');
+              
+              if(videoElInTemplate) {
+                  container.appendChild(videoContent);
+                  const videoEl = container.querySelector('video');
+                  
+                  if (videoEl) {
+                      hasVideo = true;
+                      videoEl.classList.add('modal-video-player');
+                      videoEl.controls = false; 
+                      videoEl.playsInline = true;
+                      
+                      currentModalVideo = videoEl;
+                      
+                      updatePlayButton(true);
+                      updateMuteButton(false);
+                      
+                      videoEl.play().catch(e => {
+                          console.log('Autoplay prevented', e);
+                          updatePlayButton(false);
+                      });
+                      
+                      // Setup Events
+                      videoEl.addEventListener('play', () => updatePlayButton(true));
+                      videoEl.addEventListener('pause', () => updatePlayButton(false));
+                      videoEl.addEventListener('volumechange', () => updateMuteButton(videoEl.muted));
+                      videoEl.addEventListener('ended', () => updatePlayButton(false));
+                      videoEl.addEventListener('click', toggleModalPlay);
+                  }
+              }
+          }
+          
+          // Fallback to Image Preview if no video
+          if (!hasVideo) {
+              const poster = card.querySelector('.video-poster');
+              if (poster) {
+                  const imgClone = poster.cloneNode(true);
+                  imgClone.classList.add('modal-video-player'); // Re-use styling class
+                  imgClone.classList.remove('video-poster');
+                  imgClone.style.objectFit = 'contain'; 
+                  container.appendChild(imgClone);
+                  
+                  // Hide Controls for image mode
+                  if(playBtn) playBtn.parentElement.style.display = 'none';
+                  if(muteBtn) muteBtn.parentElement.style.display = 'none';
+              }
+          } else {
+              // Show controls if we have video
+              if(playBtn) playBtn.parentElement.style.display = 'flex';
+              if(muteBtn) muteBtn.parentElement.style.display = 'flex';
+          }
+          
+          modal.classList.add('active');
+      }
+  }
+
+  function toggleModalPlay() {
+      if (currentModalVideo) {
+          if (currentModalVideo.paused) {
+              currentModalVideo.play();
+          } else {
+              currentModalVideo.pause();
+          }
+      }
+  }
+
+  function toggleModalMute() {
+      if (currentModalVideo) {
+          currentModalVideo.muted = !currentModalVideo.muted;
+      }
+  }
+
+  function updatePlayButton(isPlaying) {
+      const btn = document.getElementById('modalPlayBtn');
+      if (!btn) return;
+      if (isPlaying) {
+          btn.querySelector('.icon-pause').classList.remove('control-icon-hidden');
+          btn.querySelector('.icon-play').classList.add('control-icon-hidden');
+      } else {
+          btn.querySelector('.icon-pause').classList.add('control-icon-hidden');
+          btn.querySelector('.icon-play').classList.remove('control-icon-hidden');
+      }
+  }
+
+  function updateMuteButton(isMuted) {
+      const btn = document.getElementById('modalMuteBtn');
+      if (!btn) return;
+      if (isMuted) {
+          btn.querySelector('.icon-volume-up').classList.add('control-icon-hidden');
+          btn.querySelector('.icon-volume-off').classList.remove('control-icon-hidden');
+      } else {
+          btn.querySelector('.icon-volume-up').classList.remove('control-icon-hidden');
+          btn.querySelector('.icon-volume-off').classList.add('control-icon-hidden');
+      }
+  }
+
+  function closeVideoModal() {
+      const modal = document.getElementById('videoModal');
+      const container = document.getElementById('modalVideoContainer');
+      
+      if (modal) {
+          modal.classList.remove('active');
+          // Wait for transition, then clear video to stop audio
+          setTimeout(() => {
+              if (container) container.innerHTML = '';
+          }, 300);
+      }
+  }
+  
+  // Close on click outside
+  document.getElementById('videoModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+          closeVideoModal();
+      }
+  });
+</script>

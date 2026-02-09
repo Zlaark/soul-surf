@@ -1,0 +1,214 @@
+{{ 'about-animations.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'about-animations.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "About Hero",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Soda, Reconsidered."
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "SoulSurf is a modern soda made for people who care about taste, vibe, and what they're choosing without turning it into a lecture."
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background Image"
+    },
+    {
+      "type": "text",
+      "id": "bg_image_filename",
+      "label": "Background Image Filename (Assets)",
+      "info": "e.g. 'Group 1321315867.webp'",
+      "default": "Group 1321315867.webp"
+    },
+    {
+      "type": "text",
+      "id": "mobile_bg_image_filename",
+      "label": "Mobile Background Image (Assets)",
+      "info": "e.g. 'ghcsghcsda.jpg' - shown only on mobile",
+      "default": "ghcsghcsda.jpg"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "wave_color",
+      "label": "Bottom Wave Color",
+      "default": "#FFF5E6",
+      "info": "Should match the Vision section background"
+    }
+  ],
+  "presets": [
+    {
+      "name": "About Hero"
+    }
+  ]
+}
+{% endschema %}
+
+<div class="about-hero-section">
+  <div class="hero-background">
+    {% if section.settings.bg_image_filename != blank %}
+      <img src="{{ section.settings.bg_image_filename | asset_url }}" class="hero-bg-img desktop-bg" alt="Background">
+    {% elsif section.settings.background_image != blank %}
+      {{ section.settings.background_image | image_url: width: 2000 | image_tag: class: 'hero-bg-img desktop-bg' }}
+    {% endif %}
+    {% if section.settings.mobile_bg_image_filename != blank %}
+      <img src="{{ section.settings.mobile_bg_image_filename | asset_url }}" class="hero-bg-img mobile-bg" alt="Background">
+    {% endif %}
+  </div>
+
+  <div class="page-width">
+    <div class="hero-content">
+      <h1 class="hero-heading">{{ section.settings.heading }}</h1>
+      <p class="hero-subheading">{{ section.settings.subheading }}</p>
+    </div>
+  </div>
+
+  <!-- Bottom Wave -->
+  <div class="hero-bottom-wave">
+    <svg class="desktop-wave" viewBox="0 0 1440 100" preserveAspectRatio="none">
+       <path d="M0,100 C 40,100 40,40 80,40 S 120,100 160,100 S 200,40 240,40 S 280,100 320,100 S 360,40 400,40 S 440,100 480,100 S 520,40 560,40 S 600,100 640,100 S 680,40 720,40 S 760,100 800,100 S 840,40 880,40 S 920,100 960,100 S 1000,40 1040,40 S 1080,100 1120,100 S 1160,40 1200,40 S 1240,100 1280,100 S 1320,40 1360,40 S 1400,100 1440,100 L1440,100 L0,100 Z" fill="{{ section.settings.wave_color }}"></path>
+    </svg>
+    <svg class="mobile-wave" viewBox="0 0 400 60" preserveAspectRatio="none">
+       <path d="M0,55 C25,55 25,5 50,5 S75,55 100,55 S125,5 150,5 S175,55 200,55 S225,5 250,5 S275,55 300,55 S325,5 350,5 S375,55 400,55 L400,60 L0,60 Z" fill="{{ section.settings.wave_color }}"></path>
+    </svg>
+  </div>
+</div>
+
+<style>
+  .about-hero-section {
+    position: relative;
+    padding: 80px 20px 80px; /* Reduced top padding since header is above now */
+    margin-top: 85px; /* Push below the fixed header */
+    min-height: 725px;
+    overflow: hidden;
+    color: {{ section.settings.text_color }};
+    z-index: 1;
+  }
+
+  .hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+  }
+
+  .hero-bg-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+  
+  /* Desktop/Mobile background image visibility */
+  .hero-bg-img.mobile-bg { display: none; }
+  .hero-bg-img.desktop-bg { display: block; }
+
+  .about-hero-section .page-width {
+    width: 100%;
+    max-width: 1400px;
+    padding: 0 30px 0 10px; /* Increased left padding */
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-content {
+    max-width: 600px; /* Limit text width */
+    padding-bottom: 50px; /* Space from wave */
+  }
+
+  .hero-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: 80px;
+    font-weight: 500;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    color: {{ section.settings.text_color }};
+  }
+
+  .hero-subheading {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 21px; /* Increased by 1px */
+    line-height: 1.6;
+    color: {{ section.settings.text_color }};
+    opacity: 0.9;
+    max-width: 520px; /* Aligned in 3 lines approx */
+  }
+
+  .hero-bottom-wave {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    line-height: 0;
+    pointer-events: none;
+  }
+
+  .hero-bottom-wave svg {
+    width: 100%;
+    height: 60px;
+    display: block;
+  }
+  
+  .hero-bottom-wave .mobile-wave { display: none; }
+
+  @media screen and (max-width: 990px) {
+    .about-hero-section {
+      height: 500px;
+    }
+
+    .hero-heading {
+      font-size: 30px;
+    }
+  }
+
+  @media screen and (max-width: 550px) {
+    .about-hero-section {
+      height: auto;
+      min-height: 450px; /* Further reduced height */
+      padding: 40px 20px 10px; /* Reduced padding */
+      margin-top: 50px; /* Reduced from 85px for mobile header */
+      text-align: left; /* Left align like reference */
+    }
+
+    .hero-content {
+      margin: 0; /* Remove auto margin for left alignment */
+      padding-left: 4px;
+    }
+    
+    .hero-subheading {
+      font-size: 13px; /* Reduced from 21px */
+      max-width: 100%;
+    }
+    
+    .hero-bg-img {
+      object-position: 70% center; /* Adjust for mobile focus if needed */
+    }
+
+    .hero-bottom-wave .desktop-wave { display: none; }
+    .hero-bottom-wave .mobile-wave { 
+      display: block;
+      height: 25px !important; /* Reduced height */
+    }
+    
+    /* Swap to mobile background image */
+    .hero-bg-img.desktop-bg { display: none; }
+    .hero-bg-img.mobile-bg { display: block; }
+  }
+</style>

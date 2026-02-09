@@ -1,0 +1,663 @@
+{% schema %}
+{
+  "name": "Ingredients & Nutrition",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Know What You're Sipping"
+    },
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "Section Background",
+      "default": "#FFF5E6"
+    },
+    {
+      "type": "color",
+      "id": "marquee_bg",
+      "label": "Marquee Background",
+      "default": "#E2981A"
+    },
+    {
+        "type": "color",
+        "id": "border_color",
+        "label": "Table Border Color",
+        "default": "#13785A"
+    },
+    {
+        "type": "color",
+        "id": "footer_color",
+        "label": "Footer Text Color",
+        "default": "#000000"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "ingredient",
+      "name": "Ingredient",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Ingredient Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Ingredient Name",
+          "default": "Ingredient Name"
+        }
+      ]
+    },
+    {
+      "type": "marquee_item",
+      "name": "Marquee Text",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "No Artificial Sweeteners"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Ingredients & Nutrition",
+      "blocks": [
+        {
+          "type": "ingredient",
+          "settings": { "title": "Carbonated water" }
+        },
+        {
+          "type": "ingredient",
+          "settings": { "title": "Real Mango Extract" }
+        },
+        {
+          "type": "ingredient",
+          "settings": { "title": "Lime extract" }
+        },
+        {
+          "type": "ingredient",
+          "settings": { "title": "Prebiotic fibre\n(plant-based inulin)" }
+        },
+        {
+          "type": "ingredient",
+          "settings": { "title": "Natural sweeteners" }
+        },
+        {
+          "type": "ingredient",
+          "settings": { "title": "Himalayan rock salt" }
+        },
+        {
+          "type": "ingredient",
+          "settings": { "title": "Natural flavours" }
+        },
+        {
+           "type": "marquee_item",
+           "settings": { "text": "No Artificial Sweeteners" }
+        },
+        {
+           "type": "marquee_item",
+           "settings": { "text": "No Preservatives" }
+        },
+        {
+           "type": "marquee_item",
+           "settings": { "text": "No Gluten" }
+        },
+        {
+           "type": "marquee_item",
+           "settings": { "text": "No Artificial Colours" }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+
+  .ing-section {
+    /* === CSS Variables for DRY Principles === */
+    --section-bg: {{ section.settings.section_bg }};
+    --nut-color: {{ product.selected_or_first_available_variant.metafields.custom.color | default: section.settings.border_color }};
+    --font-primary: 'Plus Jakarta Sans', sans-serif;
+    --font-display: 'Playfair Display', serif;
+    --border-thin: 2px;
+    --border-thick: 4px;
+    --spacing-sm: 10px;
+    --spacing-md: 15px;
+    --spacing-lg: 30px;
+    --spacing-xl: 60px;
+    --container-max-width: 1200px;
+    
+    /* Section Styles */
+    background-color: var(--section-bg);
+    padding-top: 140px;
+    font-family: var(--font-primary);
+    position: relative;
+    padding-bottom: 60px; /* Reduced since marquee is no longer absolute */
+    margin-top: -70px; /* Remove gap with section above */
+  }
+
+  .ing-container {
+    max-width: var(--container-max-width);
+    margin: 0 auto 0;
+    padding: 0 var(--spacing-lg);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--spacing-xl);
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Left Side: Ingredients */
+  .ing-left {
+    flex: 1;
+    max-width: 750px;
+    margin-top: -70px;
+    margin-left: -30px; /* Shift content to the left */
+  }
+
+  .ing-heading {
+    font-family: var(--font-display);
+    font-size: 63px;
+    font-weight: 600;
+    color: #000;
+    margin-bottom: var(--spacing-xl);
+    line-height: 1.1;
+    letter-spacing: -1px;
+    text-align: center;
+  }
+
+  .ing-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px 55px; /* Increased column gap */
+  }
+
+  .ing-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 140px; /* Increased for single-line text */
+    text-align: center;
+  }
+
+  .ing-circle {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background-color: #E0E0E0;
+    margin-bottom: var(--spacing-md);
+    overflow: hidden;
+  }
+  
+  .ing-circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+  }
+
+  .ing-label {
+    font-size: 17px;
+    font-weight: 500;
+    color: #333;
+    line-height: 1.3;
+  }
+
+  /* Right Side: Nutrition Facts */
+  .ing-right {
+    width: 420px; /* Increased from 380px */
+    flex-shrink: 0;
+    margin-right: -100px; /* Shift card to the right */
+  }
+
+  .nut-card {
+    background-color: #fff;
+    border: var(--border-thick) solid var(--nut-color);
+    border-radius: 12px;
+    padding: var(--spacing-lg);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    min-height: 600px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    z-index: 2;
+  }
+
+  .nut-title {
+    font-family: var(--font-primary);
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--nut-color) !important;
+    margin-bottom: 5px;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    border-bottom: var(--border-thin) solid var(--nut-color);
+    padding-bottom: 5px;
+    width: 100%;
+    display: block;
+  }
+
+  .nut-serving {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--nut-color) !important;
+    margin-bottom: 10px;
+    border-bottom: 14px solid var(--nut-color); /* Added 4px bottom border */
+    padding-bottom: 10px; /* Added padding */
+    width: 100%;
+    display: block;
+  }
+
+  .nut-divider-thick {
+    height: 12px;
+    background-color: var(--nut-color);
+    width: 100%;
+    margin-top: 5px;
+    margin-bottom: 12px;
+  }
+
+  .nut-divider-thin {
+    height: 2px;
+    background-color: var(--nut-color) !important;
+    width: 100%;
+    margin-top: 6px;
+    margin-bottom: 10px;
+    display: block;
+    opacity: 1;
+    border: none;
+  }
+
+  .nut-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 0;
+    border-bottom: var(--border-thin) solid var(--nut-color);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--nut-color) !important;
+  }
+   
+  .nut-row.no-border {
+      border-bottom: none;
+  }
+   
+  .nut-row.thick-border {
+    border-bottom: var(--border-thick) solid var(--nut-color);
+  }
+
+  .nut-label {
+    font-weight: 700;
+  }
+  
+  .nut-sub-label {
+      padding-left: 15px; 
+      font-weight: 500;
+  }
+
+  .nut-value {
+    font-weight: 700;
+  }
+
+  .nut-calories {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 24px;
+    font-weight: 800;
+    padding: 2px 0 8px;
+    border-bottom: var(--border-thick) solid var(--nut-color);
+    margin-bottom: 4px;
+    color: var(--nut-color) !important;
+  }
+
+  .nut-daily-value {
+    text-align: right;
+    font-size: 19px;
+    font-weight: 700;
+    margin-bottom: 5px;
+    padding-top: 4px;
+  }
+
+  .nut-footer {
+    font-size: 14px;
+    margin-top: var(--spacing-md);
+    color: {{ section.settings.footer_color }};
+    line-height: 1.3;
+  }
+
+  /* Marquee Section */
+  .marquee-wrapper {
+    background: linear-gradient(90deg, #D29100 0%, #FFD26C 50%, #D29100 100%);
+    padding: 28px 0;
+    width: 100%;
+    overflow: hidden;
+    position: relative; /* Standard flow */
+    margin-top: 80px; /* Spacing below card */
+    white-space: nowrap;
+    z-index: 1;
+    transform: none;
+  }
+
+  .marquee-content {
+    display: inline-block;
+    animation: marquee 20s linear infinite;
+  }
+
+  .marquee-item {
+    display: inline-block;
+    color: #000;
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 30px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  .marquee-dot {
+      display: inline-block;
+      margin: 0 10px;
+  }
+
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .ing-container {
+      flex-direction: column;
+      align-items: center;
+      gap: 50px;
+      padding: 0 10px; /* Reduced side padding */
+    }
+
+    .ing-left {
+      width: 100%; /* Force full width */
+      max-width: 100%;
+      text-align: center;
+      margin-left: 0; /* Reset desktop offset */
+    }
+    
+    .ing-heading {
+        text-align: center;
+        font-size: 42px;
+    }
+
+    .ing-grid {
+      justify-content: center;
+    }
+
+    .ing-right {
+      width: 100%;
+      max-width: 420px;
+      margin-right: 0;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .ing-heading {
+      font-size: 32px;
+      margin-bottom: 40px;
+    }
+
+    .ing-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px 0;
+      width: 100%; /* Force full width */
+    }
+
+    .ing-item {
+      flex: 0 0 33.33%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .ing-circle {
+        width: 90px;
+        height: 90px;
+    }
+
+    .ing-label {
+        font-size: 13px;
+        line-height: 1.2;
+    }
+
+    .nut-card {
+      width: 100%;
+      max-width: 350px;
+      margin: 0 auto; /* Explicitly center */
+    }
+    
+    .marquee-item {
+        font-size: 15px;
+        margin: 0 15px;
+    }
+  }
+</style>
+
+<div class="ing-section">
+  <div class="ing-container">
+    
+    <!-- Left: Ingredients -->
+    <div class="ing-left">
+      <h2 class="ing-heading">{{ section.settings.heading }}</h2>
+      
+      <div class="ing-grid">
+        {% for block in section.blocks %}
+          {% if block.type == 'ingredient' %}
+            <div class="ing-item">
+              <div class="ing-circle">
+                {% if block.settings.image != blank %}
+                  {{ block.settings.image | image_url: width: 200 | image_tag: loading: 'lazy' }}
+                {% endif %}
+              </div>
+              <div class="ing-label">{{ block.settings.title | newline_to_br }}</div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Right: Nutrition Facts -->
+    <div class="ing-right">
+      <div class="nut-card">
+        <div class="nut-title">NUTRITION FACTS</div>
+        <!-- Removed separate divider -->
+        <div class="nut-serving">Serving Size &nbsp; 1 Can (350ml)</div>
+        <!-- Removed thick divider as it's now part of serving class -->
+        
+        <div style="font-size: 13px; font-weight: 700; margin-bottom: 5px; color: var(--nut-color) !important;">Amount Per Serving</div>
+        <div class="nut-calories">
+          <span>Calories</span>
+          <span>35 kcal</span>
+        </div>
+        
+         <div class="nut-daily-value" style="color: var(--nut-color) !important;">% Daily Value*</div>
+         <div style="border-bottom: 1px solid #13785A; margin-bottom: 5px;"></div>
+
+        <div class="nut-row" style="border-top: 2px solid var(--nut-color);">
+          <span class="nut-label">Total Fat <span style="font-weight:500">0.06g</span></span>
+          <span class="nut-value">0.06</span>
+        </div>
+        
+        <div class="nut-row">
+          <span class="nut-label">Sodium <span style="font-weight:500">0.50mg</span></span>
+          <span class="nut-value">0.50</span>
+        </div>
+        
+        <div class="nut-row">
+          <span class="nut-label">Total Carbohydrates <span style="font-weight:500">5.22g</span></span>
+          <span class="nut-value">5.22</span>
+        </div>
+        
+        <div class="nut-row">
+          <span class="nut-sub-label">Fiber 1.71g</span>
+          <span class="nut-value">1.71</span>
+        </div>
+        
+        <div class="nut-row">
+          <span class="nut-sub-label">Total Sugar 3.47g</span>
+          <span class="nut-value">3.47</span>
+        </div>
+        
+        <div class="nut-row">
+          <span class="nut-sub-label">Added Sugar 0g</span>
+          <span class="nut-value">0.00</span>
+        </div>
+        
+        <div class="nut-row thick-border">
+          <span class="nut-label">Protein <span style="font-weight:500">0.23g</span></span>
+          <span class="nut-value">0.23</span>
+        </div>
+
+        <div class="nut-footer">
+          Not a significant source of the information provided
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Marquee -->
+  <div class="marquee-wrapper">
+    <div class="marquee-content">
+      <!-- Duplicate content to ensure seamless scrolling -->
+      {% for i in (1..4) %}
+        {% for block in section.blocks %}
+          {% if block.type == 'marquee_item' %}
+            <span class="marquee-item">&#9679;&nbsp;&nbsp; {{ block.settings.text }}</span>
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Standardize variant data for lookup
+    const variantColors = {
+      {% for variant in product.variants %}
+        "{{ variant.options | join: '-' | escape }}": "{{ variant.metafields.custom.color | default: section.settings.border_color }}",
+      {% endfor %}
+    };
+    
+    // Also map by ID just in case
+    const variantIdColors = {
+        {% for variant in product.variants %}
+        "{{ variant.id }}": "{{ variant.metafields.custom.color | default: section.settings.border_color }}",
+      {% endfor %}
+    };
+    
+    const sectionContainer = document.querySelector('.ing-section');
+
+    function updateColor() {
+      // Try to find the selected variant from the main product form
+      // Method 1: Look for checked radios in .pp-form
+      const form = document.querySelector('.pp-form') || document.querySelector('form[action*="/cart/add"]');
+      if (!form) return;
+
+      const formData = new FormData(form);
+      // Construct key from options
+      const options = [];
+      // We assume options are ordered Option1, Option2, Option3...
+      // But standard FormData might not preserve order or might be missing keys if not checked.
+      // Safer way: Iterate product options from DOM if available, or just guess.
+      
+      // Let's try to find the inputs by name "Flavour", "Size", etc.
+      // But we need the order: Option1, Option2, Option3.
+      
+      // Alternative: Look for the hidden ID input
+      const idInput = form.querySelector('input[name="id"]');
+      if (idInput && variantIdColors[idInput.value]) {
+         sectionContainer.style.setProperty('--nut-color', variantIdColors[idInput.value]);
+         return;
+      }
+      
+      // If hidden input isn't updated (as we suspected), try standard radio sniffing
+      // This is brittle without knowing exact option names, but we can try observing all radios.
+    }
+
+    // Listen for changes on any radio input in the document (global delegation)
+    document.addEventListener('change', function(e) {
+        if (e.target.type === 'radio' && e.target.closest('form')) {
+            // Give a small delay for any other scripts to update the hidden ID input
+            setTimeout(() => {
+                const form = e.target.closest('form');
+                const idInput = form.querySelector('input[name="id"]');
+                 if (idInput && variantIdColors[idInput.value]) {
+                     sectionContainer.style.setProperty('--nut-color', variantIdColors[idInput.value]);
+                 } else {
+                     // Fallback: Try to reconstruct options
+                     // This is tricky without the full option map. 
+                     // For now, let's assume the ID update is effectively handled or request user to ensure their product-form updates the ID.
+                     // IMPORTANT: The main-product.liquid we saw DOES NOT update the hidden field. 
+                     // We must implement a Finder.
+                     
+                     // Quick find: Iterate all variants and check if their options match the checked radios
+                     const checkedValues = Array.from(form.querySelectorAll('input[type="radio"]:checked')).map(r => r.value);
+                     
+                     // We need to match these values against the variant map.
+                     // Since we don't have the variant options in JS easily structured without outputting a huge object,
+                     // let's output a simplified structure above.
+                 }
+            }, 50);
+        }
+    });
+    
+    // Inject a robust variant finder
+    const variants = [
+      {% for variant in product.variants %}
+        {
+          id: "{{ variant.id }}",
+          options: [
+            "{{ variant.option1 | escape }}",
+            "{{ variant.option2 | escape }}",
+            "{{ variant.option3 | escape }}"
+          ].filter(Boolean),
+          color: "{{ variant.metafields.custom.color | default: section.settings.border_color }}"
+        },
+      {% endfor %}
+    ];
+
+    document.addEventListener('change', function(e) {
+        if (e.target.type === 'radio' && e.target.closest('form')) {
+            const form = e.target.closest('form');
+            // Get all checked values
+            const checked = Array.from(form.querySelectorAll('input[type="radio"]:checked')).map(i => i.value);
+            
+            // Find variant that matches ALL these values (ignoring order or partials, assume exact set match or subset)
+            // It's safer to match length and containment
+            
+            const match = variants.find(v => {
+                // Check if every option of the variant is present in the checked values
+                // Note: checked values might include non-variant properties potentially, but usually just options
+                // Also variant.options includes ALL options for that variant.
+                
+                if (v.options.length !== checked.length) return false;
+                return v.options.every(opt => checked.includes(opt));
+            });
+            
+            if (match) {
+                 sectionContainer.style.setProperty('--nut-color', match.color);
+            }
+        }
+    });
+
+  });
+</script>

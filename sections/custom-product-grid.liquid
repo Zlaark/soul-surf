@@ -1,0 +1,876 @@
+{% schema %}
+{
+  "name": "Custom Product Grid",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Pick Your Mood"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Each flavour is crafted to feel different — but unmistakably SoulSurf."
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "VIEW ALL FLAVOURS"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "Section Background",
+      "default": "#FFF5E6"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_slider_nav",
+      "label": "Enable Slider Navigation Buttons",
+      "info": "Shows arrows when more than 4 products are present.",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_wave",
+      "label": "Show Top Wave",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "label": "Top Padding",
+      "default": 170
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product_card",
+      "name": "Product Card",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Custom Title",
+          "default": "Quirky Lemon Lime"
+        },
+        {
+          "type": "text",
+          "id": "tagline",
+          "label": "Tagline",
+          "default": "CRISP. SHARP. REFRESHING."
+        },
+        {
+           "type": "textarea",
+           "id": "description",
+           "label": "Description",
+           "default": "For everyday cravings and clean finishes."
+        },
+        {
+            "type": "color",
+            "id": "card_bg",
+            "label": "Card Background Color",
+            "default": "#FBD569"
+        },
+        {
+            "type": "color",
+            "id": "text_color",
+            "label": "Text Color",
+            "default": "#000000"
+        },
+        {
+            "type": "color",
+            "id": "button_bg",
+            "label": "Button Background",
+            "default": "#FFFAF0"
+        },
+        {
+            "type": "color",
+            "id": "button_text",
+            "label": "Button Text Color",
+            "default": "#000000"
+        },
+        {
+            "type": "text",
+            "id": "button_label",
+            "label": "Add to Cart Label",
+            "default": "ADD TO CART"
+        },
+        {
+             "type": "image_picker",
+             "id": "custom_image",
+             "label": "Custom Image (Optional)",
+             "info": "Overrides product image"
+        },
+        {
+             "type": "image_picker",
+             "id": "floating_icon",
+             "label": "Floating Icon (Fruit)",
+             "info": "Small icon top right"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Product Grid",
+      "blocks": [
+        {
+          "type": "product_card",
+          "settings": {
+              "title": "Quirky Lemon Lime",
+              "card_bg": "#FFD75E"
+          }
+        },
+        {
+          "type": "product_card",
+          "settings": {
+              "title": "Refreshing Orange",
+              "card_bg": "#FABD6C"
+          }
+        },
+        {
+          "type": "product_card",
+          "settings": {
+              "title": "Fizzy Aam Panna",
+              "card_bg": "#96D0B7"
+          }
+        },
+        {
+          "type": "product_card",
+          "settings": {
+              "title": "Nostalgic Masala Cola",
+              "card_bg": "rgba(115, 30, 7, 0.27)"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+
+  .product-grid-section {
+    background-color: {{ section.settings.section_bg }};
+    padding-bottom: 80px;
+    position: relative;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  .pg-top-wave {
+    position: absolute;
+    top: -45px;
+    left: 0;
+    width: 100%;
+    height: 46px; /* Increased 1px to prevent gap */
+    line-height: 0;
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  .pg-top-wave svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .mobile-wave {
+    display: none !important;
+  }
+
+  @media (max-width: 768px) {
+    .desktop-wave {
+      display: none !important;
+    }
+    .mobile-wave {
+      display: block !important;
+    }
+    .pg-top-wave {
+      top: -30px;
+      height: 31px;
+    }
+  }
+  
+  /* Spacer to push content down below wave */
+  .pg-spacer {
+    display: none; /* No longer needed if wave is pulled up */
+  }
+
+  .pg-container {
+    max-width: 1420px;
+    margin: 0 auto;
+    padding: {{ section.settings.padding_top }}px 40px 0; /* Added top padding to manage spacing, removed from heading */
+  }
+
+  /* Header Section - CSS Grid Layout */
+  .pg-header {
+    display: grid;
+    grid-template-areas: 
+      "heading button"
+      "subheading subheading";
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 16px 20px; /* Row Gap 16px, Column Gap 20px */
+    margin-bottom: 60px;
+  }
+
+  /* No explicit container needed for left side anymore in this grid layout, 
+     but we need to handle the elements directly */
+  
+  .pg-heading {
+    grid-area: heading;
+    font-family: 'Playfair Display', serif;
+    font-size: 64px;
+    font-weight: 500;
+    color: #000;
+    margin: 0;
+    line-height: 1.1;
+  }
+
+  .pg-subheading {
+    grid-area: subheading;
+    font-size: 16px;
+    color: #333;
+    margin: 0;
+    line-height: 1.5;
+    max-width: 600px;
+  }
+
+  .pg-view-btn,
+  .pg-view-btn-mobile {
+    grid-area: button;
+    background-color: #000;
+    color: #fff;
+    padding: 18px 50px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    min-width: 200px;
+    text-align: center;
+    justify-self: end; /* Align button to right */
+    height: fit-content;
+    margin-top: 16px; /* Fine-tune alignment */
+    
+    /* Animation Properties */
+    position: relative;
+    overflow: hidden;
+    z-index: 10;
+    border: 1px solid rgba(208, 151, 0, 0); /* Transparent border of target color */
+    outline: none;
+  }
+  
+  .pg-view-btn span,
+  .pg-view-btn-mobile span {
+    position: relative;
+    z-index: 2;
+  }
+
+  .pg-view-btn::after,
+  .pg-view-btn-mobile::after {
+    content: '';
+    position: absolute;
+    bottom: -50%;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #D09700; 
+    transform-origin: bottom center;
+    transition: transform 1000ms cubic-bezier(0.48, 0, 0.12, 1);
+    transform: skewY(9.3deg) scaleY(0);
+    z-index: 1;
+  }
+
+  .pg-view-btn:hover,
+  .pg-view-btn-mobile:hover {
+    background-color: transparent; /* Override bg to show wave */
+    border-color: #D09700;
+    transform: translateY(-2px);
+  }
+
+  .pg-view-btn:hover::after,
+  .pg-view-btn-mobile:hover::after {
+      transform-origin: bottom center;
+      transform: skewY(9.3deg) scaleY(2);
+  }
+  
+  .pg-view-btn-mobile {
+    display: none; /* Hidden on desktop */
+  }
+
+  /* Grid */
+  .pg-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px 15px; /* Reduced gap */
+  }
+
+  /* Card */
+  /* Entry Animations */
+  @keyframes fadeSlideDown {
+    from { opacity: 0; transform: translateY(-80px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(80px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .pg-card {
+    background-color: var(--bg);
+    border-radius: 24px;
+    padding: 22px 15px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 543px; /* Increased by 2px again */
+    /* transition: transform 0.3s ease; - Removed to defer to animation, restored in hover if needed or kept generic */
+    transition: transform 0.3s ease, opacity 0.3s ease; 
+    overflow: visible; /* Allow button to hang out */
+    margin-bottom: 20px;
+    opacity: 0; /* Initial hidden state for animation */
+  }
+  
+  /* Animation Triggers */
+  .pg-grid.in-view .pg-card:nth-child(odd) {
+    animation: fadeSlideDown 1s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
+  }
+  .pg-grid.in-view .pg-card:nth-child(even) {
+    animation: fadeSlideUp 1s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
+  }
+
+  /* Stagger Delays */
+  .pg-grid.in-view .pg-card:nth-child(1) { animation-delay: 0.1s; }
+  .pg-grid.in-view .pg-card:nth-child(2) { animation-delay: 0.25s; }
+  .pg-grid.in-view .pg-card:nth-child(3) { animation-delay: 0.4s; }
+  .pg-grid.in-view .pg-card:nth-child(4) { animation-delay: 0.55s; }
+
+  .pg-card:hover {
+    z-index: 5; /* Ensure overlapping elements stay on top */
+  }
+  
+  .pg-card-content {
+    /* Remove flex:1 to let image expand naturally */
+    z-index: 2;
+  }
+
+  .pg-card-title-group {
+    margin-bottom: 7px;
+    position: relative; /* Anchor for absolute description */
+  }
+
+  .pg-card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 1.1;
+    margin: 0 0 19px; /* Increased gap */
+    color: var(--text);
+    max-width: 220px;
+  }
+
+  .pg-card-tagline {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text);
+    padding-left: 8px;
+    border-left: 2px solid var(--text);
+    margin-bottom: 0px;
+    line-height: 1.4;
+  }
+
+  .pg-card-desc {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text);
+    margin: 0;
+    opacity: 0;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: max-content; /* Allow text to expand to fit on single line */
+    max-width: 350px; /* Reasonable maximum */
+    white-space: nowrap; /* Prevent text wrapping */
+    z-index: 10;
+    pointer-events: none;
+    transform: translateY(25px);
+    transition: all 0.3s ease;
+  }
+
+  .pg-card:hover .pg-card-desc {
+    opacity: 0.9;
+    transform: translateY(15px);
+  }
+
+  .pg-icon-float {
+    position: absolute;
+    top: 22px; /* Aligned with title padding */
+    right: 15px;
+    width: 75px;
+    height: 75px;
+    z-index: 2;
+  }
+  
+  .pg-icon-float img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.4s ease;
+  }
+
+  .pg-card:hover .pg-icon-float img {
+    transform: scale(1.15) rotate(12deg);
+  }
+
+  .pg-image-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 7px 0 5px; /* Reduced bottom margin */
+    position: relative;
+    width: 100%;
+  }
+
+  .pg-product-img {
+    width: auto;
+    height: auto;
+    max-height: 352px;
+    max-width: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.15));
+    transition: transform 0.3s ease;
+  }
+
+  .pg-card:hover .pg-product-img {
+    transform: translateY(29px);
+  }
+
+  /* Add to Cart Button */
+  .pg-atc-wrapper {
+    position: absolute;
+    bottom: -25px; /* Increased gap */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .pg-atc-btn {
+    background-color: var(--btn-bg);
+    color: var(--btn-text);
+    border: 1.5px solid var(--btn-text);
+    border-radius: 50px;
+    width: 202px;
+    height: 48px;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    max-width: 100%;
+  }
+
+  .pg-atc-btn:hover,
+  .pg-card:hover .pg-atc-btn {
+    background-color: #000000;
+    color: var(--btn-bg);
+    border-color: #000000;
+  }
+  
+  .pg-atc-btn:disabled {
+      cursor: not-allowed;
+      background-color: var(--btn-bg);
+      color: var(--btn-text);
+  }
+
+  @media (max-width: 1200px) {
+    .pg-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+    .pg-card {
+        min-height: 480px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .pg-container {
+        padding: 50px 0 0; /* Remove horizontal padding for full-width carousel */
+    }
+    
+    .pg-header {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      text-align: left;
+      margin-bottom: 40px;
+      padding: 0 20px; /* Add padding back for header only */
+    }
+    
+    .pg-header .pg-view-btn {
+      display: none; /* Hide button in header on mobile */
+    }
+    
+    .pg-heading {
+      font-size: 36px; /* Slightly smaller for mobile */
+    }
+    
+    .pg-view-btn-mobile {
+      display: block;
+      margin: 30px auto 0;
+      max-width: calc(100% - 40px);
+    }
+    
+    /* Convert grid to carousel on mobile */
+    .pg-grid {
+      display: flex !important; /* Override grid layout */
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      gap: 20px;
+      padding: 0 20px 30px 20px; /* Add padding for spacing */
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE 10+ */
+    }
+    
+    .pg-grid::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera */
+    }
+    
+    .pg-card {
+      min-width: 85vw; /* Show one full card + peek of next */
+      max-width: 85vw;
+      flex: 0 0 85vw;
+      scroll-snap-align: center;
+      scroll-snap-stop: always;
+      min-height: auto; /* Let content dictate height */
+      padding: 30px 20px;
+      align-items: flex-start;
+      text-align: left;
+      margin-bottom: 0;
+      opacity: 1; /* Always visible in carousel */
+      animation: none !important; /* Disable entry animations on mobile */
+    }
+    
+    .pg-card-tagline {
+        border-left: none;
+        padding-left: 0;
+        position: relative;
+        margin-bottom: 5px;
+    }
+    
+    .pg-icon-float {
+        right: 20px;
+        width: 60px; /* Smaller icon */
+        height: 60px;
+    }
+    
+    .pg-card-title {
+        margin: 0 0 15px; /* Left align title */
+    }
+    
+    .pg-product-img {
+      max-height: 300px; /* Slightly smaller for mobile */
+    }
+  }
+
+  /* Slider Mode Styles */
+  .pg-slider-wrapper {
+    position: relative;
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  .pg-grid.pg-slider-mode {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    flex-wrap: nowrap;
+    gap: 30px; /* Consistent gap */
+    padding-bottom: 30px; /* Space for hover effects/shadows */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    grid-template-columns: none; /* Override grid */
+  }
+
+  .pg-grid.pg-slider-mode::-webkit-scrollbar {
+    display: none;
+  }
+
+  .pg-grid.pg-slider-mode .pg-card {
+    min-width: 320px; /* Fixed width for slider items */
+    flex: 0 0 320px;
+    scroll-snap-align: start;
+    margin-bottom: 0; /* No bottom margin needed in slider */
+  }
+
+  /* Navigation Buttons (Reused from Video Carousel) */
+  .nav-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 20;
+    padding: 0;
+    transition: transform 0.2s;
+  }
+
+  .nav-button:hover {
+      transform: translateY(-50%) scale(1.1);
+      background: transparent;
+  }
+
+  .nav-prev { left: -50px; } /* Position outside relative to grid */
+  .nav-next { right: -50px; }
+
+  .nav-icon {
+      width: auto;
+      height: 40px;
+      display: block;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+  }
+
+  @media (max-width: 1540px) {
+     /* Bring buttons inside or hide if screen too narrow */
+     .nav-prev { left: -15px; }
+     .nav-next { right: -15px; }
+  }
+
+  @media (max-width: 768px) {
+    .nav-button { display: none; } /* Hide on mobile, use swipe */
+    
+    /* Mobile carousel overrides for slider mode */
+    .pg-grid.pg-slider-mode {
+      display: flex !important;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      gap: 20px;
+      padding: 0 20px 30px 20px; /* Symmetric padding for centering */
+      grid-template-columns: none !important;
+    }
+    
+    .pg-grid.pg-slider-mode .pg-card {
+      min-width: 75vw;
+      max-width: 75vw;
+      flex: 0 0 75vw;
+      scroll-snap-align: center;
+      margin-bottom: 0;
+    }
+  }
+</style>
+
+<div class="product-grid-section">
+  <!-- Top Wave: Inverted wave to create the curve effect from top -->
+  {%- if section.settings.show_wave -%}
+  <div class="pg-top-wave">
+    <!-- Desktop Wave -->
+    <svg class="desktop-wave" viewBox="0 0 1440 100" preserveAspectRatio="none">
+       <path d="M0,100 C32.73,100 32.73,40 65.45,40 S98.18,100 130.91,100 S163.64,40 196.36,40 S229.09,100 261.82,100 S294.55,40 327.27,40 S360.00,100 392.73,100 S425.45,40 458.18,40 S490.91,100 523.64,100 S556.36,40 589.09,40 S621.82,100 654.55,100 S687.27,40 720.00,40 S752.73,100 785.45,100 S818.18,40 850.91,40 S883.64,100 916.36,100 S949.09,40 981.82,40 S1014.55,100 1047.27,100 S1080.00,40 1112.73,40 S1145.45,100 1178.18,100 S1210.91,40 1243.64,40 S1276.36,100 1309.09,100 S1341.82,40 1374.55,40 S1407.27,100 1440.00,100 L1440,100 L0,100 Z" fill="{{ section.settings.section_bg }}"></path>
+    </svg>
+    <!-- Mobile Wave (4.5 cycles, 5 peaks, ends at valley) -->
+    <svg class="mobile-wave" viewBox="65.45 0 589.1 100" preserveAspectRatio="none">
+       <path d="M0,100 C32.73,100 32.73,40 65.45,40 S98.18,100 130.91,100 S163.64,40 196.36,40 S229.09,100 261.82,100 S294.55,40 327.27,40 S360.00,100 392.73,100 S425.45,40 458.18,40 S490.91,100 523.64,100 S556.36,40 589.09,40 S621.82,100 654.55,100 S687.27,40 720.00,40 S752.73,100 785.45,100 S818.18,40 850.91,40 S883.64,100 916.36,100 S949.09,40 981.82,40 S1014.55,100 1047.27,100 S1080.00,40 1112.73,40 S1145.45,100 1178.18,100 S1210.91,40 1243.64,40 S1276.36,100 1309.09,100 S1341.82,40 1374.55,40 S1407.27,100 1440.00,100 L1440,100 L0,100 Z" fill="{{ section.settings.section_bg }}"></path>
+    </svg>
+  </div>
+  {%- endif -%}
+  
+  <div class="pg-spacer"></div>
+
+  <div class="pg-container">
+    <div class="pg-header">
+      <h2 class="pg-heading">{{ section.settings.heading }}</h2>
+      {%- if section.settings.subheading != blank -%}
+        <p class="pg-subheading">{{ section.settings.subheading }}</p>
+      {%- endif -%}
+      {%- if section.settings.button_text != blank -%}
+        <a href="{{ section.settings.button_link | default: '#' }}" class="pg-view-btn">
+          <span>{{ section.settings.button_text }}</span>
+        </a>
+      {%- endif -%}
+    </div>
+
+    {%- assign slider_active = false -%}
+    {%- if section.blocks.size > 4 -%}
+      {%- assign slider_active = true -%}
+    {%- endif -%}
+
+    {%- if slider_active -%}
+    <div class="pg-slider-wrapper">
+       {%- if section.settings.enable_slider_nav -%}
+       <button class="nav-button nav-prev" onclick="scrollProductGrid('{{ section.id }}', -1)">
+          <img src="{{ 'left.svg' | asset_url }}" alt="Previous" class="nav-icon" width="12" height="20">
+       </button>
+       {%- endif -%}
+    {%- endif -%}
+
+    <div class="pg-grid {% if slider_active %}pg-slider-mode{% endif %}" id="productGrid-{{ section.id }}">
+      {% for block in section.blocks %}
+        {% assign product = block.settings.product %}
+        
+        {% assign card_bg = block.settings.card_bg %}
+        {% comment %} Auto-migration for old default colors to new requested colors {% endcomment %}
+        {% if card_bg == '#FBD569' or card_bg == '#FFBF73' or card_bg == '#96D3BB' or card_bg == '#DDBCA8' or card_bg == blank %}
+           {% case forloop.index %}
+             {% when 1 %}{% assign card_bg = '#FFD75E' %}
+             {% when 2 %}{% assign card_bg = '#FABD6C' %}
+             {% when 3 %}{% assign card_bg = '#96D0B7' %}
+             {% when 4 %}{% assign card_bg = 'rgba(115, 30, 7, 0.27)' %}
+           {% endcase %}
+        {% endif %}
+
+        {% assign text_color = block.settings.text_color | default: '#000000' %}
+        {% assign btn_bg = block.settings.button_bg | default: '#FFFAF0' %}
+        {% if btn_bg == 'rgba(0,0,0,0)' or btn_bg == blank %}
+            {% assign btn_bg = '#FFFAF0' %}
+        {% endif %}
+        {% assign btn_text = block.settings.button_text | default: '#000000' %}
+        
+        <div class="pg-card" style="--bg: {{ card_bg }}; --text: {{ text_color }}; --btn-bg: {{ btn_bg }}; --btn-text: {{ btn_text }};" data-index="{{ forloop.index }}">
+           
+           <div class="pg-icon-float">
+             {% case forloop.index %}
+               {% when 1 %}
+                 <img src="{{ 'pg1.png' | asset_url }}" alt="Icon 1" width="75" height="75" loading="lazy">
+               {% when 2 %}
+                 <img src="{{ 'pg2.png' | asset_url }}" alt="Icon 2" width="75" height="75" loading="lazy">
+               {% when 3 %}
+                 <img src="{{ 'pg3.png' | asset_url }}" alt="Icon 3" width="75" height="75" loading="lazy">
+               {% when 4 %}
+                 <img src="{{ 'pg4.png' | asset_url }}" alt="Icon 4" width="75" height="75" loading="lazy">
+               {% else %}
+                 {% if block.settings.floating_icon != blank %}
+                   {{ block.settings.floating_icon | image_url: width: 100 | image_tag: loading: 'lazy' }}
+                 {% else %}
+                   <img src="{{ 'icon-apple.svg' | asset_url }}" alt="Fruit Icon" width="75" height="75" loading="lazy">
+                 {% endif %}
+             {% endcase %}
+           </div>
+
+           <div class="pg-card-content">
+              <div class="pg-card-title-group">
+                 <h3 class="pg-card-title">{{ block.settings.title }}</h3>
+                 <div class="pg-card-tagline">{{ block.settings.tagline }}</div>
+                 <p class="pg-card-desc">{{ block.settings.description }}</p>
+              </div>
+           </div>
+
+           <div class="pg-image-container">
+             {% assign override_image = blank %}
+             {% case forloop.index %}
+               {% when 1 %}{% assign override_image = 'lemoncan.png' %}
+               {% when 2 %}{% assign override_image = 'orgcan.png' %}
+               {% when 4 %}{% assign override_image = 'chercan.png' %}
+             {% endcase %}
+
+             {% if override_image != blank %}
+                <img src="{{ override_image | asset_url }}" class="pg-product-img" alt="{{ block.settings.title }}" loading="lazy" width="400" height="auto">
+             {% elsif block.settings.custom_image != blank %}
+                {{ block.settings.custom_image | image_url: width: 400 | image_tag: class: 'pg-product-img', loading: 'lazy' }}
+             {% elsif product.featured_image != blank %}
+                {{ product.featured_image | image_url: width: 400 | image_tag: class: 'pg-product-img', loading: 'lazy' }}
+             {% else %}
+                <img src="{{ 'can2.png' | asset_url }}" class="pg-product-img" alt="Product Image" loading="lazy" width="200" height="auto">
+             {% endif %}
+           </div>
+
+           <div class="pg-atc-wrapper">
+             {% if product != blank and product.available %}
+             <form method="post" action="/cart/add" class="pg-atc-form">
+                <input type="hidden" name="id" value="{{ product.variants.first.id }}">
+                <button type="submit" class="pg-atc-btn">
+                  {{ block.settings.button_label }}
+                </button>
+             </form>
+             {% else %}
+               <button type="button" class="pg-atc-btn" disabled>
+                  {% if product != blank %}SOLD OUT{% else %}ADD TO CART{% endif %}
+               </button>
+             {% endif %}
+           </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    {%- if slider_active -%}
+       {%- if section.settings.enable_slider_nav -%}
+       <button class="nav-button nav-next" onclick="scrollProductGrid('{{ section.id }}', 1)">
+          <img src="{{ 'right.svg' | asset_url }}" alt="Next" class="nav-icon" width="12" height="20">
+       </button>
+       {%- endif -%}
+    </div>
+    {%- endif -%}
+    
+    <!-- Mobile Button (shows below grid on mobile only) -->
+    <a href="{{ section.settings.button_link | default: '#' }}" class="pg-view-btn-mobile">
+      <span>{{ section.settings.button_text }}</span>
+    </a>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+        observer.unobserve(entry.target); // Play once
+      }
+    });
+  }, { threshold: 0.1 });
+
+  const grids = document.querySelectorAll('.pg-grid');
+  grids.forEach(grid => observer.observe(grid));
+});
+
+function scrollProductGrid(sectionId, direction) {
+  const track = document.getElementById(`productGrid-${sectionId}`);
+  if (!track) return;
+  
+  // Calculate scroll amount (card width + gap)
+  // We assume card width approx 320px + 30px gap based on CSS
+  const scrollAmount = 350;
+
+  track.scrollBy({
+      left: direction * scrollAmount,
+      behavior: 'smooth'
+  });
+}
+</script>

@@ -1,0 +1,984 @@
+<link rel="stylesheet" href="{{ 'component-list-menu.css' | asset_url }}" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{{ 'component-search.css' | asset_url }}" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{{ 'component-menu-drawer.css' | asset_url }}" media="print" onload="this.media='all'">
+<link
+  rel="stylesheet"
+  href="{{ 'component-cart-notification.css' | asset_url }}"
+  media="print"
+  onload="this.media='all'"
+>
+
+{%- if settings.predictive_search_enabled -%}
+  <link rel="stylesheet" href="{{ 'component-price.css' | asset_url }}" media="print" onload="this.media='all'">
+{%- endif -%}
+
+{%- if section.settings.menu_type_desktop == 'mega' -%}
+  <link rel="stylesheet" href="{{ 'component-mega-menu.css' | asset_url }}" media="print" onload="this.media='all'">
+{%- endif -%}
+
+<style>
+  header-drawer {
+    justify-self: start;
+    margin-left: -1.2rem;
+  }
+
+  {%- if section.settings.sticky_header_type == 'reduce-logo-size' -%}
+    .scrolled-past-header .header__heading-logo-wrapper {
+      width: 75%;
+    }
+  {%- endif -%}
+
+  {%- if section.settings.menu_type_desktop != "drawer" -%}
+    @media screen and (min-width: 990px) {
+      header-drawer {
+        display: none;
+      }
+    }
+  {%- endif -%}
+
+  .menu-drawer-container {
+    display: flex;
+  }
+
+  .list-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .list-menu--inline {
+    display: inline-flex;
+    flex-wrap: wrap;
+  }
+
+  summary.list-menu__item {
+    padding-right: 2.7rem;
+  }
+
+  .list-menu__item {
+    display: flex;
+    align-items: center;
+    line-height: calc(1 + 0.3 / var(--font-body-scale));
+  }
+
+  .list-menu__item--link {
+    text-decoration: none;
+    padding-bottom: 0.5rem;
+    padding-top: 0.5rem;
+    line-height: 1.2;
+  }
+
+  @media screen and (min-width: 750px) {
+    .list-menu__item--link {
+      padding-bottom: 0.5rem;
+      padding-top: 0.5rem;
+    }
+  }
+</style>
+
+{%- style -%}
+  .header {
+    padding: {{ section.settings.padding_top | times: 0.5 | round: 0 }}px 3rem {{ section.settings.padding_bottom | times: 0.5 | round: 0 }}px 3rem;
+  }
+
+  .section-header {
+    position: sticky; /* This is for fixing a Safari z-index issue. PR #2147 */
+    margin-bottom: {{ section.settings.margin_bottom | times: 0.75 | round: 0 }}px;
+    z-index: 1000000000; /* Ensure header sits above all page content */
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-header {
+      margin-bottom: {{ section.settings.margin_bottom }}px;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .header {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<script src="{{ 'cart-notification.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  for block in section.blocks
+    if block.type == '@app'
+      assign has_app_block = true
+    endif
+  endfor
+-%}
+
+{% liquid
+  assign header_tag = 'div'
+
+  if section.settings.sticky_header_type != 'none'
+    assign header_tag = 'div' 
+  endif
+%}
+
+<{{ header_tag }}
+  class="header-wrapper custom-transparent-header"
+>
+  <style>
+    .custom-transparent-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000000000; /* Increased to ensure header and sidebar sit above all content */
+      background-color: {% if page.handle == 'contact' or page.handle == 'about-us' %}#FFF5E6{% else %}transparent{% endif %};
+      padding: {% if page.handle == 'contact' or page.handle == 'about-us' %}15px 50px 20px{% else %}39px 50px 20px{% endif %};
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      {% if page.handle == 'contact' or page.handle == 'about-us' %}box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);{% endif %}
+    }
+    
+    /* Contact page: Golden border by default */
+    {% if page.handle == 'contact' or page.handle == 'about-us' %}
+    .custom-transparent-header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(
+          90deg,
+          rgba(197, 126, 0, 0.4) 0%,
+          rgba(218, 165, 32, 0.7) 15%,
+          #FFD700 35%,
+          #FFC107 50%,
+          #FFD700 65%,
+          rgba(218, 165, 32, 0.7) 85%,
+          rgba(197, 126, 0, 0.4) 100%
+      );
+    }
+    {% endif %}
+    
+    /* Desktop: Header becomes white with golden border on scroll (for non-contact pages) */
+    .custom-transparent-header.header-scrolled {
+      background-color: #FFF5E6;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+      padding-top: 15px; /* Reduced top padding when sticky */
+    }
+    
+    /* Desktop golden border - 4px height (for non-contact pages when scrolled) */
+    .custom-transparent-header.header-scrolled::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(
+          90deg,
+          rgba(197, 126, 0, 0.4) 0%,
+          rgba(218, 165, 32, 0.7) 15%,
+          #FFD700 35%,
+          #FFC107 50%,
+          #FFD700 65%,
+          rgba(218, 165, 32, 0.7) 85%,
+          rgba(197, 126, 0, 0.4) 100%
+      );
+    }
+
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 1600px; /* Or full width as per pref */
+      margin: 0 auto;
+    }
+
+    /* Left: Menu */
+    .header-left {
+      flex: 1;
+      display: flex;
+      justify-content: flex-start;
+      gap: 60px;
+    }
+    
+    .nav-link {
+      font-family: 'Gilroy Medium', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      color: #1A1A1A; /* Dark text for contrast against assumed light bg */
+      text-decoration: none;
+      transition: opacity 0.2s;
+      line-height: 1.2;
+    }
+    .nav-link:hover {
+      opacity: 0.7;
+    }
+
+    /* Center: Logo */
+    .header-center {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center; /* Fix vertical alignment */
+    }
+    
+    .custom-logo {
+      max-width: 210px; /* Adjust based on actual logo ratio */
+      height: auto;
+    }
+
+    /* Right: Actions */
+    .header-right {
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .find-store-link {
+        font-family: 'Gilroy Medium', sans-serif;
+        font-size: 16px;
+        font-weight: 500;
+        color: #1A1A1A;
+        text-decoration: none;
+        margin-right: 15px; /* Extra space before icons */
+        line-height: 1.2;
+    }
+
+    .icon-btn-wrapper {
+        width: 45px;
+        height: 45px;
+        background-color: rgba(236, 135, 0, 0.11); /* EC8700 at 11% opacity */
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-decoration: none;
+        color: #000;
+        transition: transform 0.2s ease, background-color 0.2s;
+        border: none;
+        cursor: pointer;
+    }
+
+    .icon-btn-wrapper:hover {
+        transform: scale(1.05);
+        background-color: rgba(236, 135, 0, 0.2);
+    }
+
+    .icon-svg {
+        width: 22px;
+        height: 22px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.5;
+    }
+    
+    .cart-count-bubble {
+        bottom: 28px;
+        left: 28px;
+    }
+
+    /* Mobile Menu Styles */
+    .mobile-menu-toggle {
+        display: none;
+        background-color: rgba(236, 135, 0, 0.11);
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        color: #C57E00; /* Matched from carticon.svg */
+        justify-content: center;
+        align-items: center;
+        transition: transform 0.2s ease, background-color 0.2s;
+        position: relative;
+    }
+
+    .mobile-menu-toggle:hover {
+        transform: scale(1.05);
+        background-color: rgba(236, 135, 0, 0.2);
+    }
+    
+    /* Hamburger icon lines */
+    .hamburger-icon {
+        width: 20px;
+        height: 14px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    
+    .hamburger-icon span {
+        display: block;
+        width: 100%;
+        height: 2px;
+        background-color: #C57E00;
+        border-radius: 2px;
+        transition: all 0.3s ease;
+    }
+    
+    /* Transform to X when menu is open */
+    .mobile-menu-toggle.menu-open .hamburger-icon span:nth-child(1) {
+        transform: translateY(6px) rotate(45deg);
+    }
+    
+    .mobile-menu-toggle.menu-open .hamburger-icon span:nth-child(2) {
+        opacity: 0;
+    }
+    
+    .mobile-menu-toggle.menu-open .hamburger-icon span:nth-child(3) {
+        transform: translateY(-6px) rotate(-45deg);
+    }
+    
+    /* Header turns white when menu is open */
+    .custom-transparent-header.menu-open {
+        background-color: #ffffff !important;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Shiny golden gradient border at bottom - full width */
+    .custom-transparent-header.header-scrolled::after,
+    .custom-transparent-header.menu-open::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(
+            90deg,
+            rgba(197, 126, 0, 0.4) 0%,
+            rgba(218, 165, 32, 0.7) 15%,
+            #FFD700 35%,
+            #FFC107 50%,
+            #FFD700 65%,
+            rgba(218, 165, 32, 0.7) 85%,
+            rgba(197, 126, 0, 0.4) 100%
+        );
+    }
+
+    .mobile-drawer-overlay {
+        position: fixed;
+        top: 80px; /* Start properly below header + golden border */
+        left: 0;
+        width: 100%;
+        height: calc(100% - 80px);
+        background: rgba(0,0,0,0.5);
+        z-index: 999999999;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s;
+    }
+    .mobile-drawer-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .mobile-drawer {
+        position: fixed;
+        top: 80px; /* Start properly below header + golden border */
+        left: -320px; /* Hidden off-screen */
+        width: 300px;
+        max-width: 85vw;
+        height: calc(100% - 80px); /* Full height minus header + border */
+        background-color: #ffffff; /* Match header background */
+        z-index: 1000000000; /* High z-index to sit on top of everything */
+        transition: transform 0.3s ease-in-out;
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+    }
+    .mobile-drawer.active {
+        transform: translateX(320px);
+    }
+    
+    .drawer-menu-list {
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+        margin-top: 10px;
+    }
+    
+    .drawer-link {
+        font-family: 'Gilroy Medium', sans-serif;
+        font-size: 18px; /* Reduced from 22px */
+        font-weight: 500;
+        color: #1A1A1A;
+        text-decoration: none;
+    }
+
+    @media screen and (max-width: 900px) {
+        .custom-transparent-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 15px;
+            background-color: {% if page.handle == 'contact' or page.handle == 'about-us' %}#FFF5E6{% else %}transparent{% endif %};
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            {% if page.handle == 'contact' or page.handle == 'about-us' %}box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);{% endif %}
+        }
+        
+        /* When scrolled, header gets cream background */
+        .custom-transparent-header.header-scrolled {
+            background-color: #FFF5E6;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-left { 
+            gap: 20px;
+            flex: 0 0 auto; /* Shrink to fit content */
+            display: flex;
+            align-items: center; /* Vertically center hamburger */
+        }
+        .desktop-nav {
+            display: none !important;
+        }
+        .mobile-menu-toggle {
+            display: flex;
+            width: 35px; /* Match icon-btn-wrapper */
+            height: 35px;
+        }
+        .header-center {
+            flex: 1; /* Take up available space */
+            width: auto;
+            justify-content: flex-start; /* Align left */
+            padding-left: 15px; /* Gap between hamburger and logo */
+            display: flex;
+            align-items: center;
+        }
+        .custom-logo {
+            max-width: 150px;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .header__heading-link {
+            max-height: max-content;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-right {
+           flex: 0 0 auto; /* Shrink to fit content */
+           gap: 10px;
+           justify-content: flex-end;
+           display: flex;
+           align-items: center; /* Vertically center icons */
+        }
+        .find-store-link { display: none; }
+        .icon-btn-wrapper {
+            width: 35px;
+            height: 35px;
+        }
+    }
+
+    /* Small mobile devices (phones like Realme 6, etc.) */
+    @media screen and (max-width: 480px) {
+        .mobile-drawer-overlay,
+        .mobile-drawer {
+            top: 68px; /* Smaller header + golden border */
+            height: calc(100% - 68px);
+        }
+        
+        .custom-transparent-header {
+            padding: 15px 10px;
+        }
+        .custom-logo {
+            max-width: 130px;
+        }
+        .mobile-menu-toggle {
+            width: 33px; /* Match icon-btn-wrapper */
+            height: 33px;
+        }
+        .icon-btn-wrapper {
+            width: 33px;
+            height: 33px;
+        }
+        .icon-svg {
+            width: 20px; /* Increased from 18px */
+            height: 20px;
+        }
+        .drawer-link {
+            font-size: 16px;
+        }
+        .drawer-menu-list {
+            gap: 20px;
+        }
+    }
+  </style>
+
+  <header class="header-container page-width">
+    <!-- Left: Navigation -->
+    <div class="header-left">
+        <!-- Mobile Toggle (transforms to X when open) -->
+        <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" aria-label="Toggle Menu">
+            <div class="hamburger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </button>
+
+        <!-- Desktop Nav -->
+        <nav class="desktop-nav" style="display: flex; gap: 60px;">
+            <a href="/collections/all" class="nav-link">Shop</a>
+            <a href="/pages/about-us" class="nav-link">About us</a>
+            <a href="/pages/contact" class="nav-link">Contact us</a>
+        </nav>
+    </div>
+
+    <!-- Center: Logo -->
+    <div class="header-center">
+        <a href="{{ routes.root_url }}" class="header__heading-link link link--text focus-inset">
+             {%- if page.handle == 'contact' or page.handle == 'about-us' -%}
+               <img src="{{ 'footerlogo.svg' | asset_url }}" class="custom-logo" alt="{{ shop.name }}" width="200" height="auto" loading="lazy">
+             {%- else -%}
+               <img src="{{ 'logo soulsurf.png' | asset_url }}" class="custom-logo" alt="{{ shop.name }}" width="200" height="auto" loading="lazy">
+             {%- endif -%}
+        </a>
+    </div>
+
+    <!-- Right: "Find in store" + User + Cart -->
+    <div class="header-right">
+        <a href="#" class="find-store-link">Find in store</a>
+        
+        {%- if shop.customer_accounts_enabled -%}
+        <a href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}" class="icon-btn-wrapper">
+             <img src="{{ 'login.svg' | asset_url }}" class="icon-svg" alt="Login" width="20" height="20" loading="lazy">
+        </a>
+        {%- endif -%}
+
+        <a href="{{ routes.cart_url }}" class="icon-btn-wrapper" id="cart-icon-bubble">
+            <img src="{{ 'carticon.svg' | asset_url }}" class="icon-svg" alt="Cart" width="20" height="20" loading="lazy">
+             {%- if cart != empty -%}
+                <div class="cart-count-bubble">
+                    {%- if cart.item_count < 100 -%}
+                    <span aria-hidden="true">{{ cart.item_count }}</span>
+                    {%- endif -%}
+                    <span class="visually-hidden">{{ 'sections.header.cart_count' | t: count: cart.item_count }}</span>
+                </div>
+            {%- endif -%}
+        </a>
+    </div>
+
+  </header>
+  
+  <!-- Mobile Sidebar Drawer -->
+  <div class="mobile-drawer-overlay" onclick="toggleMobileMenu()"></div>
+  <div class="mobile-drawer">
+      <div class="drawer-menu-list">
+           <a href="/collections/all" class="drawer-link">Shop</a>
+           <a href="/pages/about-us" class="drawer-link">About us</a>
+           <a href="/pages/contact" class="drawer-link">Contact us</a>
+           <a href="#" class="drawer-link">Find in store</a>
+           {%- if shop.customer_accounts_enabled -%}
+              <a href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}" class="drawer-link">Account</a>
+           {%- endif -%}
+      </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const drawer = document.querySelector('.mobile-drawer');
+        const overlay = document.querySelector('.mobile-drawer-overlay');
+        const header = document.querySelector('.custom-transparent-header');
+        
+        // Move to body to break out of header stacking context
+        if (drawer && overlay) {
+            document.body.appendChild(overlay);
+            document.body.appendChild(drawer);
+        }
+        
+        // Sticky header scroll handler - works on all screen sizes
+        function handleHeaderScroll() {
+            if (window.scrollY > 50) {
+                header.classList.add('header-scrolled');
+            } else {
+                header.classList.remove('header-scrolled');
+            }
+        }
+        
+        // Listen to scroll events
+        window.addEventListener('scroll', handleHeaderScroll);
+        // Check on resize too
+        window.addEventListener('resize', handleHeaderScroll);
+        // Initial check
+        handleHeaderScroll();
+    });
+
+    function toggleMobileMenu() {
+        const drawer = document.querySelector('.mobile-drawer');
+        const overlay = document.querySelector('.mobile-drawer-overlay');
+        const toggleBtn = document.querySelector('.mobile-menu-toggle');
+        const header = document.querySelector('.custom-transparent-header');
+        const body = document.body;
+        
+        if (drawer) drawer.classList.toggle('active');
+        if (overlay) overlay.classList.toggle('active');
+        if (toggleBtn) toggleBtn.classList.toggle('menu-open');
+        if (header) header.classList.toggle('menu-open');
+        
+        // Prevent background scrolling when open
+        if (drawer && drawer.classList.contains('active')) {
+             body.style.overflow = 'hidden';
+        } else {
+             body.style.overflow = '';
+        }
+    }
+  </script>
+</{{ header_tag }}>
+
+{%- if settings.cart_type == 'notification' -%}
+  {%- render 'cart-notification',
+    color_scheme: section.settings.color_scheme,
+    desktop_menu_type: section.settings.menu_type_desktop
+  -%}
+{%- endif -%}
+
+{% javascript %}
+  class StickyHeader extends HTMLElement {
+    constructor() {
+      super();
+    }
+
+    connectedCallback() {
+      this.header = document.querySelector('.section-header');
+      this.headerIsAlwaysSticky =
+        this.getAttribute('data-sticky-type') === 'always' ||
+        this.getAttribute('data-sticky-type') === 'reduce-logo-size';
+      this.headerBounds = {};
+
+      this.setHeaderHeight();
+
+      window.matchMedia('(max-width: 990px)').addEventListener('change', this.setHeaderHeight.bind(this));
+
+      if (this.headerIsAlwaysSticky) {
+        this.header.classList.add('shopify-section-header-sticky');
+      }
+
+      this.currentScrollTop = 0;
+      this.preventReveal = false;
+      this.predictiveSearch = this.querySelector('predictive-search');
+
+      this.onScrollHandler = this.onScroll.bind(this);
+      this.hideHeaderOnScrollUp = () => (this.preventReveal = true);
+
+      this.addEventListener('preventHeaderReveal', this.hideHeaderOnScrollUp);
+      window.addEventListener('scroll', this.onScrollHandler, false);
+
+      this.createObserver();
+    }
+
+    setHeaderHeight() {
+      document.documentElement.style.setProperty('--header-height', `${this.header.offsetHeight}px`);
+    }
+
+    disconnectedCallback() {
+      this.removeEventListener('preventHeaderReveal', this.hideHeaderOnScrollUp);
+      window.removeEventListener('scroll', this.onScrollHandler);
+    }
+
+    createObserver() {
+      let observer = new IntersectionObserver((entries, observer) => {
+        this.headerBounds = entries[0].intersectionRect;
+        observer.disconnect();
+      });
+
+      observer.observe(this.header);
+    }
+
+    onScroll() {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+      if (this.predictiveSearch && this.predictiveSearch.isOpen) return;
+
+      if (scrollTop > this.currentScrollTop && scrollTop > this.headerBounds.bottom) {
+        this.header.classList.add('scrolled-past-header');
+        if (this.preventHide) return;
+        requestAnimationFrame(this.hide.bind(this));
+      } else if (scrollTop < this.currentScrollTop && scrollTop > this.headerBounds.bottom) {
+        this.header.classList.add('scrolled-past-header');
+        if (!this.preventReveal) {
+          requestAnimationFrame(this.reveal.bind(this));
+        } else {
+          window.clearTimeout(this.isScrolling);
+
+          this.isScrolling = setTimeout(() => {
+            this.preventReveal = false;
+          }, 66);
+
+          requestAnimationFrame(this.hide.bind(this));
+        }
+      } else if (scrollTop <= this.headerBounds.top) {
+        this.header.classList.remove('scrolled-past-header');
+        requestAnimationFrame(this.reset.bind(this));
+      }
+
+      this.currentScrollTop = scrollTop;
+    }
+
+    hide() {
+      if (this.headerIsAlwaysSticky) return;
+      this.header.classList.add('shopify-section-header-hidden', 'shopify-section-header-sticky');
+      this.closeMenuDisclosure();
+      this.closeSearchModal();
+    }
+
+    reveal() {
+      if (this.headerIsAlwaysSticky) return;
+      this.header.classList.add('shopify-section-header-sticky', 'animate');
+      this.header.classList.remove('shopify-section-header-hidden');
+    }
+
+    reset() {
+      if (this.headerIsAlwaysSticky) return;
+      this.header.classList.remove('shopify-section-header-hidden', 'shopify-section-header-sticky', 'animate');
+    }
+
+    closeMenuDisclosure() {
+      this.disclosures = this.disclosures || this.header.querySelectorAll('header-menu');
+      this.disclosures.forEach((disclosure) => disclosure.close());
+    }
+
+    closeSearchModal() {
+      this.searchModal = this.searchModal || this.header.querySelector('details-modal');
+      this.searchModal.close(false);
+    }
+  }
+
+  customElements.define('sticky-header', StickyHeader);
+{% endjavascript %}
+
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Organization",
+    "name": {{ shop.name | json }},
+    {% if settings.logo %}
+      "logo": {{ settings.logo | image_url: width: 500 | prepend: "https:" | json }},
+    {% endif %}
+    "sameAs": [
+      {{ settings.social_twitter_link | json }},
+      {{ settings.social_facebook_link | json }},
+      {{ settings.social_pinterest_link | json }},
+      {{ settings.social_instagram_link | json }},
+      {{ settings.social_tiktok_link | json }},
+      {{ settings.social_tumblr_link | json }},
+      {{ settings.social_snapchat_link | json }},
+      {{ settings.social_youtube_link | json }},
+      {{ settings.social_vimeo_link | json }}
+    ],
+    "url": {{ request.origin | append: page.url | json }}
+  }
+</script>
+
+{%- if request.page_type == 'index' -%}
+  {% assign potential_action_target = request.origin | append: routes.search_url | append: '?q={search_term_string}' %}
+  <script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "WebSite",
+      "name": {{ shop.name | json }},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {{ potential_action_target | json }},
+        "query-input": "required name=search_term_string"
+      },
+      "url": {{ request.origin | append: page.url | json }}
+    }
+  </script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.header.name",
+  "class": "section-header",
+  "max_blocks": 3,
+  "settings": [
+    {
+      "type": "select",
+      "id": "logo_position",
+      "options": [
+        {
+          "value": "top-left",
+          "label": "t:sections.header.settings.logo_position.options__2.label"
+        },
+        {
+          "value": "top-center",
+          "label": "t:sections.header.settings.logo_position.options__3.label"
+        },
+        {
+          "value": "middle-left",
+          "label": "t:sections.header.settings.logo_position.options__1.label"
+        },
+        {
+          "value": "middle-center",
+          "label": "t:sections.header.settings.logo_position.options__4.label"
+        }
+      ],
+      "default": "middle-left",
+      "label": "t:sections.header.settings.logo_position.label",
+      "info": "t:sections.header.settings.logo_help.content"
+    },
+    {
+      "type": "select",
+      "id": "mobile_logo_position",
+      "options": [
+        {
+          "value": "center",
+          "label": "t:sections.header.settings.mobile_logo_position.options__1.label"
+        },
+        {
+          "value": "left",
+          "label": "t:sections.header.settings.mobile_logo_position.options__2.label"
+        }
+      ],
+      "default": "center",
+      "label": "t:sections.header.settings.mobile_logo_position.label"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "default": "main-menu",
+      "label": "t:sections.header.settings.menu.label"
+    },
+    {
+      "type": "select",
+      "id": "menu_type_desktop",
+      "options": [
+        {
+          "value": "dropdown",
+          "label": "t:sections.header.settings.menu_type_desktop.options__1.label"
+        },
+        {
+          "value": "mega",
+          "label": "t:sections.header.settings.menu_type_desktop.options__2.label"
+        },
+        {
+          "value": "drawer",
+          "label": "t:sections.header.settings.menu_type_desktop.options__3.label"
+        }
+      ],
+      "default": "dropdown",
+      "label": "t:sections.header.settings.menu_type_desktop.label"
+    },
+    {
+      "type": "select",
+      "id": "sticky_header_type",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:sections.header.settings.sticky_header_type.options__1.label"
+        },
+        {
+          "value": "on-scroll-up",
+          "label": "t:sections.header.settings.sticky_header_type.options__2.label"
+        },
+        {
+          "value": "always",
+          "label": "t:sections.header.settings.sticky_header_type.options__3.label"
+        },
+        {
+          "value": "reduce-logo-size",
+          "label": "t:sections.header.settings.sticky_header_type.options__4.label"
+        }
+      ],
+      "default": "none",
+      "label": "t:sections.header.settings.sticky_header_type.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_line_separator",
+      "default": true,
+      "label": "t:sections.header.settings.show_line_separator.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.header.settings.header__1.content"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "color_scheme",
+      "id": "menu_color_scheme",
+      "label": "t:sections.header.settings.menu_color_scheme.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.header.settings.header__utilities.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_country_selector",
+      "default": true,
+      "label": "t:sections.header.settings.enable_country_selector.label",
+      "info": "t:sections.header.settings.enable_country_selector.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_language_selector",
+      "default": true,
+      "label": "t:sections.header.settings.enable_language_selector.label",
+      "info": "t:sections.header.settings.enable_language_selector.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_customer_avatar",
+      "default": true,
+      "label": "t:sections.header.settings.enable_customer_avatar.label",
+      "info": "t:sections.header.settings.enable_customer_avatar.info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.spacing"
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.header.settings.margin_bottom.label",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 36,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 36,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 20
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@app"
+    }
+  ]
+}
+{% endschema %}

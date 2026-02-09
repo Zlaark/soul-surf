@@ -1,0 +1,354 @@
+{% schema %}
+{
+  "name": "Comparison Table",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "How SoulSurf is Different"
+    },
+    {
+      "type": "image_picker",
+      "id": "soulsurf_image",
+      "label": "SoulSurf Product Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "generic_image",
+      "label": "Generic Product Image"
+    },
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "Section Background",
+      "default": "#E8F7EA"
+    },
+    {
+      "type": "color",
+      "id": "highlight_bg",
+      "label": "Highlight Background",
+      "default": "#137B56"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Comparison Table"
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+
+  .comparison-section {
+    background-color: {{ section.settings.section_bg }};
+    padding: 60px 0 80px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  .cmp-container {
+    max-width: 950px; /* Increased back slightly to accommodate gaps without shrinking cards */
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .cmp-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: 56px;
+    font-weight: 500;
+    color: #000;
+    margin-bottom: 190px; /* Increased to allow space for pop-out images */
+    text-align: center;
+    letter-spacing: -0.5px;
+  }
+
+  /* Main Grid - 3 columns */
+  .cmp-grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: 0.8fr 1fr 1fr; /* Reduced left column width */
+    column-gap: 60px; /* Increased gap to 40px */
+    align-items: start;
+    z-index: 1;
+  }
+
+  /* Continuous horizontal lines bridging the gaps */
+  .cmp-grid::after {
+    content: "";
+    position: absolute;
+    top: 20px; /* Starts after the 20px header */
+    left: 0;
+    right: 0;
+    height: calc(70px * 5); /* Draws 5 lines for 6 rows */
+    background-image: linear-gradient(to bottom, 
+      transparent 68.5px, 
+      rgba(0,0,0,0.16) 68.5px, 
+      rgba(0,0,0,0.16) 70px
+    );
+    background-size: 100% 70px;
+    background-repeat: repeat-y;
+    pointer-events: none;
+    z-index: 5; /* On top of columns to bridge the gap */
+  }
+
+  /* Labels Column */
+  .cmp-labels {
+    display: flex;
+    flex-direction: column;
+    padding-top: 20px; /* Minimized to match 20px header */
+  }
+
+  .cmp-row-label {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    font-size: 22px; 
+    color: #1A1A1A;
+    padding-left: 10px;
+    /* border-bottom removed - handled by cmp-grid::after */
+  }
+  
+  .cmp-row-label:last-child {
+      border-bottom: none;
+  }
+
+  /* SoulSurf Column (Dark Green) */
+  .cmp-soul-col {
+    background-color: {{ section.settings.highlight_bg }};
+    color: #fff;
+    border-radius: 16px; /* Keeping rounded */
+    overflow: visible;
+    position: relative;
+    box-shadow: 0 10px 40px rgba(19, 123, 86, 0.2);
+    z-index: 2;
+    padding-bottom: 10px;
+  }
+
+  .cmp-soul-header {
+    height: 20px; /* Minimal header height */
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding-bottom: 2px;
+    position: relative;
+  }
+
+  .cmp-soul-header img {
+    position: absolute;
+    bottom: 5px; /* Anchored near the row start */
+    width: 55px; /* Reduced size */
+    height: auto;
+    filter: drop-shadow(0 8px 12px rgba(0,0,0,0.2));
+    z-index: 10;
+  }
+
+  .cmp-soul-row {
+    height: 70px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px; 
+    font-weight: 500;
+    /* border-bottom removed - handled by cmp-grid::after */
+  }
+
+  .cmp-soul-row:last-child {
+    border-bottom: none;
+  }
+
+  /* Generic Column (Light) */
+  .cmp-generic-col {
+    background-color: rgba(19, 120, 90, 0.09); /* #13785A at 9% opacity */
+    border-radius: 16px; /* Fully rounded */
+    overflow: visible;
+    position: relative;
+    z-index: 1;
+    padding-bottom: 10px;
+  }
+
+  .cmp-generic-header {
+    height: 20px; /* Match minimal header height */
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding-bottom: 2px;
+    position: relative;
+  }
+
+  .cmp-generic-header img {
+    position: absolute;
+    bottom: 5px;
+    width: 55px; /* Increased size */
+    height: auto;
+    opacity: 0.6;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+  }
+
+  .cmp-generic-row {
+    height: 70px; /* Reduced height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px; /* Reduced font size */
+    font-weight: 500;
+    color: #333;
+    /* border-bottom removed - handled by cmp-grid::after */
+  }
+
+  .cmp-generic-row:last-child {
+    border-bottom: none;
+  }
+  
+  .cmp-icon-cross {
+    font-size: 24px; /* Strictly matching text size */
+    margin-right: 8px;
+  }
+
+  .cmp-icon-cross {
+    color: #E53935;
+    margin-right: 6px;
+    font-weight: bold;
+    font-size: 14px;
+  }
+
+  /* Mobile Responsiveness */
+  @media (max-width: 768px) {
+    .comparison-section {
+      padding: 40px 0 60px;
+    }
+
+    .cmp-container {
+      padding: 0 15px;
+    }
+
+    .cmp-heading {
+      font-size: 32px;
+      margin-bottom: 120px;
+    }
+
+    .cmp-grid {
+      grid-template-columns: 1fr 1fr 1fr; /* Equal width columns */
+      column-gap: 8px;
+      min-width: unset;
+    }
+
+    .cmp-grid::after {
+      display: none; /* Hide bridging lines on mobile */
+    }
+
+    .cmp-row-label {
+      font-size: 13px;
+      height: 60px;
+      padding-left: 5px;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .cmp-soul-col {
+      border-radius: 12px;
+    }
+
+    .cmp-soul-header {
+      height: 15px;
+    }
+
+    .cmp-soul-header img {
+      width: 40px;
+      bottom: 3px;
+    }
+
+    .cmp-soul-row {
+      font-size: 12px;
+      height: 60px;
+      padding: 0 8px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .cmp-soul-row:last-child {
+      border-bottom: none;
+    }
+
+    .cmp-generic-col {
+      border-radius: 12px;
+    }
+
+    .cmp-generic-header {
+      height: 15px;
+    }
+
+    .cmp-generic-header img {
+      width: 40px;
+      bottom: 3px;
+    }
+
+    .cmp-generic-row {
+      font-size: 12px;
+      height: 60px;
+      padding: 0 8px;
+      text-align: center;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .cmp-generic-row:last-child {
+      border-bottom: none;
+    }
+
+    .cmp-icon-cross {
+      font-size: 12px;
+      margin-right: 4px;
+    }
+  }
+</style>
+
+<div class="comparison-section">
+  <div class="cmp-container">
+    <h2 class="cmp-heading">{{ section.settings.heading }}</h2>
+
+    <div class="cmp-grid">
+      
+      <!-- Labels Column -->
+      <div class="cmp-labels">
+        <div class="cmp-row-label">Sugar</div>
+        <div class="cmp-row-label">Gut Health</div>
+        <div class="cmp-row-label">Additives</div>
+        <div class="cmp-row-label">Energy After Drink</div>
+        <div class="cmp-row-label">Flavour</div>
+        <div class="cmp-row-label">Calorie Count</div>
+      </div>
+
+      <!-- SoulSurf Column -->
+      <div class="cmp-soul-col">
+        <div class="cmp-soul-header">
+          <img src="{{ 'bk2.png' | asset_url }}" alt="SoulSurf">
+        </div>
+        <div class="cmp-soul-row">Zero Added Sugar</div>
+        <div class="cmp-soul-row">Supports Gut Health</div>
+        <div class="cmp-soul-row">No Chemicals</div>
+        <div class="cmp-soul-row">Light & Energizing</div>
+        <div class="cmp-soul-row">Natural Citrus Zing</div>
+        <div class="cmp-soul-row">35 kcal</div>
+      </div>
+
+      <!-- Generic Column -->
+      <div class="cmp-generic-col">
+        <div class="cmp-generic-header">
+          {% if section.settings.generic_image %}
+            {{ section.settings.generic_image | image_url: width: 200 | image_tag }}
+          {% else %}
+            <img src="{{ 'bk1.png' | asset_url }}" alt="Generic Can">
+          {% endif %}
+        </div>
+        <div class="cmp-generic-row">High</div>
+        <div class="cmp-generic-row"><span class="cmp-icon-cross">✕</span> Harms microbiome</div>
+        <div class="cmp-generic-row">Artificial</div>
+        <div class="cmp-generic-row">Sluggish</div>
+        <div class="cmp-generic-row">Fake & Syrupy</div>
+        <div class="cmp-generic-row">High</div>
+      </div>
+
+    </div>
+  </div>
+</div>

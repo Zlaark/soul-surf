@@ -1,0 +1,740 @@
+{% schema %}
+{
+  "name": "Custom Footer",
+  "settings": [
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#D6A348"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "image_picker",
+      "id": "footer_logo",
+      "label": "Footer Logo / Watermark"
+    },
+    {
+      "type": "text",
+      "id": "copyright_text",
+      "label": "Copyright Text",
+      "default": "Copyright 2026 . Soulsurf"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "menu_column",
+      "name": "Menu Column",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Column Heading",
+          "default": "Shop"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menu"
+        },
+        {
+          "type": "header",
+          "content": "Manual Links"
+        },
+        {
+          "type": "paragraph",
+          "content": "Add individual links here without creating a Navigation Menu."
+        },
+        {
+          "type": "text",
+          "id": "link_text_1",
+          "label": "Link 1 Text"
+        },
+        {
+          "type": "url",
+          "id": "link_url_1",
+          "label": "Link 1 URL"
+        },
+        {
+          "type": "text",
+          "id": "link_text_2",
+          "label": "Link 2 Text"
+        },
+        {
+          "type": "url",
+          "id": "link_url_2",
+          "label": "Link 2 URL"
+        },
+        {
+          "type": "text",
+          "id": "link_text_3",
+          "label": "Link 3 Text"
+        },
+        {
+          "type": "url",
+          "id": "link_url_3",
+          "label": "Link 3 URL"
+        },
+        {
+          "type": "text",
+          "id": "link_text_4",
+          "label": "Link 4 Text"
+        },
+        {
+          "type": "url",
+          "id": "link_url_4",
+          "label": "Link 4 URL"
+        },
+        {
+          "type": "text",
+          "id": "link_text_5",
+          "label": "Link 5 Text"
+        },
+        {
+          "type": "url",
+          "id": "link_url_5",
+          "label": "Link 5 URL"
+        },
+        {
+          "type": "text",
+          "id": "link_text_6",
+          "label": "Link 6 Text"
+        },
+        {
+          "type": "url",
+          "id": "link_url_6",
+          "label": "Link 6 URL"
+        }
+      ]
+    },
+    {
+      "type": "newsletter_social",
+      "name": "Newsletter & Socials",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "newsletter_heading",
+          "label": "Newsletter Heading",
+          "default": "Sign up to get 15% off your first order"
+        },
+        {
+          "type": "text",
+          "id": "newsletter_placeholder",
+          "label": "Email Placeholder Text",
+          "default": "Your email address"
+        },
+        {
+          "type": "text",
+          "id": "newsletter_btn_text",
+          "label": "Button Text",
+          "default": "SUBSCRIBE"
+        }
+      ]
+    },
+    {
+      "type": "social_link",
+      "name": "Social Icon",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon_source",
+          "label": "Icon Source",
+          "options": [
+            { "value": "custom", "label": "Custom Upload" },
+            { "value": "facebook", "label": "Facebook (Asset)" },
+            { "value": "instagram", "label": "Instagram (Asset)" },
+            { "value": "youtube", "label": "YouTube (Asset)" }
+          ],
+          "default": "custom"
+        },
+        {
+          "type": "image_picker",
+          "id": "custom_icon",
+          "label": "Custom Icon Image",
+          "info": "Used when 'Custom Upload' is selected."
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link URL"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Footer",
+      "blocks": [
+        {
+          "type": "menu_column",
+          "settings": { "heading": "Shop" }
+        },
+        {
+          "type": "menu_column",
+          "settings": { "heading": "Info" }
+        },
+        {
+          "type": "menu_column",
+          "settings": { "heading": "Quick Links" }
+        },
+        {
+          "type": "newsletter_social"
+        },
+        {
+          "type": "social_link",
+          "settings": { "icon_source": "facebook", "url": "https://facebook.com" }
+        },
+        {
+          "type": "social_link",
+          "settings": { "icon_source": "instagram", "url": "https://instagram.com" }
+        },
+        {
+          "type": "social_link",
+          "settings": { "icon_source": "youtube", "url": "https://youtube.com" }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,700&display=swap');
+
+  .custom-footer-section {
+    background-color: {{ section.settings.background_color }};
+    color: {{ section.settings.text_color }};
+    padding: 240px 0 420px; /* Further increased height */
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    position: relative;
+    overflow: hidden;
+    margin-top: -100px; /* Pull up behind the banner */
+    /* z-index removed to allow text banner wave to overlap */
+  }
+
+
+  .footer-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 25px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 60px; /* Space between all items */
+    position: relative;
+    z-index: 2;
+  }
+
+
+
+  .footer-column {
+    display: flex;
+    flex-direction: column;
+    min-width: 150px;
+  }
+
+  .footer-heading {
+    font-family: 'DM Sans', sans-serif !important;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: #fff;
+  }
+
+  .accordion-arrow {
+    display: none; /* Hidden on desktop */
+  }
+
+  .footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .footer-link {
+    text-decoration: none;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 500;
+    opacity: 0.9;
+    transition: opacity 0.2s;
+  }
+
+  .footer-link:hover {
+    opacity: 1;
+    text-decoration: underline;
+  }
+
+  /* Newsletter Side */
+  .footer-newsletter-wrapper {
+    flex: 1;
+    min-width: 300px;
+    max-width: 500px;
+    /* Removed margin-left: auto to allow flexible positioning */
+  }
+
+  .newsletter-heading {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 30px;
+    color: #fff;
+  }
+
+  .newsletter-form-container {
+    position: relative;
+    width: 100%;
+    margin-bottom: 30px;
+  }
+
+  .newsletter-input {
+    width: 100%;
+    height: 65px;
+    padding: 0 25px; /* Removed vertical padding, use flex align or line-height if needed, but height handles it */
+    border-radius: 50px;
+    border: none;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 15px;
+    outline: none;
+    background-color: #fff;
+    color: #333;
+    padding-right: 140px; /* Space for button */
+  }
+
+  .newsletter-input::placeholder {
+    color: #A0A0A0;
+  }
+
+  .newsletter-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 13px 25px;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    height: calc(100% - 10px);
+  }
+
+  .newsletter-btn:hover {
+    background-color: #333;
+  }
+
+  .footer-socials {
+    display: flex;
+    gap: 15px;
+  }
+
+  .social-icon-link {
+    width: 50px;
+    height: 50px;
+    /*border: 1px solid rgba(255, 255, 255, 0.4);*/
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    text-decoration: none;
+    transition: all 0.2s;
+    background: rgba(16, 16, 16, 0.38); /* #101010 at 38% opacity */
+  }
+
+  .social-icon-link:hover {
+    background: #fff;
+    color: #D6A348;
+  }
+
+  .social-icon-link svg,
+  .social-icon-link img {
+    width: 30px;
+    height: 30px;
+    fill: currentColor;
+    display: block;
+    transition: filter 0.2s; /* Smooth transition for the filter */
+  }
+
+  .social-icon-link:hover img,
+  .social-icon-link:hover svg {
+    filter: brightness(0); /* Force black on hover */
+  }
+
+  /* Watermark */
+  .footer-watermark {
+    position: absolute;
+    bottom: 100px; /* Moved up from 50px */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    text-align: center;
+    line-height: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.9; /* Adjust opacity as needed for effect */
+  }
+
+  .footer-watermark img, .footer-watermark svg {
+    width: 80%;
+    max-width: 1400px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .footer-bottom {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    z-index: 2;
+    text-align: center;
+    margin-top: 0;
+    opacity: 0.8;
+  }
+
+  .copyright-text {
+    font-size: 16px;
+    color: #fff;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+  }
+
+  @media (max-width: 1024px) {
+    .footer-container {
+      flex-direction: column;
+      gap: 50px;
+    }
+    
+    .footer-newsletter-wrapper {
+      max-width: 100%;
+    }
+    
+    .footer-columns-wrapper {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .custom-footer-section {
+      padding: 180px 0 220px; /* Reduced vertical padding on mobile */
+    }
+
+    .footer-container {
+      flex-direction: column;
+      gap: 0; /* Remove gap between accordion items */
+      padding: 0 15px; /* Increased width by reducing padding from 25px */
+    }
+    
+    /* Move newsletter/social section to appear first on mobile */
+    .footer-newsletter-wrapper {
+      order: -1; /* Moves before footer columns */
+      margin-bottom: 20px;
+    }
+    
+    .footer-column {
+      order: 1; /* Footer columns appear after newsletter */
+    }
+    
+    .footer-columns-wrapper {
+      flex-direction: column;
+      gap: 30px;
+    }
+    
+    .footer-column {
+      min-width: 100%;
+      text-align: left;
+      border-bottom: none; /* Removed bottom border */
+    }
+
+    /* Add border top to subsequent columns to create dividers between items */
+    .footer-column + .footer-column {
+      border-top: 2px solid rgba(255, 255, 255, 0.47);
+    }
+
+    .footer-column:last-child {
+      border-bottom: none !important;
+    }
+    
+    .footer-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      margin-bottom: 0;
+      padding: 20px 0; /* Clickable area */
+    }
+
+    .accordion-arrow {
+      display: block; /* Visible on mobile */
+      transition: transform 0.3s ease;
+    }
+    
+    .footer-links {
+      display: none; /* Hidden by default */
+      padding-bottom: 25px;
+      align-items: flex-start;
+      margin-top: -5px;
+    }
+
+    .footer-column.active .footer-links {
+      display: flex;
+    }
+
+    .footer-column.active .accordion-arrow {
+      transform: rotate(180deg);
+    }
+    
+    .footer-newsletter-wrapper {
+        text-align: center;
+    }
+    
+    .footer-socials {
+        justify-content: center;
+    }
+    
+    .newsletter-heading {
+      font-size: 16px; /* Reduced for mobile */
+      margin-bottom: 20px;
+    }
+
+    .newsletter-input {
+      height: 50px; /* Reduced height */
+      font-size: 14px;
+    }
+
+    .newsletter-btn {
+      padding: 0 20px;
+      font-size: 13px;
+    }
+  }
+</style>
+
+<div class="custom-footer-section">
+  <div class="footer-container">
+    
+    <!-- All Items in One Container -->
+    {%- if section.blocks.size > 0 -%}
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'menu_column' -%}
+            <div class="footer-column" {{ block.shopify_attributes }}>
+              <div class="footer-heading">
+                {{ block.settings.heading }}
+                <svg class="accordion-arrow" width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 1L7 7L13 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <ul class="footer-links">
+                {%- comment -%} Menu Links {%- endcomment -%}
+                {%- if block.settings.menu != blank -%}
+                  {%- for link in block.settings.menu.links -%}
+                    <li><a href="{{ link.url }}" class="footer-link">{{ link.title }}</a></li>
+                  {%- endfor -%}
+                {%- endif -%}
+
+                {%- comment -%} Manual Links {%- endcomment -%}
+                {%- for i in (1..6) -%}
+                  {%- capture text_key -%}link_text_{{ i }}{%- endcapture -%}
+                  {%- capture url_key -%}link_url_{{ i }}{%- endcapture -%}
+                  {%- assign link_text = block.settings[text_key] -%}
+                  {%- assign link_url = block.settings[url_key] -%}
+                  
+                  {%- if link_text != blank -%}
+                     <li><a href="{{ link_url | default: '#' }}" class="footer-link">{{ link_text }}</a></li>
+                  {%- endif -%}
+                {%- endfor -%}
+
+                {%- comment -%} Placeholder if NOTHING is set (Demo Fallback inside block) {%- endcomment -%}
+                {%- assign has_manual_links = false -%}
+                {%- for i in (1..6) -%}
+                   {%- capture text_key -%}link_text_{{ i }}{%- endcapture -%}
+                   {%- if block.settings[text_key] != blank -%}{%- assign has_manual_links = true -%}{%- endif -%}
+                {%- endfor -%}
+
+                {%- if block.settings.menu == blank and has_manual_links == false -%}
+                   <!-- Placeholder links if no menu AND no manual links selected -->
+                    <li><a href="#" class="footer-link">Link Item</a></li>
+                    <li><a href="#" class="footer-link">Link Item</a></li>
+                    <li><a href="#" class="footer-link">Link Item</a></li>
+                {%- endif -%}
+              </ul>
+            </div>
+
+          {%- when 'newsletter_social' -%}
+            <div class="footer-newsletter-wrapper" {{ block.shopify_attributes }}>
+              <div class="newsletter-heading">{{ block.settings.newsletter_heading }}</div>
+              
+              {% form 'customer', class: 'footer-newsletter-form' %}
+                <input type="hidden" name="contact[tags]" value="newsletter">
+                <div class="newsletter-form-container">
+                  <input 
+                    type="email" 
+                    name="contact[email]" 
+                    class="newsletter-input" 
+                    placeholder="{{ block.settings.newsletter_placeholder | default: 'Your email address' }}" 
+                    required
+                  >
+                  <button type="submit" class="newsletter-btn">{{ block.settings.newsletter_btn_text | default: 'SUBSCRIBE' }}</button>
+                </div>
+                {% if form.posted_successfully? %}
+                  <p style="color: white; margin-top: 10px; font-size: 14px;">Thanks for subscribing!</p>
+                {% elsif form.errors %}
+                  <p style="color: white; margin-top: 10px; font-size: 14px;">{{ form.errors.translated_fields['email'] }} {{ form.errors.messages['email'] }}</p>
+                {% endif %}
+              {% endform %}
+
+              <div class="footer-socials">
+                {%- for social_block in section.blocks -%}
+                  {%- if social_block.type == 'social_link' -%}
+                    <a href="{{ social_block.settings.url }}" class="social-icon-link" aria-label="Social Link" target="_blank" {{ social_block.shopify_attributes }}>
+                      {%- if social_block.settings.icon_source == 'custom' and social_block.settings.custom_icon != blank -%}
+                        {{ social_block.settings.custom_icon | image_url: width: 60 | image_tag: loading: 'lazy' }}
+                      {%- elsif social_block.settings.icon_source == 'facebook' -%}
+                        <img src="{{ 'fb.svg' | asset_url }}" alt="Facebook" width="36" height="36" loading="lazy">
+                      {%- elsif social_block.settings.icon_source == 'instagram' -%}
+                        <img src="{{ 'insta.svg' | asset_url }}" alt="Instagram" width="36" height="36" loading="lazy">
+                      {%- elsif social_block.settings.icon_source == 'youtube' -%}
+                        <img src="{{ 'yt.svg' | asset_url }}" alt="YouTube" width="36" height="36" loading="lazy">
+                      {%- elsif social_block.settings.icon_source == 'custom' -%}
+                         <!-- Fallback if custom selected but empty: Show nothing or a default placeholder? -->
+                         <!-- User asked for fully editable. If empty, maybe just name? For now, nothing. -->
+                      {%- endif -%}
+                    </a>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            </div>
+
+        {%- endcase -%}
+      {%- endfor -%}
+    {%- else -%}
+      <!-- Default Demo Content -->
+      <div class="footer-column">
+        <div class="footer-heading">
+          Shop
+          <svg class="accordion-arrow" width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1 1L7 7L13 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <ul class="footer-links">
+          <li><a href="#" class="footer-link">Refreshing Orange</a></li>
+          <li><a href="#" class="footer-link">Fizzy Aam Panna</a></li>
+          <li><a href="#" class="footer-link">Quirky Lemon Lime</a></li>
+          <li><a href="#" class="footer-link">Nostalgic Masala Cola</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <div class="footer-heading">
+          Info
+          <svg class="accordion-arrow" width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1 1L7 7L13 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <ul class="footer-links">
+          <li><a href="#" class="footer-link">About Us</a></li>
+          <li><a href="#" class="footer-link">Contact us</a></li>
+          <li><a href="#" class="footer-link">Blogs</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <div class="footer-heading">
+          Quick Links
+          <svg class="accordion-arrow" width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1 1L7 7L13 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <ul class="footer-links">
+          <li><a href="#" class="footer-link">Privacy Policy</a></li>
+          <li><a href="#" class="footer-link">Terms of services</a></li>
+          <li><a href="#" class="footer-link">Shipping Policy</a></li>
+          <li><a href="#" class="footer-link">Refund & Cancelation</a></li>
+        </ul>
+      </div>
+
+      <!-- Demo Newsletter -->
+      <div class="footer-newsletter-wrapper">
+        <div class="newsletter-heading">Sign up to get 15% off your first order</div>
+        
+        {% form 'customer', class: 'footer-newsletter-form' %}
+          <div class="newsletter-form-container">
+            <input 
+              type="email" 
+              name="contact[email]" 
+              class="newsletter-input" 
+              placeholder="Your email address" 
+              required
+            >
+            <button type="submit" class="newsletter-btn">SUBSCRIBE</button>
+          </div>
+        {% endform %}
+
+        <div class="footer-socials">
+          <!-- Demo Icons -->
+          <a href="#" class="social-icon-link"><img src="{{ 'fb.svg' | asset_url }}" alt="Facebook" width="36"></a>
+          <a href="#" class="social-icon-link"><img src="{{ 'insta.svg' | asset_url }}" alt="Instagram" width="36"></a>
+          <a href="#" class="social-icon-link"><img src="{{ 'yt.svg' | asset_url }}" alt="YouTube" width="36"></a>
+        </div>
+      </div>
+    {%- endif -%}
+
+  </div>
+
+  <!-- Watermark -->
+  <div class="footer-watermark">
+    {%- if section.settings.footer_logo != blank -%}
+      {{ section.settings.footer_logo | image_url: width: 1500 | image_tag: loading: 'lazy', alt: 'SoulSurf Watermark' }}
+    {%- else -%}
+      <img src="{{ 'footerlogo.svg' | asset_url }}?v={{ "now" | date: "%N" }}" alt="SoulSurf Watermark" loading="lazy">
+    {%- endif -%}
+  </div>
+
+  <!-- Copyright -->
+  <div class="footer-bottom">
+    <div class="copyright-text">{{ section.settings.copyright_text }}</div>
+  </div>
+</div>
+
+<style>
+  /* Accordion Styles (Mobile Only Logic integrated into main CSS block via media query below) */
+  /* We add the arrow and specific mobile styles here to keep it contained if preferred, or update the main block.
+     Let's update the main media query block effectively. */
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Select only footer headings inside columns (excluding newsletter intentionally if it's not meant to collapse, 
+    // strictly columns as per request "footer links i want under dropdown menu")
+    // The columns have class .footer-column
+    const footersHeadings = document.querySelectorAll('.footer-column .footer-heading');
+
+    footersHeadings.forEach(heading => {
+      heading.addEventListener('click', function() {
+        if (window.innerWidth > 768) return; // Disable on desktop
+
+        const parent = this.parentElement;
+        // Toggle current
+        parent.classList.toggle('active');
+
+        // Optional: Close others? Users often prefer keeping multiple open. 
+        // Let's keep it simple: independent toggles.
+      });
+    });
+  });
+</script>

@@ -1,0 +1,218 @@
+{% schema %}
+{
+  "name": "Custom Marquee",
+  "settings": [
+    {
+      "type": "color_background",
+      "id": "background",
+      "label": "Background",
+      "default": "linear-gradient(90deg, #D29100 0%, #FFD26C 50%, #D29100 100%)"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "height",
+      "min": 50,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "label": "Section Height",
+      "default": 110
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "unit": "s",
+      "label": "Animation Speed",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "min": 12,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "label": "Font Size",
+      "default": 24
+    }
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "name": "Marquee Text",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "LATE NIGHTS"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Marquee",
+      "blocks": [
+        { "type": "text", "settings": { "text": "LATE NIGHTS" } },
+        { "type": "text", "settings": { "text": "LONG DAYS" } },
+        { "type": "text", "settings": { "text": "WEEKEND PLANS" } },
+        { "type": "text", "settings": { "text": "OFFICE BREAKS" } },
+        { "type": "text", "settings": { "text": "ROAD TRIPS" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  .custom-marquee-section-{{ section.id }} {
+    width: 100%;
+    height: {{ section.settings.height }}px;
+    background: {{ section.settings.background }};
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    position: relative;
+    border-top: 1px solid rgba(0,0,0,0.1);
+  }
+
+  .marquee-track-{{ section.id }} {
+    display: flex;
+    white-space: nowrap;
+    will-change: transform;
+  }
+  
+  .marquee-track-{{ section.id }}:hover {
+    animation-play-state: paused !important;
+  }
+
+  .marquee-content-{{ section.id }} {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    animation: marquee-scroll-{{ section.id }} {{ section.settings.speed }}s linear infinite;
+  }
+
+  .marquee-item-{{ section.id }} {
+    display: flex;
+    align-items: center;
+    padding: 0;
+  }
+
+  .marquee-text-{{ section.id }} {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: {{ section.settings.font_size }}px;
+    font-weight: 600;
+    color: {{ section.settings.text_color }};
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+  }
+
+  .marquee-bullet-{{ section.id }} {
+    width: 10px;
+    height: 10px;
+    background-color: {{ section.settings.text_color }};
+    border-radius: 50%;
+    display: inline-block;
+    margin: 0 20px;
+    align-self: flex-end;
+    margin-bottom: 12px;
+  }
+
+  @keyframes marquee-scroll-{{ section.id }} {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .custom-marquee-section-{{ section.id }} {
+      height: {{ section.settings.height | minus: 30 }}px;
+    }
+    .marquee-text-{{ section.id }} {
+      font-size: {{ section.settings.font_size | minus: 4 }}px;
+    }
+  }
+
+  /* Small mobile devices */
+  @media screen and (max-width: 480px) {
+    .custom-marquee-section-{{ section.id }} {
+      height: {{ section.settings.height | minus: 40 }}px;
+    }
+    .marquee-text-{{ section.id }} {
+      font-size: {{ section.settings.font_size | minus: 6 }}px;
+    }
+    .marquee-item-{{ section.id }} {
+      gap: 15px;
+      padding: 0 15px;
+    }
+    .marquee-bullet-{{ section.id }} {
+      width: 6px;
+      height: 6px;
+    }
+  }
+</style>
+
+<div class="custom-marquee-section-{{ section.id }}">
+  <div class="marquee-track-{{ section.id }}">
+    <!-- First copy of content -->
+    <div class="marquee-content-{{ section.id }}">
+      {%- for block in section.blocks -%}
+        <div class="marquee-item-{{ section.id }}">
+          <span class="marquee-text-{{ section.id }}">{{ block.settings.text }}</span>
+          <span class="marquee-bullet-{{ section.id }}"></span>
+        </div>
+      {%- endfor -%}
+    </div>
+    <!-- Second copy for seamless infinite loop -->
+    <div class="marquee-content-{{ section.id }}">
+      {%- for block in section.blocks -%}
+        <div class="marquee-item-{{ section.id }}">
+          <span class="marquee-text-{{ section.id }}">{{ block.settings.text }}</span>
+          <span class="marquee-bullet-{{ section.id }}"></span>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  // Infinite marquee setup - ensures no blank space
+  const marqueeSection = document.querySelector('.custom-marquee-section-{{ section.id }}');
+  const marqueeTrack = document.querySelector('.marquee-track-{{ section.id }}');
+  
+  if (marqueeTrack && marqueeSection) {
+    // Clone content enough times to fill the screen and then some
+    const content = marqueeTrack.querySelector('.marquee-content-{{ section.id }}');
+    if (content) {
+      const contentWidth = content.offsetWidth;
+      const screenWidth = window.innerWidth;
+      
+      // Calculate how many copies we need to fill screen + extra for smooth loop
+      const copiesNeeded = Math.ceil((screenWidth * 3) / contentWidth) + 2;
+      
+      // We already have 2 copies, add more if needed
+      const existingCopies = marqueeTrack.querySelectorAll('.marquee-content-{{ section.id }}').length;
+      
+      for (let i = existingCopies; i < copiesNeeded; i++) {
+        const clone = content.cloneNode(true);
+        marqueeTrack.appendChild(clone);
+      }
+    }
+  }
+})();
+</script>

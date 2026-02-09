@@ -1,0 +1,466 @@
+{% schema %}
+{
+  "name": "Text Banner",
+  "settings": [
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#FFD65B"
+    },
+    {
+      "type": "color",
+      "id": "wave_color",
+      "label": "Wave Color",
+      "default": "#D6A348",
+      "info": "Match this to the footer background color for a seamless transition."
+    },
+    {
+      "type": "text",
+      "id": "top_tag",
+      "label": "Top Tag Text",
+      "default": "ELEVATE YOUR STANDARDS"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Ready for a Better Buzz?"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Modern soda for those who care about taste, vibe, and the ingredients that fuel their day."
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "SHOP SOULSURF NOW"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Text Banner"
+    }
+  ]
+}
+{% endschema %}
+
+<div class="text-banner-section">
+  <div class="text-banner-bubbles">
+    <!-- Left Animated Images -->
+    <img src="{{ 'lr1.svg' | asset_url }}" alt="" class="left-animated-image delay-1">
+    <img src="{{ 'lr2.svg' | asset_url }}" alt="" class="left-animated-image delay-2">
+    <img src="{{ 'lr3.svg' | asset_url }}" alt="" class="left-animated-image delay-3">
+    <img src="{{ 'lr2.svg' | asset_url }}" alt="" class="left-animated-image delay-4">
+  
+    <!-- Right Animated Images -->
+    <img src="{{ 'rr1.svg' | asset_url }}" alt="" class="right-animated-image right-delay-1">
+    <img src="{{ 'rr2.svg' | asset_url }}" alt="" class="right-animated-image right-delay-2">
+    <img src="{{ 'rr3.svg' | asset_url }}" alt="" class="right-animated-image right-delay-3">
+  </div>
+
+  <div class="text-banner-content">
+    <div class="tag-pill">{{ section.settings.top_tag }}</div>
+    
+    <h2 class="banner-heading">{{ section.settings.heading }}</h2>
+    
+    <p class="banner-description">{{ section.settings.description }}</p>
+    
+    <a href="{{ section.settings.button_link }}" class="banner-button">
+      <span>{{ section.settings.button_text }}</span>
+    </a>
+  </div>
+
+  <!-- Bottom Wave -->
+  <div class="bottom-wave">
+    <!-- Desktop Wave (many peaks) -->
+    <svg class="desktop-wave" viewBox="0 0 1440 100" preserveAspectRatio="none">
+      <path d="M0,100 C60,100 60,40 120,40 S180,100 240,100 S300,40 360,40 S420,100 480,100 S540,40 600,40 S660,100 720,100 S780,40 840,40 S900,100 960,100 S1020,40 1080,40 S1140,100 1200,100 S1260,40 1320,40 S1380,100 1440,100 L1440,100 L0,100 Z" fill="{{ section.settings.wave_color }}"></path>
+    </svg>
+    <!-- Mobile Wave (half peak left, 3 bottom points, half peak right) -->
+    <svg class="mobile-wave" viewBox="0 0 840 100" preserveAspectRatio="none">
+      <path d="M0,100 L0,30 C70,30 70,90 140,90 S210,30 280,30 S350,90 420,90 S490,30 560,30 S630,90 700,90 S770,30 840,30 L840,100 Z" fill="{{ section.settings.wave_color }}"></path>
+    </svg>
+  </div>
+</div>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Inter:wght@400;500;600&display=swap');
+
+  .text-banner-section {
+    background-color: {{ section.settings.bg_color }};
+    padding: 140px 20px 200px; /* Reduced height as requested */
+    position: relative;
+    z-index: 5; /* Ensure it overlaps the footer, header has z-index 10000 so stays above */
+    /* overflow: hidden; REMOVED to allow wave overlap */
+    width: 100%;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .text-banner-bubbles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Bubbles contained here */
+    z-index: 1;
+    pointer-events: none !important;
+  }
+
+  .text-banner-content {
+    position: relative;
+    z-index: 4;
+    max-width: 1200px; /* Increased from 800px to allow single line heading */
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+  }
+
+  /* ... skipping unchanged ... */
+
+  .bottom-wave {
+    position: absolute;
+    bottom: -1px; 
+    left: 0;
+    width: 100%;
+    line-height: 0;
+    z-index: 3; /* Wave covers bubbles */
+    pointer-events: none !important; /* Don't block scroll events */
+  }
+  .bottom-wave svg {
+    width: 100%;
+    height: 60px; /* Taller for fuller curves */
+    display: block;
+  }
+
+  /* Show/hide desktop vs mobile wave */
+  .bottom-wave .mobile-wave {
+    display: none;
+  }
+  .bottom-wave .desktop-wave {
+    display: block;
+  }
+
+  @media (max-width: 768px) {
+    .bottom-wave .desktop-wave {
+      display: none;
+    }
+    .bottom-wave .mobile-wave {
+      display: block;
+    }
+    .bottom-wave svg {
+      height: 40px; /* Smaller wave height on mobile */
+    }
+  }
+  .tag-pill {
+    display: inline-block;
+    padding: 6px 28px;
+    border: 1px solid #111;
+    border-radius: 50px;
+    font-size: 16px; /* Increased from 11px */
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #111;
+  }
+
+  .banner-heading {
+    font-family: 'Playfair Display', serif; /* Matched to product grid */
+    font-size: 74px; /* Increased from 64px */
+    font-weight: 500;
+    color: #111;
+    margin: 0;
+    line-height: 1.1;
+  }
+
+  .banner-description {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 17px;
+    font-weight: 500; /* Medium */
+    color: #111;
+    max-width: 800px;
+    margin: 0px;
+    line-height: 1.5;
+  }
+
+  .banner-button {
+    background-color: #000;
+    color: #fff;
+    margin-top: 20px; /* Added gap between description and button */
+    padding: 16px 50px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 18px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    
+    /* Animation Properties */
+    position: relative;
+    overflow: hidden;
+    z-index: 10;
+    border: 1px solid rgba(208, 151, 0, 0); /* Transparent border */
+    outline: none;
+  }
+  
+  .banner-button span {
+    position: relative;
+    z-index: 2;
+  }
+
+  .banner-button::after {
+    content: '';
+    position: absolute;
+    bottom: -50%;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #D09700; 
+    transform-origin: bottom center;
+    transition: transform 1000ms cubic-bezier(0.48, 0, 0.12, 1);
+    transform: skewY(9.3deg) scaleY(0);
+    z-index: 1;
+  }
+  
+  .banner-button:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    border-color: #D09700;
+    transform: translateY(-2px);
+  }
+
+  .banner-button:hover::after {
+      transform-origin: bottom center;
+      transform: skewY(9.3deg) scaleY(2);
+  }
+
+
+
+  @media (max-width: 768px) {
+    .banner-heading {
+      font-size: 54px; /* Increased from 42px */
+    }
+  }
+
+  /* Small mobile devices */
+  @media (max-width: 480px) {
+    .text-banner-section {
+      padding: 80px 15px 150px;
+    }
+
+    .text-banner-content {
+      gap: 20px;
+    }
+
+    .tag-pill {
+      font-size: 12px;
+      padding: 5px 20px;
+    }
+
+    .banner-heading {
+      font-size: 36px;
+    }
+
+    .banner-description {
+      font-size: 14px;
+    }
+
+    .banner-button {
+      font-size: 14px;
+      padding: 14px 35px;
+      margin-top: 10px;
+    }
+  }
+
+  .left-animated-image {
+    position: absolute;
+    bottom: -250px;
+    z-index: 1;
+    max-width: 200px;
+    opacity: 0;
+    /* Base animation overridden by specific classes */
+    /* animation: floatUp 8s linear infinite; REMOVED */ 
+  }
+  
+  .delay-1 {
+    left: 2%; 
+    max-width: 220px; 
+    animation: floatCycle1 40s linear infinite;
+    animation-delay: 0s;
+  }
+  
+  .delay-2 {
+    left: 17%; 
+    max-width: 120px; 
+    animation: floatCycle2 40s linear infinite;
+    animation-delay: 2s;
+  }
+  
+  .delay-3 {
+    left: 25%;
+    max-width: 200px; 
+    animation: floatCycle3 40s linear infinite;
+    animation-delay: 3s;
+  }
+
+  /* Cycle 1: 2% -> 17% -> 25% */
+  @keyframes floatCycle1 {
+    0% { transform: translateY(0); opacity: 0; left: 2%; }
+    3% { opacity: 1; }
+    30% { transform: translateY(-1200px); opacity: 0; left: 2%; }
+    
+    33.33% { transform: translateY(0); opacity: 0; left: 17%; }
+    36.33% { opacity: 1; }
+    63.33% { transform: translateY(-1200px); opacity: 0; left: 17%; }
+    
+    66.66% { transform: translateY(0); opacity: 0; left: 25%; }
+    69.66% { opacity: 1; }
+    96.66% { transform: translateY(-1200px); opacity: 0; left: 25%; }
+    100% { transform: translateY(-1200px); opacity: 0; left: 25%; }
+  }
+
+  /* Cycle 2: 17% -> 25% -> 2% */
+  @keyframes floatCycle2 {
+    0% { transform: translateY(0); opacity: 0; left: 17%; }
+    3% { opacity: 1; }
+    30% { transform: translateY(-1200px); opacity: 0; left: 17%; }
+    
+    33.33% { transform: translateY(0); opacity: 0; left: 25%; }
+    36.33% { opacity: 1; }
+    63.33% { transform: translateY(-1200px); opacity: 0; left: 25%; }
+    
+    66.66% { transform: translateY(0); opacity: 0; left: 2%; }
+    69.66% { opacity: 1; }
+    96.66% { transform: translateY(-1200px); opacity: 0; left: 2%; }
+    100% { transform: translateY(-1200px); opacity: 0; left: 2%; }
+  }
+
+  /* Cycle 3: 25% -> 2% -> 17% */
+  @keyframes floatCycle3 {
+    0% { transform: translateY(0); opacity: 0; left: 25%; }
+    3% { opacity: 1; }
+    30% { transform: translateY(-1200px); opacity: 0; left: 25%; }
+    
+    33.33% { transform: translateY(0); opacity: 0; left: 2%; }
+    36.33% { opacity: 1; }
+    63.33% { transform: translateY(-1200px); opacity: 0; left: 2%; }
+    
+    66.66% { transform: translateY(0); opacity: 0; left: 17%; }
+    69.66% { opacity: 1; }
+    96.66% { transform: translateY(-1200px); opacity: 0; left: 17%; }
+    100% { transform: translateY(-1200px); opacity: 0; left: 17%; }
+  }
+
+  .delay-4 {
+    left: 12%; 
+    max-width: 140px; 
+    animation: floatCycle4 40s linear infinite;
+    animation-delay: 20s; /* Starts after 3rd bubble finishes */
+  }
+
+  /* Cycle 4: 12% -> 20% -> 8% */
+  @keyframes floatCycle4 {
+    0% { transform: translateY(0); opacity: 0; left: 12%; }
+    3% { opacity: 1; }
+    30% { transform: translateY(-1200px); opacity: 0; left: 12%; }
+    
+    33.33% { transform: translateY(0); opacity: 0; left: 20%; }
+    36.33% { opacity: 1; }
+    63.33% { transform: translateY(-1200px); opacity: 0; left: 20%; }
+    
+    66.66% { transform: translateY(0); opacity: 0; left: 8%; }
+    69.66% { opacity: 1; }
+    96.66% { transform: translateY(-1200px); opacity: 0; left: 8%; }
+    100% { transform: translateY(-1200px); opacity: 0; left: 8%; }
+  }
+
+  /* Right Side Animation - Distinct Timing & Positions */
+  .right-animated-image {
+    position: absolute;
+    bottom: -250px;
+    z-index: 1;
+    max-width: 200px;
+    opacity: 0;
+  }
+
+  .right-delay-1 {
+    right: 4%; 
+    max-width: 220px; 
+    animation: floatCycleRight1 40s linear infinite;
+    animation-delay: 1.5s; /* Offset from left */
+  }
+  
+  .right-delay-2 {
+    right: 28%; 
+    max-width: 120px; 
+    animation: floatCycleRight2 40s linear infinite;
+    animation-delay: 8s;
+  }
+  
+  .right-delay-3 {
+    right: 15%;
+    max-width: 200px; 
+    animation: floatCycleRight3 40s linear infinite;
+    animation-delay: 4s;
+  }
+
+  /* Right Cycle 1: 4% -> 28% -> 15% */
+  @keyframes floatCycleRight1 {
+    0% { transform: translateY(0); opacity: 0; right: 4%; }
+    3% { opacity: 1; }
+    30% { transform: translateY(-1200px); opacity: 0; right: 4%; }
+    
+    33.33% { transform: translateY(0); opacity: 0; right: 28%; }
+    36.33% { opacity: 1; }
+    63.33% { transform: translateY(-1200px); opacity: 0; right: 28%; }
+    
+    66.66% { transform: translateY(0); opacity: 0; right: 15%; }
+    69.66% { opacity: 1; }
+    96.66% { transform: translateY(-1200px); opacity: 0; right: 15%; }
+    100% { transform: translateY(-1200px); opacity: 0; right: 15%; }
+  }
+
+  /* Right Cycle 2: 28% -> 15% -> 4% */
+  @keyframes floatCycleRight2 {
+    0% { transform: translateY(0); opacity: 0; right: 28%; }
+    3% { opacity: 1; }
+    30% { transform: translateY(-1200px); opacity: 0; right: 28%; }
+    
+    33.33% { transform: translateY(0); opacity: 0; right: 15%; }
+    36.33% { opacity: 1; }
+    63.33% { transform: translateY(-1200px); opacity: 0; right: 15%; }
+    
+    66.66% { transform: translateY(0); opacity: 0; right: 4%; }
+    69.66% { opacity: 1; }
+    96.66% { transform: translateY(-1200px); opacity: 0; right: 4%; }
+    100% { transform: translateY(-1200px); opacity: 0; right: 4%; }
+  }
+
+  /* Right Cycle 3: 15% -> 4% -> 28% */
+  @keyframes floatCycleRight3 {
+    0% { transform: translateY(0); opacity: 0; right: 15%; }
+    3% { opacity: 1; }
+    30% { transform: translateY(-1200px); opacity: 0; right: 15%; }
+    
+    33.33% { transform: translateY(0); opacity: 0; right: 4%; }
+    36.33% { opacity: 1; }
+    63.33% { transform: translateY(-1200px); opacity: 0; right: 4%; }
+    
+    66.66% { transform: translateY(0); opacity: 0; right: 28%; }
+    69.66% { opacity: 1; }
+    96.66% { transform: translateY(-1200px); opacity: 0; right: 28%; }
+    100% { transform: translateY(-1200px); opacity: 0; right: 28%; }
+  }
+</style>

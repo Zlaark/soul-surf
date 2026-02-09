@@ -1,0 +1,483 @@
+{% schema %}
+{
+  "name": "Features Section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "What We Put In. And What We Don't."
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 20,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Heading Size",
+      "default": 56
+    },
+    {
+      "type": "richtext",
+      "id": "footer_text",
+      "label": "Footer Text",
+      "default": "<p>Because good soda shouldn't come with compromises.</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Right Image"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#FFF6E3"
+    },
+    {
+        "type": "color",
+        "id": "text_color",
+        "label": "Text Color",
+        "default": "#1E1E1E"
+    },
+    {
+        "type": "color",
+        "id": "cross_color",
+        "label": "Cross Color",
+        "default": "#FF6B00"
+    },
+    {
+        "type": "color",
+        "id": "check_color",
+        "label": "Check Color",
+        "default": "#006B4D"
+    }
+
+  ],
+  "blocks": [
+    {
+      "type": "feature_item",
+      "name": "Feature Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Feature Text",
+          "default": "Real fruit flavour"
+        },
+        {
+          "type": "select",
+          "id": "status",
+          "label": "Status",
+          "options": [
+            {
+              "value": "check",
+              "label": "Check (Green)"
+            },
+            {
+              "value": "cross",
+              "label": "Cross (Orange)"
+            }
+          ],
+          "default": "check"
+        },
+        {
+            "type": "checkbox",
+            "id": "strikethrough",
+            "label": "Strikethrough Text",
+            "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Features Section",
+      "blocks": [
+        {
+          "type": "feature_item",
+          "settings": {
+            "text": "Real fruit flavour",
+            "status": "check"
+          }
+        },
+        {
+          "type": "feature_item",
+          "settings": {
+            "text": "Prebiotic fibre",
+            "status": "check"
+          }
+        },
+        {
+          "type": "feature_item",
+          "settings": {
+            "text": "Low sugar",
+            "status": "check"
+          }
+        },
+        {
+          "type": "feature_item",
+          "settings": {
+            "text": "Artificial sweeteners",
+            "status": "cross",
+            "strikethrough": true
+          }
+        },
+        {
+          "type": "feature_item",
+          "settings": {
+            "text": "Preservatives",
+            "status": "cross",
+            "strikethrough": true
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  .custom-features-section {
+    background-color: {{ section.settings.background_color }};
+    padding: 80px 0;
+    width: 100%;
+    overflow: hidden;
+    color: {{ section.settings.text_color }};
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  .features-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 60px;
+  }
+
+  /* Left Content */
+  .features-content {
+    flex: 1;
+    max-width: 550px;
+  }
+
+  .features-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: {{ section.settings.heading_size }}px;
+    font-weight: 600;
+    line-height: 1.1;
+    margin-bottom: 60px;
+    color: #1E1E1E;
+  }
+  
+  .features-heading span {
+      display: block;
+      color: #8c867d; /* Muted color for the second part as per visually observed design style, can iterate */
+      color: rgba(30,30,30, 0.5); 
+  }
+
+  .features-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 0px;
+    margin: 0 0 0px;
+    max-width: 490px;
+  }
+
+  li.feature-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    padding-right: 20px;
+    border-bottom: 2px solid rgba(0,0,0,0.1);
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-weight: 600 !important;
+    color: #131313;
+  }
+
+  .feature-text.strikethrough {
+      text-decoration: line-through;
+      color: #999; /* Greyed out for crossed items */
+      text-decoration-color: #999;
+      text-decoration-thickness: 2px;
+      font-style: italic !important;
+  }
+  
+  span.feature-text {
+      font-family: 'Plus Jakarta Sans', sans-serif !important;
+      font-size: 25px !important;
+      font-weight: 600 !important;
+  }
+
+  .feature-icon-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+  }
+  
+  .icon-check {
+      color: {{ section.settings.check_color }};
+      width: 100%;
+      height: 100%;
+  }
+  
+  .icon-cross {
+      color: {{ section.settings.cross_color }};
+      width: 100%;
+      height: 100%;
+  }
+
+  .features-footer {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-style: italic;
+    font-size: 18px;
+    margin-top: 70px;
+    color: #333;
+    font-weight: 500;
+  }
+
+  /* Right Image */
+  .features-image-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    max-width: 500px;
+    margin-top: 50px;
+  }
+
+  .features-main-image {
+    width: 100%;
+    height: auto;
+    border-radius: 20px;
+    display: block;
+    object-fit: cover;
+  }
+  
+  /* Hide mobile image on desktop, show desktop image */
+  .features-content .features-image-wrapper {
+      display: none;
+  }
+
+  .features-image-desktop {
+      display: flex;
+  }
+
+  @media screen and (max-width: 1024px) {
+      .features-container {
+          flex-direction: column;
+          gap: 40px;
+          padding: 0 24px;
+      }
+      
+      .features-content {
+          max-width: 100%;
+          text-align: left;
+          display: flex;
+          flex-direction: column;
+      }
+
+      /* Show image inside content on mobile */
+      .features-content .features-image-wrapper {
+          display: block;
+          max-width: 100%;
+          width: 100%;
+          margin: 30px 0;
+      }
+
+      /* Hide desktop image on mobile */
+      .features-image-desktop {
+          display: none;
+      }
+
+      .features-heading {
+          font-size: 32px;
+          margin-bottom: 0;
+      }
+  }
+  
+    @media screen and (max-width: 768px) {
+      .features-heading {
+          font-size: 32px;
+      }
+      
+    .feature-item {
+          font-size: 18px;
+          padding: 18px 0;
+          padding-right: 0px;
+    }
+    }
+
+    /* Small mobile devices */
+    @media screen and (max-width: 480px) {
+      .custom-features-section {
+          padding: 50px 0;
+      }
+
+      .features-container {
+          padding: 0 15px;
+          gap: 30px;
+      }
+
+      .features-heading {
+          font-size: 36px;
+          margin-bottom: 0;
+      }
+
+      .features-content .features-image-wrapper {
+          margin: 25px 0;
+      }
+
+      .features-list {
+          max-width: 100%;
+      }
+
+      span.feature-text {
+          font-size: 20px !important;
+      }
+
+      .feature-item {
+          padding: 14px 0;
+      }
+
+      .feature-icon-wrapper {
+          width: 26px;
+          height: 26px;
+      }
+
+      .features-footer {
+          font-size: 15px;
+          margin-top: 10px;
+      }
+
+      .features-main-image {
+          border-radius: 15px;
+      }
+    }
+
+</style>
+
+<style>
+  /* Animation Initial States */
+  .features-list .feature-item {
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: all 0.6s ease-out;
+  }
+
+  .features-image-wrapper {
+    opacity: 0;
+    transform: translateX(50px);
+    transition: all 0.8s ease-out;
+  }
+
+  /* Triggered State */
+  .custom-features-section.in-view .features-list .feature-item {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .custom-features-section.in-view .features-image-wrapper {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* Staggered Delays for List Items */
+  .features-list .feature-item:nth-child(1) { transition-delay: 0.1s; }
+  .features-list .feature-item:nth-child(2) { transition-delay: 0.2s; }
+  .features-list .feature-item:nth-child(3) { transition-delay: 0.3s; }
+  .features-list .feature-item:nth-child(4) { transition-delay: 0.4s; }
+  .features-list .feature-item:nth-child(5) { transition-delay: 0.5s; }
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const observerOptions = {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0.5
+  };
+
+  const observer = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+        observer.unobserve(entry.target); // Run once
+      }
+    });
+  }, observerOptions);
+
+  const featuresSection = document.querySelector('.custom-features-section');
+  if (featuresSection) {
+    observer.observe(featuresSection);
+  }
+});
+</script>
+
+<div class="custom-features-section">
+  <div class="features-container">
+    
+    <!-- Left Side: Content -->
+    <div class="features-content">
+      <h2 class="features-heading">
+          {{ section.settings.heading | split: "." | first }}.
+          <span>{{ section.settings.heading | split: "." | last }}</span>
+      </h2>
+
+      <!-- Image (moves between heading and features on mobile) -->
+      <div class="features-image-wrapper">
+          {%- if section.settings.image != blank -%}
+               {{ section.settings.image | image_url: width: 800 | image_tag: class: 'features-main-image', loading: 'lazy' }}
+          {%- else -%}
+               <img src="{{ 'features_image.png' | asset_url }}" alt="Features Image" class="features-main-image" loading="lazy" width="500" height="600">
+          {%- endif -%}
+      </div>
+      
+      <ul class="features-list">
+        {%- for block in section.blocks -%}
+          <li class="feature-item">
+            <span class="feature-text {% if block.settings.strikethrough %}strikethrough{% endif %}">
+                {{ block.settings.text }}
+            </span>
+            
+            <span class="feature-icon-wrapper">
+                {%- if block.settings.status == 'check' -%}
+                    <!-- Circular Check Icon -->
+                   <svg viewBox="0 0 42 42" fill="none" class="icon-check" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M37.6916 18.9807V20.5568C37.6895 24.2509 36.4933 27.8454 34.2814 30.8042C32.0695 33.763 28.9604 35.9275 25.4179 36.9749C21.8753 38.0223 18.0891 37.8966 14.6239 36.6163C11.1586 35.3361 8.20007 32.97 6.18942 29.871C4.17877 26.7719 3.22376 23.106 3.46682 19.4198C3.70989 15.7337 5.138 12.2248 7.53817 9.41664C9.93834 6.60844 13.182 4.65134 16.7853 3.83721C20.3886 3.02309 24.1586 3.39556 27.533 4.89908" stroke="currentColor" stroke-width="3.42619" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M37.6882 6.85205L20.5573 24.0001L15.418 18.8609" stroke="currentColor" stroke-width="3.42619" stroke-linecap="round" stroke-linejoin="round"/>
+                   </svg>
+                {%- else -%}
+                    <!-- Circular Cross Icon -->
+                    <svg viewBox="0 0 43 43" fill="none" class="icon-cross" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M21.5026 39.4163C31.3977 39.4163 39.4193 31.3948 39.4193 21.4997C39.4193 11.6046 31.3977 3.58301 21.5026 3.58301C11.6075 3.58301 3.58594 11.6046 3.58594 21.4997C3.58594 31.3948 11.6075 39.4163 21.5026 39.4163Z" stroke="currentColor" stroke-width="3.41667" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M26.875 16.125L16.125 26.875" stroke="currentColor" stroke-width="3.41667" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M16.125 16.125L26.875 26.875" stroke="currentColor" stroke-width="3.41667" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                {%- endif -%}
+            </span>
+          </li>
+        {%- endfor -%}
+      </ul>
+      
+      <div class="features-footer">
+        {{ section.settings.footer_text }}
+      </div>
+    </div>
+
+    <!-- Right Side: Image (Desktop only) -->
+    <div class="features-image-wrapper features-image-desktop">
+        {%- if section.settings.image != blank -%}
+             {{ section.settings.image | image_url: width: 800 | image_tag: class: 'features-main-image', loading: 'lazy' }}
+        {%- else -%}
+             <img src="{{ 'features_image.png' | asset_url }}" alt="Features Image" class="features-main-image" loading="lazy" width="500" height="600">
+        {%- endif -%}
+    </div>
+    
+  </div>

@@ -1,0 +1,191 @@
+{% schema %}
+{
+  "name": "Brand Marks",
+  "settings": [
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#FFF5E6"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "text_item",
+      "name": "Brand Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "VEGAN"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Brand Marks",
+      "blocks": [
+        {
+          "type": "text_item",
+          "settings": {
+            "text": "VEGAN"
+          }
+        },
+        {
+          "type": "text_item",
+          "settings": {
+            "text": "LOW SUGAR"
+          }
+        },
+        {
+          "type": "text_item",
+          "settings": {
+            "text": "GUT-FRIENDLY"
+          }
+        },
+        {
+          "type": "text_item",
+          "settings": {
+            "text": "NATURAL INGREDIENTS"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600&display=swap');
+
+  .cbm-section {
+    background-color: {{ section.settings.background_color }};
+    color: {{ section.settings.text_color }};
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    width: 100%;
+    overflow: hidden;
+    position: relative; 
+    z-index: 5; /* Ensure it sits above anything trying to hide it */
+  }
+
+  .cbm-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-evenly; /* Distribute items evenly */
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .cbm-item {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-align: center;
+    white-space: nowrap;
+    opacity: 0.9;
+  }
+
+  @media (max-width: 768px) {
+    .cbm-container {
+      display: grid;
+      grid-template-columns: repeat(2, auto);
+      justify-content: center;
+      gap: 15px 40px;
+      padding: 0 10px;
+    }
+    
+    .cbm-item {
+      font-size: 15px;
+      letter-spacing: 1px;
+      white-space: normal;
+      line-height: 1.2;
+      text-align: center;
+    }
+
+    .cbm-item:nth-child(odd),
+    .cbm-item:nth-child(even) {
+      justify-self: center;
+      text-align: center;
+    }
+
+    .cbm-item:first-child {
+      transform: translateX(45px);
+    }
+
+    .cbm-item:nth-child(2) {
+      transform: translateX(-25px);
+    }
+  }
+
+  /* Small mobile devices */
+  @media (max-width: 480px) {
+    .cbm-container {
+      gap: 12px 25px;
+    }
+    
+    .cbm-item {
+      font-size: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .cbm-item:first-child {
+      transform: translateX(30px);
+    }
+
+    .cbm-item:nth-child(2) {
+      transform: translateX(-15px);
+    }
+  }
+</style>
+
+<div class="cbm-section">
+  <div class="cbm-container">
+    {% if section.blocks.size > 0 %}
+      {% for block in section.blocks %}
+        <div class="cbm-item" {{ block.shopify_attributes }}>
+          {{ block.settings.text }}
+        </div>
+      {% endfor %}
+    {% else %}
+      <!-- Demo / Fallback Content -->
+      <div class="cbm-item">VEGAN</div>
+      <div class="cbm-item">LOW SUGAR</div>
+      <div class="cbm-item">GUT-FRIENDLY</div>
+      <div class="cbm-item">NATURAL INGREDIENTS</div>
+    {% endif %}
+  </div>
+</div>

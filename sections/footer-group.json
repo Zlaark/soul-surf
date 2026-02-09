@@ -1,0 +1,49 @@
+{
+    "name": "t:sections.footer.name",
+    "type": "footer",
+    "sections": {
+        "footer": {
+            "type": "custom-footer",
+            "settings": {
+                "background_color": "#D6A348",
+                "text_color": "#FFFFFF",
+                "watermark_text": "SoulSurf",
+                "newsletter_heading": "Sign up to get 15% off your first order",
+                "copyright_text": "Copyright 2026 . Soulsurf"
+            },
+            "blocks": {
+                "block_1": {
+                    "type": "menu_column",
+                    "settings": {
+                        "heading": "Shop",
+                        "menu": "footer"
+                    }
+                },
+                "block_2": {
+                    "type": "menu_column",
+                    "settings": {
+                        "heading": "Info",
+                        "menu": "footer"
+                    }
+                },
+                "block_3": {
+                    "type": "menu_column",
+                    "settings": {
+                        "heading": "Quick Links",
+                        "menu": "footer"
+                    }
+                },
+                "block_4": {
+                    "type": "menu_column",
+                    "settings": {
+                        "heading": "Resources",
+                        "menu": "footer"
+                    }
+                }
+            }
+        }
+    },
+    "order": [
+        "footer"
+    ]
+}

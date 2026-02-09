@@ -1,0 +1,401 @@
+{% schema %}
+{
+  "name": "Image Grid (Product)",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section Heading",
+      "default": "Why SoulSurf Hits Different"
+    },
+    {
+        "type": "color",
+        "id": "background_color",
+        "label": "Background Color",
+        "default": "#FFF5E6"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature_card",
+      "name": "Feature Card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Card Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Feature Title"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle",
+          "default": "FEATURE SUBTITLE"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Feature Grid (Product)",
+      "blocks": [
+        {
+            "type": "feature_card",
+            "settings": {
+                "title": "Crafted Flavours",
+                "subtitle": "NOT CHEMICAL BLENDS"
+            }
+        },
+        {
+            "type": "feature_card",
+            "settings": {
+                "title": "Low Sugar",
+                "subtitle": "NO ARTIFICIAL SWEETENERS"
+            }
+        },
+        {
+            "type": "feature_card",
+            "settings": {
+                "title": "Clean-Label",
+                "subtitle": "INGREDIENTS YOU KNOW"
+            }
+        },
+        {
+            "type": "feature_card",
+            "settings": {
+                "title": "Light Finish",
+                "subtitle": "REFRESHING, NEVER HEAVY"
+            }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+
+  .custom-feature-grid {
+    background-color: {{ section.settings.background_color }};
+    padding: 60px 0 80px;
+    width: 100%;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+
+  .grid-container {
+    max-width: 1450px;
+    margin: 0 auto;
+    padding: 0 20px;
+    text-align: center;
+  }
+
+  .grid-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: 63.9px;
+    font-weight: 600;
+    color: #000;
+    margin-bottom: 100px;
+    margin-top: 0;
+    line-height: 1.2;
+  }
+
+  .features-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-bottom: 50px;
+    flex-wrap: wrap; 
+  }
+
+  .feature-card {
+    position: relative;
+    width: 280px;
+    height: 350px;
+    border-radius: 25px;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+  }
+
+  .feature-card:nth-child(1) { transform: rotate(-3deg); }
+  .feature-card:nth-child(2) { transform: rotate(2deg); }
+  .feature-card:nth-child(3) { transform: rotate(-2deg); }
+  .feature-card:nth-child(4) { transform: rotate(3deg); }
+
+  .feature-card:hover {
+    transform: rotate(0deg) scale(1.05);
+    z-index: 10;
+  }
+
+  .feature-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    transition: transform 0.5s ease;
+  }
+  
+  .feature-card:hover img {
+    /* transform: scale(1.05); */ /* Removed here to put hover on card itself */
+  }
+
+  .feature-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px 24px 24px;
+    text-align: left;
+    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+    box-sizing: border-box;
+  }
+
+  .feature-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 500;
+    color: #fff;
+    margin: 0 0 8px;
+    letter-spacing: 0.5px;
+  }
+
+  .feature-subtitle {
+     font-family: 'Plus Jakarta Sans', sans-serif !important;
+     font-size: 15px; /* Slightly increased for readability */
+     font-weight: 500 !important; /* Medium weight */
+     color: #fff;
+     text-transform: none; /* Sentence case */
+     letter-spacing: 0; /* Normal spacing */
+     margin: 0;
+     opacity: 0.95;
+     line-height: 1.4;
+  }
+
+  @media screen and (max-width: 1024px) {
+    .features-wrapper {
+        gap: 15px;
+    }
+    .feature-card {
+        width: 220px;
+        height: 280px;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .custom-feature-grid {
+        padding: 30px 0 60px; /* Reduced top padding */
+    }
+
+    .grid-container {
+        padding: 0 10px;
+    }
+    
+    .grid-heading {
+        font-size: 28px; /* Reduced from 36px */
+        margin-bottom: 50px;
+    }
+    
+    .features-wrapper {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* 2 columns */
+        gap: 20px 10px; /* row gap, column gap */
+        justify-items: center;
+    }
+    
+    .feature-card {
+        width: 100%;
+        max-width: 220px; /* Increased to allow wider cards */
+        height: 280px; 
+    }
+    
+    /* Keep rotation effects on mobile */
+    .feature-card:nth-child(1) { transform: rotate(-3deg); }
+    .feature-card:nth-child(2) { transform: rotate(2deg); }
+    .feature-card:nth-child(3) { transform: rotate(-2deg); }
+    .feature-card:nth-child(4) { transform: rotate(2deg); }
+    
+    /* Adjust text sizes for smaller cards */
+    .feature-title {
+        font-size: 18px;
+    }
+    
+    .feature-subtitle {
+        font-size: 10px;
+        letter-spacing: 1px;
+    }
+    
+    .feature-content {
+        padding: 15px 12px 12px;
+    }
+  }
+
+  /* Small mobile devices */
+  @media screen and (max-width: 480px) {
+    .custom-feature-grid {
+        padding: 40px 0 60px;
+    }
+
+    .grid-heading {
+        font-size: 36px; /* Reduced from 36px */
+        margin-bottom: 35px;
+    }
+
+    .features-wrapper {
+        gap: 15px 10px;
+    }
+
+    .feature-card {
+        max-width: 200px; /* Increased from 165px */
+        height: 230px;
+        border-radius: 18px;
+    }
+
+    .feature-title {
+        font-size: 16px;
+    }
+
+    .feature-subtitle {
+        font-size: 9px;
+        letter-spacing: 0.5px;
+    }
+
+    .feature-content {
+        padding: 10px 8px 8px;
+    }
+  }
+</style>
+<style>
+  /* Animation Styles */
+  .custom-feature-grid .feature-card {
+    opacity: 0;
+    transition: transform 1s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 1s ease-out;
+    will-change: transform, opacity;
+  }
+
+  /* Before Animation (Not in view) */
+  .custom-feature-grid:not(.in-view) .feature-card:nth-child(1),
+  .custom-feature-grid:not(.in-view) .feature-card:nth-child(2) {
+      transform: translateX(-150px) rotate(-10deg);
+  }
+
+  .custom-feature-grid:not(.in-view) .feature-card:nth-child(3),
+  .custom-feature-grid:not(.in-view) .feature-card:nth-child(4) {
+      transform: translateX(150px) rotate(10deg);
+  }
+
+  /* After Animation (In view) - Reset to original styles handled by nth-child rules, just ensure visibility */
+  .custom-feature-grid.in-view .feature-card {
+      opacity: 1;
+      /* transforms revert to their specific nth-child rules defined above */
+  }
+
+  /* Ensure hover still works but maybe speed it up or keep separate */
+  .custom-feature-grid.in-view .feature-card:hover {
+      transition: transform 0.3s ease;
+  }
+</style>
+
+<div class="custom-feature-grid">
+  <div class="grid-container">
+    <h2 class="grid-heading">{{ section.settings.heading }}</h2>
+    
+    <div class="features-wrapper">
+      {%- for block in section.blocks -%}
+        <div class="feature-card">
+           {%- if block.settings.image != blank -%}
+              {{ block.settings.image | image_url: width: 600 | image_tag: loading: 'lazy', alt: block.settings.title }}
+           {%- else -%}
+              {%- if forloop.index == 1 -%}
+                 <img src="{{ 'grdcrd1.png' | asset_url }}" alt="{{ block.settings.title }}" loading="lazy" width="270" height="335" style="object-fit: cover;">
+              {%- else -%}
+                 {% capture current_asset %}grdcrd{{ forloop.index }}.png{% endcapture %}
+                 <img src="{{ current_asset | asset_url }}" alt="{{ block.settings.title }}" loading="lazy" width="270" height="335" style="object-fit: cover;">
+              {%- endif -%}
+           {%- endif -%}
+           <div class="feature-content">
+             <h3 class="feature-title">{{ block.settings.title }}</h3>
+             <p class="feature-subtitle">{{ block.settings.subtitle }}</p>
+           </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const featureGrid = document.querySelector('.custom-feature-grid');
+    
+    if (featureGrid) {
+      // Intersection Observer for animation
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {
+        threshold: 0.5
+      });
+      
+      observer.observe(featureGrid);
+      
+      // Dynamic Variant Content Switching
+      // Listen for flavor/variant changes from the main product section
+      const productSection = document.querySelector('.pp-product-section');
+      if (productSection) {
+        const flavorInputs = productSection.querySelectorAll('.pp-swatches-flavor input[type="radio"]');
+        const featureCards = featureGrid.querySelectorAll('.feature-card img');
+        
+        // Parse variant colors from main product section
+        const variantColorsData = productSection.dataset.variantColors;
+        let variantColors = {};
+        try {
+          variantColors = JSON.parse('{' + variantColorsData + '}');
+        } catch(e) {
+          console.log('Could not parse variant colors for feature grid');
+        }
+        
+        flavorInputs.forEach(input => {
+          input.addEventListener('change', function() {
+            const flavorValue = this.value.toLowerCase().replace(/\s+/g, '-');
+            const variantId = this.dataset.variantId;
+            
+            // Update background color based on variant
+            if (variantId && variantColors[variantId]) {
+              featureGrid.style.backgroundColor = variantColors[variantId];
+            }
+            
+            // Update feature card images based on flavor
+            // Images should be named: {flavor}-grdcrd1.png, {flavor}-grdcrd2.png, etc.
+            // e.g., mango-grdcrd1.png, lemon-lime-grdcrd1.png
+            featureCards.forEach((img, index) => {
+              const newImageUrl = `{{ 'placeholder' | asset_url }}`.replace('placeholder', `${flavorValue}-grdcrd${index + 1}.png`);
+              
+              // Try to load the flavor-specific image, fallback to default on error
+              const testImg = new Image();
+              testImg.onload = function() {
+                img.src = newImageUrl;
+              };
+              testImg.onerror = function() {
+                // Keep existing image if flavor-specific doesn't exist
+                console.log(`No variant image found: ${flavorValue}-grdcrd${index + 1}.png`);
+              };
+              testImg.src = newImageUrl;
+            });
+          });
+        });
+      }
+    }
+  });
+</script>

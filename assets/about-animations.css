@@ -1,0 +1,393 @@
+/* ========================================
+   ABOUT PAGE ANIMATIONS
+   Professional scroll-triggered animations
+   ======================================== */
+
+/* Base animation states - elements start invisible */
+.animate-on-scroll {
+    opacity: 0;
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Fade Up Animation */
+.animate-fade-up {
+    transform: translateY(60px);
+}
+
+.animate-fade-up.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Fade Left Animation (comes from right) */
+.animate-fade-left {
+    transform: translateX(80px);
+}
+
+.animate-fade-left.is-visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Fade Right Animation (comes from left) */
+.animate-fade-right {
+    transform: translateX(-80px);
+}
+
+.animate-fade-right.is-visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Scale Up Animation */
+.animate-scale-up {
+    transform: scale(0.9);
+}
+
+.animate-scale-up.is-visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Blur-in Animation */
+.animate-blur-in {
+    filter: blur(10px);
+    transform: scale(1.05);
+}
+
+.animate-blur-in.is-visible {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+}
+
+/* Stagger delays for grid items */
+.stagger-1 {
+    transition-delay: 0.1s;
+}
+
+.stagger-2 {
+    transition-delay: 0.2s;
+}
+
+.stagger-3 {
+    transition-delay: 0.3s;
+}
+
+.stagger-4 {
+    transition-delay: 0.4s;
+}
+
+.stagger-5 {
+    transition-delay: 0.5s;
+}
+
+.stagger-6 {
+    transition-delay: 0.6s;
+}
+
+/* ========================================
+   HERO SECTION ANIMATIONS
+   ======================================== */
+.about-hero-section .hero-heading {
+    opacity: 0;
+    transform: translateY(40px);
+    animation: heroFadeUp 1s cubic-bezier(0.4, 0, 0.2, 1) 0.3s forwards;
+}
+
+.about-hero-section .hero-subheading {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: heroFadeUp 1s cubic-bezier(0.4, 0, 0.2, 1) 0.6s forwards;
+}
+
+@keyframes heroFadeUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Wave subtle animation */
+.hero-bottom-wave svg path {
+    animation: waveFloat 4s ease-in-out infinite;
+}
+
+@keyframes waveFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-3px);
+    }
+}
+
+/* ========================================
+   VISION SECTION ANIMATIONS
+   ======================================== */
+.vision-heading,
+.vision-description,
+.vision-image-wrapper {
+    opacity: 0;
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.vision-heading {
+    transform: translateY(40px);
+}
+
+.vision-description {
+    transform: translateY(30px);
+    transition-delay: 0.15s;
+}
+
+.vision-image-wrapper {
+    transform: translateX(60px) scale(0.95);
+    transition-delay: 0.2s;
+}
+
+.about-vision-section.is-visible .vision-heading,
+.about-vision-section.is-visible .vision-description {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.about-vision-section.is-visible .vision-image-wrapper {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+}
+
+/* ========================================
+   GALLERY SECTION ANIMATIONS
+   ======================================== */
+/* Intro section */
+.intro-main-heading {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.about-gallery-section.is-visible .intro-main-heading {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.intro-image-wrapper {
+    opacity: 0;
+    transform: translateX(-60px) rotate(-3deg);
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.1s,
+        transform 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.1s;
+}
+
+.about-gallery-section.is-visible .intro-image-wrapper {
+    opacity: 1;
+    transform: translateX(0) rotate(0);
+}
+
+.intro-subheading,
+.intro-description {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.intro-subheading {
+    transition-delay: 0.2s;
+}
+
+.intro-description {
+    transition-delay: 0.35s;
+}
+
+.about-gallery-section.is-visible .intro-subheading,
+.about-gallery-section.is-visible .intro-description {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Gallery Header */
+.gallery-header {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gallery-header.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Gallery Cards */
+.gallery-card {
+    opacity: 0;
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gallery-card:nth-child(1) {
+    transform: translateY(50px) rotate(-3deg);
+    transition-delay: 0.1s;
+}
+
+.gallery-card:nth-child(2) {
+    transform: translateY(70px) rotate(3deg);
+    transition-delay: 0.2s;
+}
+
+.gallery-card:nth-child(3) {
+    transform: translateY(50px) rotate(-3deg);
+    transition-delay: 0.3s;
+}
+
+.gallery-card:nth-child(4) {
+    transform: translateY(70px) rotate(4deg);
+    transition-delay: 0.4s;
+}
+
+.gallery-card:nth-child(5) {
+    transform: translateY(50px) rotate(-3deg);
+    transition-delay: 0.5s;
+}
+
+.gallery-grid.is-visible .gallery-card:nth-child(1) {
+    opacity: 1;
+    transform: translateY(10px) rotate(-3deg);
+}
+
+.gallery-grid.is-visible .gallery-card:nth-child(2) {
+    opacity: 1;
+    transform: translateY(-10px) rotate(3deg);
+}
+
+.gallery-grid.is-visible .gallery-card:nth-child(3) {
+    opacity: 1;
+    transform: translateY(5px) rotate(-3deg);
+}
+
+.gallery-grid.is-visible .gallery-card:nth-child(4) {
+    opacity: 1;
+    transform: translateY(-8px) rotate(4deg);
+}
+
+.gallery-grid.is-visible .gallery-card:nth-child(5) {
+    opacity: 1;
+    transform: translateY(8px) rotate(-3deg);
+}
+
+/* Gallery bottom text */
+.gallery-footer-desktop,
+.gallery-footer-inline {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.6s,
+        transform 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.6s;
+}
+
+.gallery-footer-desktop.is-visible,
+.gallery-footer-inline.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ========================================
+   FLAVOUR PHILOSOPHY SECTION ANIMATIONS
+   ======================================== */
+.main-section-heading {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.flavour-philosophy-section.is-visible .main-section-heading {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.philosophy-row {
+    opacity: 0;
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.philosophy-row.layout-left {
+    transform: translateX(-60px);
+}
+
+.philosophy-row.layout-right {
+    transform: translateX(60px);
+}
+
+.philosophy-row:nth-child(1) {
+    transition-delay: 0.15s;
+}
+
+.philosophy-row:nth-child(2) {
+    transition-delay: 0.3s;
+}
+
+.philosophy-row.is-visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Philosophy image hover effect enhancement */
+.philosophy-image {
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.philosophy-row:hover .philosophy-image {
+    transform: scale(1.02);
+}
+
+/* ========================================
+   MOBILE OPTIMIZATIONS
+   Reduce motion for performance
+   ======================================== */
+@media screen and (max-width: 550px) {
+
+    .vision-image-wrapper,
+    .intro-image-wrapper,
+    .philosophy-row.layout-left,
+    .philosophy-row.layout-right {
+        transform: translateY(40px) !important;
+    }
+
+    .about-vision-section.is-visible .vision-image-wrapper,
+    .about-gallery-section.is-visible .intro-image-wrapper,
+    .philosophy-row.is-visible {
+        transform: translateY(0) !important;
+    }
+
+    .gallery-card {
+        transform: translateY(30px) !important;
+    }
+
+    .gallery-card:nth-child(n) {
+        transition-delay: 0.05s !important;
+    }
+
+    .gallery-grid.is-visible .gallery-card:nth-child(n) {
+        transform: none !important;
+    }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

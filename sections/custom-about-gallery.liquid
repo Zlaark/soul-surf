@@ -1,0 +1,471 @@
+{% schema %}
+{
+  "name": "About Gallery Grid",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Intro Section"
+    },
+    {
+      "type": "text",
+      "id": "intro_heading",
+      "label": "Intro Main Heading",
+      "default": "Our POV"
+    },
+    {
+      "type": "text",
+      "id": "intro_subheading",
+      "label": "Intro Content Title",
+      "default": "What We Believe"
+    },
+    {
+      "type": "textarea",
+      "id": "intro_text",
+      "label": "Intro Description",
+      "default": "Soda should feel good to drink — and good to choose.\n\nIt should be flavour-first, light, and effortless. No extremes. No overthinking. Just balance."
+    },
+    {
+      "type": "image_picker",
+      "id": "intro_image",
+      "label": "Intro Image"
+    },
+    {
+      "type": "text",
+      "id": "intro_svg_filename",
+      "label": "Intro SVG Filename (from Assets)",
+      "info": "Overrides image picker. e.g. 'abou1.svg'",
+      "default": "abou1.svg"
+    },
+    {
+      "type": "header",
+      "content": "Gallery Section"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Gallery Heading",
+      "default": "DESIGNED FOR REAL MOMENTS"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Gallery Subheading",
+      "default": "SoulSurf fits into life as it actually happens."
+    },
+    {
+      "type": "textarea",
+      "id": "bottom_text",
+      "label": "Gallery Bottom Text",
+      "default": "It’s soda that doesn’t ask for attention — but earns it."
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#FFE4B5"
+    },
+    {
+      "type": "color",
+      "id": "wave_color",
+      "label": "Wave Color",
+      "default": "#FFF5E6",
+      "info": "This should match the background color of the section below."
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#000000"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "gallery_item",
+      "name": "Gallery Item",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "svg_filename",
+          "label": "SVG Filename (from Assets)",
+          "info": "Overrides image picker. e.g. 'about2.svg'"
+        },
+        {
+          "type": "text",
+          "id": "overlay_text",
+          "label": "Overlay Text",
+          "default": "Moment"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "About Gallery Grid",
+      "blocks": [
+        { "type": "gallery_item", "settings": { "overlay_text": "Late nights", "svg_filename": "about2.svg" } },
+        { "type": "gallery_item", "settings": { "overlay_text": "Long Days", "svg_filename": "about2.svg" } },
+        { "type": "gallery_item", "settings": { "overlay_text": "Office Breaks", "svg_filename": "about2.svg" } },
+        { "type": "gallery_item", "settings": { "overlay_text": "Weekend Plans", "svg_filename": "about2.svg" } },
+        { "type": "gallery_item", "settings": { "overlay_text": "Road Trips", "svg_filename": "about2.svg" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<div class="about-gallery-section">
+  <div class="page-width">
+    
+    <!-- Intro Section -->
+    <div class="gallery-intro">
+      {% if section.settings.intro_heading != blank %}
+        <h2 class="intro-main-heading">{{ section.settings.intro_heading }}</h2>
+      {% endif %}
+
+      <div class="intro-content-wrapper">
+        <div class="intro-image-wrapper">
+          {% if section.settings.intro_svg_filename != blank %}
+            <img src="{{ section.settings.intro_svg_filename | asset_url }}" loading="lazy" class="intro-image" alt="{{ section.settings.intro_heading | escape }}">
+          {% elsif section.settings.intro_image != blank %}
+            {{ section.settings.intro_image | image_url: width: 800 | image_tag: loading: 'lazy', class: 'intro-image' }}
+          {% else %}
+            {{ 'image' | placeholder_svg_tag: 'intro-image placeholder-svg' }}
+          {% endif %}
+        </div>
+
+        <div class="intro-text-wrapper">
+          {% if section.settings.intro_subheading != blank %}
+            <h3 class="intro-subheading">{{ section.settings.intro_subheading }}</h3>
+          {% endif %}
+          {% if section.settings.intro_text != blank %}
+            <div class="intro-description">{{ section.settings.intro_text | newline_to_br }}</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Gallery Section -->
+    <div class="gallery-header">
+      {% if section.settings.heading != blank %}
+        <h2 class="gallery-heading">{{ section.settings.heading }}</h2>
+      {% endif %}
+      {% if section.settings.subheading != blank %}
+        <p class="gallery-subheading">{{ section.settings.subheading }}</p>
+      {% endif %}
+    </div>
+
+    <div class="gallery-grid">
+      {% for block in section.blocks %}
+        <div class="gallery-card" {{ block.shopify_attributes }}>
+          <div class="gallery-image-container">
+            {% if block.settings.svg_filename != blank %}
+              <img src="{{ block.settings.svg_filename | asset_url }}" loading="lazy" class="gallery-image" alt="{{ block.settings.overlay_text | escape }}">
+            {% elsif block.settings.image != blank %}
+              {{ block.settings.image | image_url: width: 600 | image_tag: loading: 'lazy', class: 'gallery-image' }}
+            {% else %}
+              {{ 'image' | placeholder_svg_tag: 'gallery-image placeholder-svg' }}
+            {% endif %}
+            
+            <div class="gallery-overlay">
+              <span class="gallery-overlay-text">{{ block.settings.overlay_text }}</span>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+      
+      {% if section.settings.bottom_text != blank %}
+        <div class="gallery-footer-inline">
+          <p class="gallery-bottom-text">{{ section.settings.bottom_text }}</p>
+        </div>
+      {% endif %}
+    </div>
+
+    {% if section.settings.bottom_text != blank %}
+      <div class="gallery-footer-desktop">
+        <p class="gallery-bottom-text">{{ section.settings.bottom_text }}</p>
+      </div>
+    {% endif %}
+
+  </div>
+
+  <!-- Bottom Wave -->
+  <div class="gallery-bottom-wave">
+    <svg class="desktop-wave" viewBox="0 0 1440 100" preserveAspectRatio="none">
+      <path d="M0,100 C 40,100 40,40 80,40 S 120,100 160,100 S 200,40 240,40 S 280,100 320,100 S 360,40 400,40 S 440,100 480,100 S 520,40 560,40 S 600,100 640,100 S 680,40 720,40 S 760,100 800,100 S 840,40 880,40 S 920,100 960,100 S 1000,40 1040,40 S 1080,100 1120,100 S 1160,40 1200,40 S 1240,100 1280,100 S 1320,40 1360,40 S 1400,100 1440,100 L1440,100 L0,100 Z" fill="{{ section.settings.wave_color }}"></path>
+    </svg>
+    <svg class="mobile-wave" viewBox="0 0 840 100" preserveAspectRatio="none">
+      <path d="M0,100 L0,30 C70,30 70,90 140,90 S210,30 280,30 S350,90 420,90 S490,30 560,30 S630,90 700,90 S770,30 840,30 L840,100 Z" fill="{{ section.settings.wave_color }}"></path>
+    </svg>
+  </div>
+</div>
+
+<style>
+  .about-gallery-section {
+    background-color: {{ section.settings.background_color }};
+    padding-top: 60px; /* Reduced from 80px to move heading up */
+    padding-bottom: 120px; /* Space for wave */
+    position: relative;
+    color: {{ section.settings.text_color }};
+    overflow: hidden;
+  }
+
+  /* Make the container wider to increase image size */
+  .about-gallery-section .page-width {
+    max-width: 1400px; /* Increased from standard ~1200px */
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  /* --- Intro Section Styles --- */
+  .gallery-intro {
+    margin-bottom: 100px; /* Space before gallery grid */
+    max-width: 1200px; /* Increased from 1000px per user request */
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .intro-main-heading {
+    text-align: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 64px; /* Big heading like image */
+    margin-bottom: 60px;
+    font-weight: 500;
+    line-height: 1.1;
+  }
+
+  .intro-content-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 80px;
+  }
+
+  .intro-text-wrapper {
+    flex: 1;
+    padding-left: 40px; /* Changed from padding-right to padding-left */
+  }
+
+  .intro-subheading {
+    font-family: 'Playfair Display', serif;
+    font-size: 56px; /* Slightly smaller than main heading */
+    margin-bottom: 24px;
+    font-weight: 500;
+    line-height: 1.1;
+  }
+
+  .intro-description {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 20px; /* Readable body */
+    line-height: 1.6;
+    opacity: 0.9;
+  }
+
+  .intro-image-wrapper {
+    width: 40%; /* Reduced width */
+    flex: none; /* Do not grow */
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .intro-image {
+    width: 100%;
+    height: auto;
+    border-radius: 20px;
+    display: block;
+    object-fit: cover;
+    /* aspect-ratio: 4/3; Landscape-ish or square? Image looks kinda square */
+  }
+
+  /* --- Gallery Section Styles --- */
+
+  .gallery-header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  .gallery-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: 56px;
+    margin-bottom: 20px;
+    font-weight: 500;
+    text-transform: uppercase;
+    line-height: 1.1;
+  }
+
+  .gallery-subheading {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 20px;
+    opacity: 0.8;
+  }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 24px;
+    margin-bottom: 60px;
+  }
+
+  .gallery-card {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    aspect-ratio: 3/4; /* Portrait aspect ratio as per image */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+  }
+
+  /* Specific rotations to match reference 'scattered' look */
+  .gallery-card:nth-child(1) { transform: rotate(-3deg) translateY(10px); }
+  .gallery-card:nth-child(2) { transform: rotate(3deg) translateY(-10px); z-index: 2; }
+  .gallery-card:nth-child(3) { transform: rotate(-3deg) translateY(5px); }
+  .gallery-card:nth-child(4) { transform: rotate(4deg) translateY(-8px); z-index: 2; }
+  .gallery-card:nth-child(5) { transform: rotate(-3deg) translateY(8px); }
+
+  .gallery-card:hover {
+    transform: scale(1.02) rotate(0deg) !important; /* Reset on hover for effect */
+    z-index: 10;
+  }
+
+  .gallery-image-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  .gallery-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .gallery-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .gallery-overlay-text {
+    color: #fff;
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 500;
+  }
+
+  .gallery-footer-desktop {
+    text-align: center;
+    margin-top: 40px;
+  }
+  
+  .gallery-footer-inline {
+    display: none; /* Hidden on desktop */
+  }
+
+  .gallery-bottom-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 25px;
+    font-weight: 600;
+  }
+
+  .gallery-bottom-wave {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    line-height: 0;
+    pointer-events: none;
+  }
+
+  .gallery-bottom-wave svg {
+    width: 100%;
+    height: 60px;
+    display: block;
+  }
+
+  .gallery-bottom-wave .mobile-wave { display: none; }
+  
+  @media screen and (max-width: 990px) {
+    .gallery-grid {
+      grid-template-columns: repeat(2, 1fr); /* 2 cols on tablet */
+    }
+     .gallery-heading {
+      font-size: 36px;
+    }
+    .gallery-card:nth-child(n) {
+      transform: none !important; /* Reset rotation on tablet/mobile */
+      margin-top: 0;
+    }
+
+    /* Intro mobile styles */
+    .intro-main-heading {
+      font-size: 50px;
+      margin-bottom: 20px; /* Reduced gap between heading and image */
+    }
+
+    .intro-content-wrapper {
+      flex-direction: column; /* Image Top, Text Bottom */
+      gap: 30px;
+      text-align: left; /* Text left aligned */
+      align-items: stretch; /* Ensure full width (override desktop center) */
+    }
+    
+    .intro-text-wrapper {
+      padding-left: 0; /* Remove padding */
+      width: 100%;
+    }
+    
+    .intro-image-wrapper {
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto; /* Center the image itself */
+    }
+
+    .intro-subheading {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+  }
+
+  @media screen and (max-width: 550px) {
+    .gallery-grid {
+      grid-template-columns: repeat(2, 1fr); /* 2 cols on mobile */
+      gap: 16px;
+    }
+    
+    .gallery-card {
+      border-radius: 15px;
+    }
+    
+    .gallery-footer-desktop {
+      display: none; /* Hide desktop footer */
+    }
+    
+    .gallery-footer-inline {
+      display: flex;
+      align-items: center;
+      justify-content: center; /* Center align */
+      text-align: center;
+      padding: 10px;
+    }
+    
+    .gallery-footer-inline .gallery-bottom-text {
+      font-size: 19px;
+      line-height: 1.4;
+      margin: 0;
+    }
+    
+    .gallery-bottom-wave .desktop-wave { display: none; }
+    .gallery-bottom-wave .mobile-wave { display: block; }
+  }
+</style>

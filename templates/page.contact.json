@@ -1,0 +1,88 @@
+{
+  "sections": {
+    "page_content": {
+      "type": "custom-page-content",
+      "settings": {
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "form": {
+      "type": "contact-form",
+      "settings": {
+        "heading": "Customer Service",
+        "heading_size": "h1",
+        "color_scheme": "scheme-1",
+        "padding_top": 36,
+        "padding_bottom": 36,
+        "wave_color_top": "#FFF5E6"
+      }
+    },
+    "custom_faq": {
+      "type": "custom-faq",
+      "blocks": {
+        "faq_1": {
+          "type": "faq_item",
+          "settings": {
+            "question": "What exactly is SoulSurf?",
+            "answer": "<p>SoulSurf is a modern soda crafted with natural ingredients, prebiotics, and low sugar. It's designed to give you a refreshing, guilt-free fizzy drink that supports your gut health and tastes amazing.</p>"
+          }
+        },
+        "faq_2": {
+          "type": "faq_item",
+          "settings": {
+            "question": "What forms of payment do you accept?",
+            "answer": "<p>We accept all major credit cards (Visa, MasterCard, American Express), PayPal, Apple Pay, and Google Pay. For subscriptions, we securely store your payment method for recurring orders.</p>"
+          }
+        },
+        "faq_3": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Should I subscribe if I’ve never tried SoulSurf?",
+            "answer": "<p>We recommend trying our Variety Pack first! It's the best way to taste all our flavors. Once you find your favorites, subscribing is the smartest way to save 15% on every order and get free shipping.</p>"
+          }
+        },
+        "faq_4": {
+          "type": "faq_item",
+          "settings": {
+            "question": "How can I use dedicated support?",
+            "answer": "<p>Our dedicated support team is available via email at support@soulsurf.com or through the contact form above. We aim to respond to all inquiries within 24 hours.</p>"
+          }
+        },
+        "faq_5": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Can I still take advantage of deals from non-subscribers?",
+            "answer": "<p>Absolutely! We often have site-wide promotions and special offers that are available to everyone. Sign up for our newsletter to stay updated on the latest deals.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "faq_1",
+        "faq_2",
+        "faq_3",
+        "faq_4",
+        "faq_5"
+      ],
+      "settings": {}
+    },
+    "hero": {
+      "type": "custom-contact-hero",
+      "settings": {
+        "subtext": "Let us know how we can help you! Email us, check out our FAQ's or contact us.",
+        "wave_color": "#FFF5E6"
+      }
+    },
+    "text_banner": {
+      "type": "custom-text-banner",
+      "settings": {}
+    }
+  },
+  "order": [
+    "hero",
+    "page_content",
+    "form",
+    "custom_faq",
+    "text_banner"
+  ]
+}

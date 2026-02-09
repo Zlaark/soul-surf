@@ -1,0 +1,638 @@
+{% schema %}
+{
+  "name": "Custom Hero Slider",
+  "settings": [
+    {
+      "type": "color_background",
+      "id": "bg_gradient",
+      "label": "Background Gradient",
+      "default": "linear-gradient(180deg, #FFEAB6 0%, #FFF8E1 100%)"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#000000"
+    },
+    {
+       "type": "text",
+       "id": "bg_text",
+       "label": "Background Big Text",
+       "default": "SoulSurf"
+    },
+     {
+      "type": "color",
+      "id": "bg_text_color",
+      "label": "Background Text Color",
+      "default": "#FBEBC2"
+    },
+    {
+      "type": "header",
+      "content": "Hero Content"
+    },
+    {
+      "type": "text",
+      "id": "heading_line_1",
+      "label": "Heading Line 1",
+      "default": "Crafted Soda"
+    },
+    {
+      "type": "text",
+      "id": "heading_line_2",
+      "label": "Heading Line 2",
+      "default": "For Your Cravings"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "SHOP NOW"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+     {
+      "type": "color",
+      "id": "button_bg",
+      "label": "Button Background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text Color",
+      "default": "#FFFFFF"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "product_image",
+          "label": "Product Image"
+        },
+        {
+          "type": "header",
+          "content": "Floating Elements"
+        },
+        {
+          "type": "paragraph",
+          "content": "Upload 6 images to surround the product. Left side: 1-3, Right side: 4-6."
+        },
+        {
+          "type": "image_picker",
+          "id": "float_img_1",
+          "label": "Floating Image 1 (Left Top)"
+        },
+        {
+          "type": "image_picker",
+          "id": "float_img_2",
+          "label": "Floating Image 2 (Left Mid)"
+        },
+        {
+           "type": "image_picker",
+           "id": "float_img_3",
+           "label": "Floating Image 3 (Left Bottom)"
+        },
+        {
+           "type": "image_picker",
+           "id": "float_img_4",
+           "label": "Floating Image 4 (Right Top)"
+        },
+        {
+           "type": "image_picker",
+           "id": "float_img_5",
+           "label": "Floating Image 5 (Right Mid)"
+        },
+        {
+           "type": "image_picker",
+           "id": "float_img_6",
+           "label": "Floating Image 6 (Right Bottom)"
+        },
+        {
+          "type": "color",
+          "id": "slide_bg",
+          "label": "Slide Background Color",
+          "default": "#FCF0DF"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Hero Slider",
+      "blocks": [
+        {
+          "type": "slide"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+{{ 'custom-hero-float-config.css' | asset_url | stylesheet_tag }}
+
+{% style %}
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+  
+  .custom-hero-slider {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background: #FCF0DF; /* {{ section.settings.bg_gradient }}; */
+    padding: 95px 0 45px 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .chs-background-text {
+    position: absolute;
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 1400px;
+    height: auto;
+    z-index: 1;
+    opacity: 2.5;
+    pointer-events: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .chs-background-text img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+  }
+  
+  .chs-slider-container {
+      width: 100%;
+      height: 550px; /* Matched to product image height */
+      position: relative;
+      z-index: 2;
+      margin: 20px 0 0 0; /* Remove bottom margin */
+  }
+
+  .chs-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out; /* Slight fade for container if needed */
+    pointer-events: none;
+  }
+  
+  .chs-slide.active {
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 5;
+  }
+
+  .chs-slide.exit {
+    opacity: 1; /* Keep visible during exit phase */
+    pointer-events: none;
+    z-index: 4;
+  }
+
+  .chs-content {
+      position: relative;
+      z-index: 3;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+  }
+
+  .chs-heading-1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 79px;
+    line-height: 1;
+    color: {{ section.settings.text_color }};
+    margin: 0 0 20px 0;
+    font-weight: 600; /* SemiBold */
+  }
+
+  .chs-heading-2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 79px;
+    line-height: 1;
+    color: {{ section.settings.text_color }};
+    margin: 0;
+    font-weight: 600; /* SemiBold */
+  }
+  
+  .chs-text-behind {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      margin-bottom: -100px; /* Pull image up to overlap */
+      padding-top: 40px;
+  }
+  
+  .chs-image-container {
+      position: relative;
+      margin: 0; /* Centered by parent flex */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%; /* Fill slide */
+      z-index: 2; /* Image on top of text */
+  }
+
+  .chs-product-image {
+      height: 460px;
+      width: auto;
+      object-fit: contain;
+      z-index: 3;
+      position: relative;
+      filter: drop-shadow(0 20px 30px rgba(0,0,0,0.15));
+      
+      /* Animation Logic */
+      transition: all 0.7s ease-in-out; 
+      transform: translateX(70vw); /* Start from extreme right (using vw for sync) */
+      opacity: 0;
+  }
+
+  .chs-slide.active .chs-product-image {
+      transform: translate(0, 0);
+      opacity: 1;
+  }
+
+  .chs-slide.exit .chs-product-image {
+      transform: translateX(-70vw); /* Exit to extreme left (using vw for sync) */
+      opacity: 0;
+      transition: transform 0.7s ease-in-out, opacity 0.7s ease-in-out; /* Smooth fade out */
+  }
+
+  .chs-floating-element {
+      position: absolute;
+      z-index: 4;
+      pointer-events: none;
+      object-fit: contain;
+      /* Base State: Centered and Hidden */
+      top: 50%;
+      width: 0; 
+      opacity: 0;
+      transition: all 1.0s ease-in-out; /* Slow exit (Outer to Inner) */
+      /* Reset immediately on exit */
+      transition-delay: 0s; 
+  }
+  
+  /* Initial center alignment helpers */
+  .float-1, .float-2, .float-3 { left: 50%; }
+  .float-4, .float-5, .float-6 { right: 50%; }
+  .float-2, .float-5 { transform: translateY(-50%); }
+
+  /* Active State: Expand Outwards */
+  .chs-slide.active .chs-floating-element {
+      opacity: 1;
+      width: auto; 
+      transition: all 0.6s ease-in-out; /* Fast entry (Inner to Outer) */
+      transition-delay: 0.1s; /* Start expanding earlier to overlap with previous exit */
+  }
+  
+  /* Left Side Positions */
+  /* Active State Logic moved to assets/custom-hero-float-config.css */
+  .chs-slide.active .chs-floating-element {
+      opacity: 1;
+      width: auto; 
+      transition: all 0.6s ease-in-out; /* Fast entry (Inner to Outer) */
+      transition-delay: 0.1s; /* Start expanding earlier to overlap with previous exit */
+  }
+
+  @keyframes chs-float {
+      0% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-15px) rotate(2deg); }
+      100% { transform: translateY(0px) rotate(0deg); }
+  }
+
+  @keyframes chs-float-centered {
+      0% { transform: translateY(-50%) rotate(0deg); }
+      50% { transform: translateY(calc(-50% - 15px)) rotate(2deg); }
+      100% { transform: translateY(-50%) rotate(0deg); }
+  }
+
+  .chs-button {
+      display: inline-block;
+      margin-top: -20px; /* Pull button closer to image */
+      padding: 11px 50px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: bold;
+      text-transform: uppercase;
+      font-size: 18px;
+      letter-spacing: 2px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      position: relative;
+      overflow: hidden;
+      z-index: 10; /* Increased to ensure it sits above slider container overlay */
+      background-color: var(--btn-bg);
+      color: var(--btn-text);
+      /* Use fully transparent yellow/gold to ensure smooth transition to solid color without black artifacts */
+      border: 1px solid rgba(255, 214, 91, 0); 
+      outline: none;
+  }
+  
+  .chs-button span {
+    position: relative;
+    z-index: 2;
+  }
+
+  .chs-button::after {
+    content: '';
+    position: absolute;
+    bottom: -50%;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #D09700; 
+    transform-origin: bottom center;
+    transition: transform 1000ms cubic-bezier(0.48, 0, 0.12, 1);
+    transform: skewY(9.3deg) scaleY(0);
+    z-index: 1;
+  }
+  
+  .chs-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      border-color: #D09700;
+  }
+
+  .chs-button:hover::after {
+      transform-origin: bottom center;
+      transform: skewY(9.3deg) scaleY(2);
+  }
+
+  /* Responsive */
+  @media screen and (max-width: 990px) {
+      .chs-heading-1, .chs-heading-2 {
+          font-size: 4.5rem;
+      }
+      .chs-product-image {
+          max-height: 400px;
+      }
+      .chs-slider-container {
+          height: 400px;
+      }
+  }
+
+  @media screen and (max-width: 500px) {
+     .custom-hero-slider {
+        padding: 60px 0;
+        min-height: 70vh;
+     }
+
+     .chs-text-behind {
+        margin-top: 20px; /* Conserved from previous request */
+        margin-bottom: 20px; /* Add space between heading and image */
+        padding-top: 10px;
+     }
+
+      .chs-heading-1, .chs-heading-2 {
+          font-size: 3.7rem;
+      }
+      .chs-product-image {
+          max-height: 300px;
+      }
+      .chs-slider-container {
+          height: 300px;
+      }
+
+      .chs-button {
+        padding: 15px 35px;
+        font-size: 1.2rem;
+        margin-top: 60px; /* Add space between image and button */
+      }
+  }
+
+  /* Slide Specific Size Increases - moved to config */
+  /* Slide 2 Specific Size Increases (~1.4x) - moved to config */
+  /* Slide 3 Specifics - moved to config */
+
+{% endstyle %}
+
+<div class="custom-hero-slider">
+    <!-- Background Text -->
+    <div class="chs-background-text">
+        <img src="{{ 'orghrdlogo.svg' | asset_url }}" alt="" width="1668" height="288" loading="lazy">
+    </div>
+
+    <div class="chs-content">
+        <!-- Static Layer: Text and Button (Taking from section settings) -->
+        
+        <!-- Text behind can -->
+        <div class="chs-text-behind">
+            <h2 class="chs-heading-1">{{ section.settings.heading_line_1 }}</h2>
+            <h3 class="chs-heading-2">{{ section.settings.heading_line_2 }}</h3>
+        </div>
+        
+        <!-- Dynamic Layer: Images -->
+        <div class="chs-slider-container">
+            {% for block in section.blocks %}
+                {% assign slide_bg = block.settings.slide_bg | default: '#FCF0DF' %}
+                {% if forloop.index == 3 %}{% assign slide_bg = '#FEF8CD' %}{% endif %}
+                {% if forloop.index == 4 %}{% assign slide_bg = '#F4EBE7' %}{% endif %}
+                <div class="chs-slide {% if forloop.first %}active{% endif %}" {{ block.shopify_attributes }} data-index="{{ forloop.index0 }}" data-bg-color="{{ slide_bg }}">
+                    <div class="chs-image-container">
+                         <!-- Product Image Logic -->
+                         {% if forloop.index == 2 %}
+                            <!-- Specific override for slide 2 -->
+                            {% if block.settings.product_image != blank %}
+                                {{ block.settings.product_image | image_url: width: 1200 | image_tag: class: 'chs-product-image', loading: 'eager' }}
+                            {% else %}
+                                <img src="{{ 'sld2.png' | asset_url }}" class="chs-product-image" width="550" height="550" loading="eager" alt="Slide 2 Product">
+                            {% endif %}
+                         {% elsif forloop.index == 1 %}
+                             <!-- Specific override for slide 1 -->
+                             {% if block.settings.product_image != blank %}
+                                {{ block.settings.product_image | image_url: width: 1200 | image_tag: class: 'chs-product-image', loading: 'eager' }}
+                             {% else %}
+                                <img src="{{ 'sld1.png' | asset_url }}" class="chs-product-image" width="560" height="560" loading="eager" alt="Slide 1 Product">
+                             {% endif %}
+                         {% elsif forloop.index == 3 %}
+                             <!-- Specific override for slide 3 -->
+                             {% if block.settings.product_image != blank %}
+                                {{ block.settings.product_image | image_url: width: 1200 | image_tag: class: 'chs-product-image', loading: 'eager' }}
+                             {% else %}
+                                <img src="{{ 'sld4.png' | asset_url }}" class="chs-product-image" width="560" height="560" loading="eager" alt="Slide 3 Product">
+                             {% endif %}
+                         {% elsif forloop.index == 4 %}
+                             <!-- Specific override for slide 4 -->
+                             {% if block.settings.product_image != blank %}
+                                {{ block.settings.product_image | image_url: width: 1200 | image_tag: class: 'chs-product-image', loading: 'eager' }}
+                             {% else %}
+                                <img src="{{ 'sld3.png' | asset_url }}" class="chs-product-image" width="560" height="560" loading="eager" alt="Slide 4 Product">
+                             {% endif %}
+                         {% else %}
+                             <!-- Default logic for other slides -->
+                             {% if block.settings.product_image != blank %}
+                                {{ block.settings.product_image | image_url: width: 1200 | image_tag: class: 'chs-product-image', loading: 'eager' }}
+                             {% elsif 'can2.png' %}
+                                <img src="{{ 'can2.png' | asset_url }}" class="chs-product-image" width="500" height="500" loading="eager" alt="Product Image">
+                             {% else %}
+                                {{ 'product-1' | placeholder_svg_tag: 'chs-product-image' }}
+                             {% endif %}
+                         {% endif %}
+
+                        <!-- Floating Elements Logic -->
+                        {% comment %} Left Side (1-3) {% endcomment %}
+                        
+                        {%- comment -%} Float 1 {%- endcomment -%}
+                        {% if block.settings.float_img_1 != blank %}
+                          {{ block.settings.float_img_1 | image_url: width: 300 | image_tag: class: 'chs-floating-element float-1', loading: 'lazy' }}
+                        {% elsif forloop.index == 1 %}
+                          <img src="{{ 'lt1.png' | asset_url }}" class="chs-floating-element float-1" alt="" loading="lazy">
+                        {% elsif forloop.index == 2 %}
+                          <img src="{{ 'lt2.png' | asset_url }}" class="chs-floating-element float-1" alt="" loading="lazy">
+                        {% elsif forloop.index == 3 %}
+                          <img src="{{ 'lt3 (2).png' | asset_url }}" class="chs-floating-element float-1" alt="" loading="lazy">
+                        {% elsif forloop.index == 4 %}
+                          <img src="{{ 'lt4.png' | asset_url }}" class="chs-floating-element float-1" alt="" loading="lazy">
+                        {% endif %}
+
+                        {%- comment -%} Float 2 {%- endcomment -%}
+                        {% if block.settings.float_img_2 != blank %}
+                          {{ block.settings.float_img_2 | image_url: width: 300 | image_tag: class: 'chs-floating-element float-2', loading: 'lazy' }}
+                        {% elsif forloop.index == 1 %}
+                          <img src="{{ 'lm1.png' | asset_url }}" class="chs-floating-element float-2" alt="" loading="lazy">
+                        {% elsif forloop.index == 2 %}
+                          <img src="{{ 'lm2.png' | asset_url }}" class="chs-floating-element float-2" alt="" loading="lazy">
+                        {% endif %}
+
+                        {%- comment -%} Float 3 {%- endcomment -%}
+                        {% if block.settings.float_img_3 != blank %}
+                          {{ block.settings.float_img_3 | image_url: width: 300 | image_tag: class: 'chs-floating-element float-3', loading: 'lazy' }}
+                        {% elsif forloop.index == 1 %}
+                          <img src="{{ 'lb1.png' | asset_url }}" class="chs-floating-element float-3" alt="" loading="lazy">
+                        {% elsif forloop.index == 2 %}
+                           <img src="{{ 'lb2.png' | asset_url }}" class="chs-floating-element float-3" alt="" loading="lazy">
+                        {% elsif forloop.index == 3 %}
+                           <img src="{{ 'lb3.png' | asset_url }}" class="chs-floating-element float-3" alt="" loading="lazy">
+                        {% elsif forloop.index == 4 %}
+                           <img src="{{ 'lb4.png' | asset_url }}" class="chs-floating-element float-3" alt="" loading="lazy">
+                        {% endif %}
+
+                        {% comment %} Right Side (4-6) {% endcomment %}
+
+                        {%- comment -%} Float 4 {%- endcomment -%}
+                        {% if block.settings.float_img_4 != blank %}
+                          {{ block.settings.float_img_4 | image_url: width: 300 | image_tag: class: 'chs-floating-element float-4', loading: 'lazy' }}
+                        {% elsif forloop.index == 1 %}
+                          <img src="{{ 'rt1.png' | asset_url }}" class="chs-floating-element float-4" alt="" loading="lazy">
+                        {% elsif forloop.index == 2 %}
+                           <img src="{{ 'rt2.png' | asset_url }}" class="chs-floating-element float-4" alt="" loading="lazy">
+                        {% elsif forloop.index == 3 %}
+                           <img src="{{ 'rt3.png' | asset_url }}" class="chs-floating-element float-4" alt="" loading="lazy">
+                        {% elsif forloop.index == 4 %}
+                           <img src="{{ 'rt4.png' | asset_url }}" class="chs-floating-element float-4" alt="" loading="lazy">
+                        {% endif %}
+
+                        {%- comment -%} Float 5 {%- endcomment -%}
+                        {% if block.settings.float_img_5 != blank %}
+                          {{ block.settings.float_img_5 | image_url: width: 300 | image_tag: class: 'chs-floating-element float-5', loading: 'lazy' }}
+                        {% elsif forloop.index == 1 %}
+                          <img src="{{ 'rm1.png' | asset_url }}" class="chs-floating-element float-5" alt="" loading="lazy">
+                        {% elsif forloop.index == 2 %}
+                           <img src="{{ 'rm2.png' | asset_url }}" class="chs-floating-element float-5" alt="" loading="lazy">
+                        {% elsif forloop.index == 3 %}
+                           <img src="{{ 'rm3.png' | asset_url }}" class="chs-floating-element float-5" alt="" loading="lazy">
+                        {% endif %}
+
+                        {%- comment -%} Float 6 {%- endcomment -%}
+                        {% if block.settings.float_img_6 != blank %}
+                          {{ block.settings.float_img_6 | image_url: width: 300 | image_tag: class: 'chs-floating-element float-6', loading: 'lazy' }}
+                        {% elsif forloop.index == 1 %}
+                          <img src="{{ 'rb1.png' | asset_url }}" class="chs-floating-element float-6" alt="" loading="lazy">
+                        {% elsif forloop.index == 2 %}
+                           <img src="{{ 'rb2.png' | asset_url }}" class="chs-floating-element float-6" alt="" loading="lazy">
+                        {% elsif forloop.index == 3 %}
+                           <img src="{{ 'rb3.png' | asset_url }}" class="chs-floating-element float-6" alt="" loading="lazy">
+                        {% elsif forloop.index == 4 %}
+                           <img src="{{ 'rb4.png' | asset_url }}" class="chs-floating-element float-6" alt="" loading="lazy">
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <a href="{{ section.settings.button_link }}" class="chs-button" style="--btn-bg: {{ section.settings.button_bg }}; --btn-text: {{ section.settings.button_text_color }};">
+            <span>{{ section.settings.button_text }}</span>
+        </a>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const slides = document.querySelectorAll('.chs-slide');
+    const container = document.querySelector('.custom-hero-slider');
+
+    if (slides.length > 1) {
+        let currentSlide = 0;
+        
+        // Initialize first slide
+        slides[0].classList.add('active'); // Should already be there but ensuring
+        
+        function nextSlide() {
+            // 1. Current slide exits to left
+            slides[currentSlide].classList.remove('active');
+            slides[currentSlide].classList.add('exit');
+            
+            // 2. Schedule New Slide Entry (Overlap 20% - Fast)
+            setTimeout(() => {
+                // Advance index
+                currentSlide = (currentSlide + 1) % slides.length;
+                
+                // 3. New slide enters from right (add active)
+                slides[currentSlide].classList.add('active');
+    
+                // 4. Update Background Color (Synced with new slide entry)
+                const newBg = slides[currentSlide].dataset.bgColor;
+                if (newBg && container) {
+                     container.style.transition = "background-color 1s ease-in-out";
+                     container.style.background = newBg;
+                }
+            }, 200); // Start next slide quickly after exit begins
+
+            // 5. Cleanup Previous Slide (After full 1000ms animation finishes)
+            setTimeout(() => {
+               // Calculate previous index (wrapping around correctly)
+               let prevIndex = (currentSlide - 1 + slides.length) % slides.length;
+               slides[prevIndex].classList.remove('exit');
+            }, 700); 
+        }
+
+        // Initial start after 2.0s (Hold for 1.5s then move)
+        setTimeout(() => {
+            nextSlide(); 
+            // Continue cycle every 2.4s (0.9s transition overlap + 1.5s hold)
+            setInterval(nextSlide, 2400); 
+        }, 2000);
+    } else if (slides.length === 1) {
+         // Set initial background for single slide
+         const newBg = slides[0].dataset.bgColor;
+         if (newBg && container) {
+            container.style.background = newBg;
+         }
+    }
+});
+</script>

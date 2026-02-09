@@ -1,0 +1,316 @@
+{% schema %}
+{
+  "name": "Custom FAQ Section",
+  "settings": [
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Section Background Color",
+      "default": "#FCE4B6"
+    },
+    {
+      "type": "color",
+      "id": "wave_color_top",
+      "label": "Top Wave Color (Previous Section BG)",
+      "default": "#FFF9F2"
+    },
+     {
+      "type": "color",
+      "id": "wave_color_bottom",
+      "label": "Bottom Wave Color (Next Section BG)",
+      "default": "#FFD65B"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "FAQs"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Find our most common questions below"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "SHOW MORE FAQS"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq_item",
+      "name": "FAQ Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "What exactly is SoulSurf?"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "<p>SoulSurf is a modern soda crafted with natural ingredients, prebiotics, and low sugar.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom FAQ Section",
+      "blocks": [
+        { "type": "faq_item" },
+        { "type": "faq_item" },
+        { "type": "faq_item" },
+        { "type": "faq_item" },
+        { "type": "faq_item" }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<div class="custom-faq-section">
+
+
+  <div class="faq-container">
+    <div class="faq-header">
+      <h2 class="faq-heading">
+        {{ section.settings.heading }}
+      </h2>
+      <p class="faq-subheading">{{ section.settings.subheading }}</p>
+    </div>
+
+    <div class="faq-list">
+      {% for block in section.blocks %}
+        <details class="faq-item">
+          <summary class="faq-question">
+            {{ block.settings.question }}
+            <span class="faq-icon">
+              <svg width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 1L7 7L13 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </summary>
+          <div class="faq-answer">
+            {{ block.settings.answer }}
+          </div>
+        </details>
+      {% endfor %}
+    </div>
+
+    {% if section.settings.button_text != blank %}
+      <div class="faq-action">
+        <a href="{{ section.settings.button_link | default: '#' }}" class="faq-button">
+          {{ section.settings.button_text }}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+
+
+</div>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+
+  .custom-faq-section {
+    background-color: {{ section.settings.bg_color }};
+    position: relative;
+    padding: 120px 0 100px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  .faq-wave-container {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    line-height: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .faq-wave-container svg {
+    display: block;
+    width: 100%;
+    height: 50px;
+  }
+
+  .faq-top-wave {
+    top: -1px; /* Slight overlap to prevent gaps */
+    transform: scaleY(-1); /* Flip to match top style */
+  }
+
+  .faq-bottom-wave {
+    bottom: -1px;
+  }
+  
+  /* Show/Hide waves based on device */
+  .mobile-wave { display: none !important; }
+  .desktop-wave { display: block !important; }
+
+  @media (max-width: 768px) {
+    .mobile-wave { display: block !important; }
+    .desktop-wave { display: none !important; }
+  }
+
+  .faq-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .faq-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .faq-heading {
+    display: inline-block;
+    position: relative;
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    font-weight: 700;
+    color: #000;
+    margin: 0 0 15px;
+    z-index: 1; /* Above underline */
+  }
+
+  /* Blue underline effect */
+  .faq-underline {
+    position: absolute;
+    bottom: 5px;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    background-color: #3B82F6; /* Blue color */
+    z-index: -1; /* Behind text */
+    border-radius: 4px;
+    opacity: 0.7;
+  }
+  
+  /* Alternative visual approach if it's just a line */
+
+
+
+  .faq-subheading {
+    font-size: 16px;
+    color: #4A4A4A;
+    font-weight: 500;
+  }
+
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 40px;
+  }
+
+  .faq-item {
+    background: #FFFFFF;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+  }
+
+  .faq-item[open] {
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  }
+
+  .faq-question {
+    padding: 20px 25px;
+    font-weight: 600;
+    font-size: 16px;
+    color: #1A1A1A;
+    cursor: pointer;
+    list-style: none; /* Hide default marker */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .faq-question::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-icon {
+    transition: transform 0.3s ease;
+    display: flex;
+    align-items: center;
+    width: 14px;
+    height: 14px;
+    color: #1A1A1A;
+  }
+
+  .faq-item[open] .faq-icon {
+    transform: rotate(180deg);
+  }
+
+  .faq-answer {
+    padding: 0 25px 25px;
+    color: #4A4A4A;
+    font-size: 15px;
+    line-height: 1.6;
+    border-top: 1px solid transparent; /* Placeholder for transition */
+  }
+  
+  .faq-item[open] .faq-answer {
+     animation: fadeIn 0.3s ease-in;
+  }
+  
+  @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+  }
+
+  .faq-action {
+    text-align: center;
+  }
+
+  .faq-button {
+    display: inline-block;
+    background-color: #000;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 16px 32px;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: background-color 0.2s, transform 0.1s;
+  }
+
+  .faq-button:hover {
+    background-color: #333;
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 768px) {
+    .faq-heading {
+      font-size: 36px;
+    }
+    
+    .faq-question {
+      padding: 15px 20px;
+      font-size: 14px;
+    }
+    
+    .faq-answer {
+      padding: 0 20px 20px;
+      font-size: 14px;
+    }
+  }
+</style>

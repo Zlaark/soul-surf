@@ -1,0 +1,149 @@
+/* Mobile Overrides to Spread Floating Elements */
+@media screen and (max-width: 500px) {
+
+    /* General Mobile Size Reductions */
+    .chs-floating-element {
+        transform-origin: center;
+    }
+
+    /* SLIDE 1 (Index 0) Mobile Positions */
+    .chs-slide[data-index="0"].active .float-1 {
+        left: 5%;
+        top: 15%;
+        width: 60px;
+    }
+
+    .chs-slide[data-index="0"].active .float-2 {
+        left: 2%;
+        width: 70px;
+    }
+
+    .chs-slide[data-index="0"].active .float-3 {
+        left: 5%;
+        bottom: 15%;
+        width: 65px;
+    }
+
+    .chs-slide[data-index="0"].active .float-4 {
+        right: 5%;
+        top: 15%;
+        width: 65px;
+    }
+
+    .chs-slide[data-index="0"].active .float-5 {
+        right: 2%;
+        width: 75px;
+    }
+
+    .chs-slide[data-index="0"].active .float-6 {
+        right: 5%;
+        bottom: 15%;
+        width: 60px;
+    }
+
+    /* SLIDE 2 (Index 1) Mobile Positions */
+    .chs-slide[data-index="1"].active .float-1 {
+        left: 5%;
+        top: 15%;
+        width: 65px;
+    }
+
+    .chs-slide[data-index="1"].active .float-2 {
+        left: 2%;
+        width: 75px;
+    }
+
+    .chs-slide[data-index="1"].active .float-3 {
+        left: 5%;
+        bottom: 15%;
+        width: 70px;
+    }
+
+    .chs-slide[data-index="1"].active .float-4 {
+        right: 5%;
+        top: 15%;
+        width: 80px;
+    }
+
+    .chs-slide[data-index="1"].active .float-5 {
+        right: 2%;
+        width: 70px;
+    }
+
+    .chs-slide[data-index="1"].active .float-6 {
+        right: 5%;
+        bottom: 15%;
+        width: 75px;
+    }
+
+    /* SLIDE 3 (Index 2) Mobile Positions */
+    .chs-slide[data-index="2"].active .float-1 {
+        left: 5%;
+        top: 15%;
+        width: 80px;
+    }
+
+    .chs-slide[data-index="2"].active .float-2 {
+        left: 2%;
+        width: 70px;
+    }
+
+    .chs-slide[data-index="2"].active .float-3 {
+        left: 5%;
+        bottom: 15%;
+        width: 80px;
+    }
+
+    .chs-slide[data-index="2"].active .float-4 {
+        right: 5%;
+        top: 15%;
+        width: 80px;
+    }
+
+    .chs-slide[data-index="2"].active .float-5 {
+        right: 2%;
+        width: 35px;
+    }
+
+    /* Small leaf */
+    .chs-slide[data-index="2"].active .float-6 {
+        right: 5%;
+        bottom: 15%;
+        width: 80px;
+    }
+
+    /* SLIDE 4 (Index 3) Mobile Positions */
+    .chs-slide[data-index="3"].active .float-1 {
+        left: 5%;
+        top: 15%;
+        width: 80px;
+    }
+
+    .chs-slide[data-index="3"].active .float-2 {
+        left: 2%;
+        width: 70px;
+    }
+
+    .chs-slide[data-index="3"].active .float-3 {
+        left: 5%;
+        bottom: 15%;
+        width: 80px;
+    }
+
+    .chs-slide[data-index="3"].active .float-4 {
+        right: 5%;
+        top: 15%;
+        width: 80px;
+    }
+
+    .chs-slide[data-index="3"].active .float-5 {
+        right: 2%;
+        width: 75px;
+    }
+
+    .chs-slide[data-index="3"].active .float-6 {
+        right: 5%;
+        bottom: 15%;
+        width: 80px;
+    }
+}
