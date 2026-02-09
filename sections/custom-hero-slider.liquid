@@ -119,6 +119,12 @@
           "id": "slide_bg",
           "label": "Slide Background Color",
           "default": "#FCF0DF"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Shop Now Button Link",
+          "info": "Link for this slide's Shop Now button (optional - uses default if empty)"
         }
       ]
     }
@@ -575,9 +581,19 @@
             {% endfor %}
         </div>
 
-        <a href="{{ section.settings.button_link }}" class="chs-button" style="--btn-bg: {{ section.settings.button_bg }}; --btn-text: {{ section.settings.button_text_color }};">
+        <a href="{{ section.settings.button_link }}" class="chs-button" id="chs-shop-button" style="--btn-bg: {{ section.settings.button_bg }}; --btn-text: {{ section.settings.button_text_color }};" data-default-link="{{ section.settings.button_link }}">
             <span>{{ section.settings.button_text }}</span>
         </a>
+        
+        {% comment %} Store each slide's button link for JS {% endcomment %}
+        <script type="application/json" id="chs-slide-links">
+          [
+            {% for block in section.blocks %}
+              "{{ block.settings.button_link | default: section.settings.button_link }}"
+              {% unless forloop.last %},{% endunless %}
+            {% endfor %}
+          ]
+        </script>
     </div>
 </div>
 
@@ -585,12 +601,32 @@
 document.addEventListener('DOMContentLoaded', function() {
     const slides = document.querySelectorAll('.chs-slide');
     const container = document.querySelector('.custom-hero-slider');
+    const shopButton = document.getElementById('chs-shop-button');
+    
+    // Load slide-specific button links
+    let slideLinks = [];
+    const slideLinksScript = document.getElementById('chs-slide-links');
+    if (slideLinksScript) {
+        try {
+            slideLinks = JSON.parse(slideLinksScript.textContent);
+        } catch (e) {
+            console.error('Failed to parse slide links:', e);
+        }
+    }
+    
+    // Function to update button link
+    function updateButtonLink(slideIndex) {
+        if (shopButton && slideLinks[slideIndex]) {
+            shopButton.href = slideLinks[slideIndex];
+        }
+    }
 
     if (slides.length > 1) {
         let currentSlide = 0;
         
         // Initialize first slide
-        slides[0].classList.add('active'); // Should already be there but ensuring
+        slides[0].classList.add('active');
+        updateButtonLink(0); // Set initial button link
         
         function nextSlide() {
             // 1. Current slide exits to left
@@ -604,35 +640,37 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // 3. New slide enters from right (add active)
                 slides[currentSlide].classList.add('active');
+                
+                // 4. Update Button Link for current slide
+                updateButtonLink(currentSlide);
     
-                // 4. Update Background Color (Synced with new slide entry)
+                // 5. Update Background Color (Synced with new slide entry)
                 const newBg = slides[currentSlide].dataset.bgColor;
                 if (newBg && container) {
                      container.style.transition = "background-color 1s ease-in-out";
                      container.style.background = newBg;
                 }
-            }, 200); // Start next slide quickly after exit begins
+            }, 200);
 
-            // 5. Cleanup Previous Slide (After full 1000ms animation finishes)
+            // 6. Cleanup Previous Slide (After full animation finishes)
             setTimeout(() => {
-               // Calculate previous index (wrapping around correctly)
                let prevIndex = (currentSlide - 1 + slides.length) % slides.length;
                slides[prevIndex].classList.remove('exit');
             }, 700); 
         }
 
-        // Initial start after 2.0s (Hold for 1.5s then move)
+        // Initial start after 2.0s
         setTimeout(() => {
             nextSlide(); 
-            // Continue cycle every 2.4s (0.9s transition overlap + 1.5s hold)
             setInterval(nextSlide, 2400); 
         }, 2000);
     } else if (slides.length === 1) {
-         // Set initial background for single slide
+         // Set initial background and button link for single slide
          const newBg = slides[0].dataset.bgColor;
          if (newBg && container) {
             container.style.background = newBg;
          }
+         updateButtonLink(0);
     }
 });
 </script>

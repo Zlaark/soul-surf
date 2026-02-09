@@ -793,21 +793,21 @@
            </div>
 
            <div class="pg-image-container">
-             {% assign override_image = blank %}
-             {% case forloop.index %}
-               {% when 1 %}{% assign override_image = 'lemoncan.png' %}
-               {% when 2 %}{% assign override_image = 'orgcan.png' %}
-               {% when 4 %}{% assign override_image = 'chercan.png' %}
-             {% endcase %}
-
-             {% if override_image != blank %}
-                <img src="{{ override_image | asset_url }}" class="pg-product-img" alt="{{ block.settings.title }}" loading="lazy" width="400" height="auto">
-             {% elsif block.settings.custom_image != blank %}
+             {% comment %} Priority: 1. Custom Image (uploaded in Shopify), 2. Product Featured Image, 3. Fallback Asset {% endcomment %}
+             {% if block.settings.custom_image != blank %}
                 {{ block.settings.custom_image | image_url: width: 400 | image_tag: class: 'pg-product-img', loading: 'lazy' }}
              {% elsif product.featured_image != blank %}
                 {{ product.featured_image | image_url: width: 400 | image_tag: class: 'pg-product-img', loading: 'lazy' }}
              {% else %}
-                <img src="{{ 'can2.png' | asset_url }}" class="pg-product-img" alt="Product Image" loading="lazy" width="200" height="auto">
+                {% comment %} Fallback to default asset images if nothing is set {% endcomment %}
+                {% assign fallback_image = 'can2.png' %}
+                {% case forloop.index %}
+                  {% when 1 %}{% assign fallback_image = 'lemoncan.png' %}
+                  {% when 2 %}{% assign fallback_image = 'orgcan.png' %}
+                  {% when 3 %}{% assign fallback_image = 'mangocan.png' %}
+                  {% when 4 %}{% assign fallback_image = 'chercan.png' %}
+                {% endcase %}
+                <img src="{{ fallback_image | asset_url }}" class="pg-product-img" alt="{{ block.settings.title }}" loading="lazy" width="400" height="auto">
              {% endif %}
            </div>
 

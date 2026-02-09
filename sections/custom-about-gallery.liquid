@@ -317,7 +317,7 @@
     overflow: hidden;
     aspect-ratio: 3/4; /* Portrait aspect ratio as per image */
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease;
+    transition: transform 0.11s ease-out;
   }
 
   /* Specific rotations to match reference 'scattered' look */
@@ -469,3 +469,100 @@
     .gallery-bottom-wave .mobile-wave { display: block; }
   }
 </style>
+
+<style>
+  /* Entrance Animation Styles */
+  .gallery-card {
+    opacity: 0;
+    will-change: transform, opacity;
+  }
+
+  /* Initial positions before animation - cards come from different directions */
+  .about-gallery-section:not(.in-view) .gallery-card:nth-child(1) {
+    transform: translateX(-80px) rotate(-10deg);
+  }
+  .about-gallery-section:not(.in-view) .gallery-card:nth-child(2) {
+    transform: translateY(-80px) rotate(5deg);
+  }
+  .about-gallery-section:not(.in-view) .gallery-card:nth-child(3) {
+    transform: translateY(80px) rotate(-5deg);
+  }
+  .about-gallery-section:not(.in-view) .gallery-card:nth-child(4) {
+    transform: translateY(-80px) rotate(-5deg);
+  }
+  .about-gallery-section:not(.in-view) .gallery-card:nth-child(5) {
+    transform: translateX(80px) rotate(10deg);
+  }
+
+  /* Animated state - cards move to their final positions */
+  .about-gallery-section.in-view .gallery-card {
+    opacity: 1;
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease-out;
+  }
+
+  /* Staggered delays for each card */
+  .about-gallery-section.in-view .gallery-card:nth-child(1) {
+    transform: rotate(-3deg) translateY(10px);
+    transition-delay: 0s;
+  }
+  .about-gallery-section.in-view .gallery-card:nth-child(2) {
+    transform: rotate(3deg) translateY(-10px);
+    transition-delay: 0.1s;
+  }
+  .about-gallery-section.in-view .gallery-card:nth-child(3) {
+    transform: rotate(-3deg) translateY(5px);
+    transition-delay: 0.2s;
+  }
+  .about-gallery-section.in-view .gallery-card:nth-child(4) {
+    transform: rotate(4deg) translateY(-8px);
+    transition-delay: 0.3s;
+  }
+  .about-gallery-section.in-view .gallery-card:nth-child(5) {
+    transform: rotate(-3deg) translateY(8px);
+    transition-delay: 0.4s;
+  }
+
+  /* Override hover to be fast for ALL cards */
+  .about-gallery-section.in-view .gallery-card:hover {
+    transform: scale(1.02) rotate(0deg) !important;
+    z-index: 10;
+    transition: transform 0.15s ease-out !important;
+    transition-delay: 0s !important;
+  }
+
+  /* Mobile - disable entrance animation */
+  @media screen and (max-width: 990px) {
+    .gallery-card {
+      opacity: 1;
+    }
+    .about-gallery-section:not(.in-view) .gallery-card:nth-child(n) {
+      transform: none;
+    }
+    .about-gallery-section.in-view .gallery-card:nth-child(n) {
+      transform: none;
+      transition-delay: 0s;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const gallerySection = document.querySelector('.about-gallery-section');
+    
+    if (gallerySection) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {
+        threshold: 0.2,
+        rootMargin: '0px 0px -50px 0px'
+      });
+      
+      observer.observe(gallerySection);
+    }
+  });
+</script>

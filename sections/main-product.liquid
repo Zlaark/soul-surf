@@ -13,8 +13,10 @@
 {% assign selected_variant = product.selected_or_first_available_variant %}
 {% assign variant_bg_color = selected_variant.metafields.custom.color %}
 {% assign bg_color = variant_bg_color | default: product.metafields.custom.background_color | default: '#E6F4EA' %}
+{% assign variant_feature_color = selected_variant.metafields.custom.feature_color %}
+{% assign feature_color = variant_feature_color | default: product.metafields.custom.feature_color | default: '#1A4D3E' %}
 
-<section class="pp-product-section" style="--pp-bg: {{ bg_color }};" data-section-id="{{ section.id }}" data-variant-colors='{% for variant in product.variants %}"{{ variant.id }}":"{{ variant.metafields.custom.color | default: bg_color }}"{% unless forloop.last %},{% endunless %}{% endfor %}'>
+<section class="pp-product-section" style="--pp-bg: {{ bg_color }}; --pp-feature-color: {{ feature_color }};" data-section-id="{{ section.id }}" data-variant-colors='{% for variant in product.variants %}"{{ variant.id }}":{"bg":"{{ variant.metafields.custom.color | default: bg_color }}","feature":"{{ variant.metafields.custom.feature_color | default: feature_color }}"}{% unless forloop.last %},{% endunless %}{% endfor %}'>
   <div class="pp-container">
     <div class="pp-grid">
       
@@ -275,7 +277,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const mainImage = section.querySelector('.pp-main-image');
   
   thumbnails.forEach(thumb => {
-     thumb.addEventListener('mouseenter', function() { // Validated: Mouseenter/Click
+     thumb.addEventListener('mouseenter', function() {
         thumbnails.forEach(t => t.classList.remove('active'));
         this.classList.add('active');
         mainImage.src = this.dataset.targetImage;
@@ -288,11 +290,11 @@ document.addEventListener('DOMContentLoaded', function() {
      });
   });
   
-  // Variant Logic (Simplified)
+  // Variant Logic with color updates
   const variantInputs = section.querySelectorAll('input[type="radio"]');
   const priceBtn = section.querySelector('.pp-add-to-cart');
   
-  // Parse variant colors for dynamic background update
+  // Parse variant colors for dynamic background and feature color update
   const variantColorsData = section.dataset.variantColors;
   let variantColors = {};
   try {
@@ -310,14 +312,17 @@ document.addEventListener('DOMContentLoaded', function() {
               this.parentElement.classList.add('selected');
           }
           
-          // Update background color based on variant selection
+          // Update background and feature color based on variant selection
           const variantId = this.dataset.variantId;
           if (variantId && variantColors[variantId]) {
-              section.style.setProperty('--pp-bg', variantColors[variantId]);
+              const colors = variantColors[variantId];
+              if (colors.bg) {
+                  section.style.setProperty('--pp-bg', colors.bg);
+              }
+              if (colors.feature) {
+                  section.style.setProperty('--pp-feature-color', colors.feature);
+              }
           }
-           
-          // Update Add to Cart Button Text (Pseudo-logic, normally requires finding variant object)
-          // For now, assuming standard Shopify behavior handles form submission ID
       });
   });
 });
