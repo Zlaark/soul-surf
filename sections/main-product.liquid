@@ -27,6 +27,7 @@
       "bg": "{{ variant.metafields.custom.background_color.value | default: bg_color }}",
       "feature": "{{ variant.metafields.custom.feature_color.value | default: feature_color }}",
       "heading": "{{ variant.metafields.custom.heading_color.value | default: heading_color }}",
+      "heading_text": "{{ variant.metafields.custom.product_heading | default: product.title | escape }}",
       "feature_bg": "{{ variant.metafields.custom.feature_background_color.value | default: feature_bg }}",
       "images": [
         {% assign image_list = variant.metafields.custom.variant_images.value %}
@@ -94,7 +95,7 @@
         </div>
 
         <!-- Title & Tagline -->
-        <h1 class="pp-title" style="color: var(--pp-heading-color);">{{ product.title }}</h1>
+        <h1 class="pp-title" style="color: var(--pp-heading-color);">{{ product.selected_or_first_available_variant.metafields.custom.product_heading | default: product.title }}</h1>
         {% if product.metafields.custom.tagline %}
           <p class="pp-tagline">{{ product.metafields.custom.tagline }}</p>
         {% else %}
@@ -431,9 +432,13 @@ document.addEventListener('DOMContentLoaded', function() {
                   section.style.setProperty('--pp-feature-color', config.feature);
               }
               
-              // 2.1 Update Heading Color
+              // 2.1 Update Heading Color & Text
               if (config.heading) {
                   section.style.setProperty('--pp-heading-color', config.heading);
+              }
+              if (config.heading_text) {
+                  const titleEl = section.querySelector('.pp-title');
+                  if (titleEl) titleEl.textContent = config.heading_text;
               }
 
               // 2.2 Update Feature Background Color

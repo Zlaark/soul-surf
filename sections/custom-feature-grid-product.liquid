@@ -310,16 +310,16 @@
     
     <div class="features-wrapper">
       {%- for block in section.blocks -%}
-        <div class="feature-card">
+        {% capture default_img_url %}{{ 'grdcrd' | append: forloop.index | append: '.png' | asset_url }}{% endcapture %}
+        <div class="feature-card"
+             data-index="{{ forloop.index0 }}"
+             data-original-title="{{ block.settings.title | escape }}"
+             data-original-desc="{{ block.settings.subtitle | escape }}"
+             data-original-img="{% if block.settings.image != blank %}{{ block.settings.image | image_url: width: 600 }}{% else %}{{ default_img_url }}{% endif %}">
            {%- if block.settings.image != blank -%}
               {{ block.settings.image | image_url: width: 600 | image_tag: loading: 'lazy', alt: block.settings.title }}
            {%- else -%}
-              {%- if forloop.index == 1 -%}
-                 <img src="{{ 'grdcrd1.png' | asset_url }}" alt="{{ block.settings.title }}" loading="lazy" width="270" height="335" style="object-fit: cover;">
-              {%- else -%}
-                 {% capture current_asset %}grdcrd{{ forloop.index }}.png{% endcapture %}
-                 <img src="{{ current_asset | asset_url }}" alt="{{ block.settings.title }}" loading="lazy" width="270" height="335" style="object-fit: cover;">
-              {%- endif -%}
+              <img src="{{ default_img_url }}" alt="{{ block.settings.title }}" loading="lazy" width="270" height="335" style="object-fit: cover;">
            {%- endif -%}
            <div class="feature-content">
              <h3 class="feature-title">{{ block.settings.title }}</h3>
@@ -350,52 +350,91 @@
       
       observer.observe(featureGrid);
       
-      // Dynamic Variant Content Switching
-      // Listen for flavor/variant changes from the main product section
-      const productSection = document.querySelector('.pp-product-section');
-      if (productSection) {
-        const flavorInputs = productSection.querySelectorAll('.pp-swatches-flavor input[type="radio"]');
-        const featureCards = featureGrid.querySelectorAll('.feature-card img');
-        
-        // Parse variant colors from main product section
-        const variantColorsData = productSection.dataset.variantColors;
-        let variantColors = {};
-        try {
-          variantColors = JSON.parse('{' + variantColorsData + '}');
-        } catch(e) {
-          console.log('Could not parse variant colors for feature grid');
-        }
-        
-        flavorInputs.forEach(input => {
-          input.addEventListener('change', function() {
-            const flavorValue = this.value.toLowerCase().replace(/\s+/g, '-');
-            const variantId = this.dataset.variantId;
-            
-            // Update background color based on variant
-            if (variantId && variantColors[variantId]) {
-              featureGrid.style.backgroundColor = variantColors[variantId];
-            }
-            
-            // Update feature card images based on flavor
-            // Images should be named: {flavor}-grdcrd1.png, {flavor}-grdcrd2.png, etc.
-            // e.g., mango-grdcrd1.png, lemon-lime-grdcrd1.png
-            featureCards.forEach((img, index) => {
-              const newImageUrl = `{{ 'placeholder' | asset_url }}`.replace('placeholder', `${flavorValue}-grdcrd${index + 1}.png`);
-              
-              // Try to load the flavor-specific image, fallback to default on error
-              const testImg = new Image();
-              testImg.onload = function() {
-                img.src = newImageUrl;
-              };
-              testImg.onerror = function() {
-                // Keep existing image if flavor-specific doesn't exist
-                console.log(`No variant image found: ${flavorValue}-grdcrd${index + 1}.png`);
-              };
-              testImg.src = newImageUrl;
-            });
-          });
-        });
+      /* ===== Dynamic Variant Feature Grid =====
+         Metafields to create under Settings > Custom data > Variants:
+           custom.feature_card_image_1  (File reference)
+           custom.feature_card_title_1  (Single line text)
+           custom.feature_card_desc_1   (Single line text)
+           ... repeat for _2, _3, _4
+      ===== */
+      var variantCards = {
+        {% for variant in product.variants %}
+        "{{ variant.id }}": [
+          {
+            "img": {% if variant.metafields.custom.feature_card_image_1.value %}"{{ variant.metafields.custom.feature_card_image_1.value | image_url: width: 600 }}"{% else %}null{% endif %},
+            "title": "{{ variant.metafields.custom.feature_card_title_1.value | default: '' | escape }}",
+            "desc": "{{ variant.metafields.custom.feature_card_desc_1.value | default: '' | escape }}"
+          },
+          {
+            "img": {% if variant.metafields.custom.feature_card_image_2.value %}"{{ variant.metafields.custom.feature_card_image_2.value | image_url: width: 600 }}"{% else %}null{% endif %},
+            "title": "{{ variant.metafields.custom.feature_card_title_2.value | default: '' | escape }}",
+            "desc": "{{ variant.metafields.custom.feature_card_desc_2.value | default: '' | escape }}"
+          },
+          {
+            "img": {% if variant.metafields.custom.feature_card_image_3.value %}"{{ variant.metafields.custom.feature_card_image_3.value | image_url: width: 600 }}"{% else %}null{% endif %},
+            "title": "{{ variant.metafields.custom.feature_card_title_3.value | default: '' | escape }}",
+            "desc": "{{ variant.metafields.custom.feature_card_desc_3.value | default: '' | escape }}"
+          },
+          {
+            "img": {% if variant.metafields.custom.feature_card_image_4.value %}"{{ variant.metafields.custom.feature_card_image_4.value | image_url: width: 600 }}"{% else %}null{% endif %},
+            "title": "{{ variant.metafields.custom.feature_card_title_4.value | default: '' | escape }}",
+            "desc": "{{ variant.metafields.custom.feature_card_desc_4.value | default: '' | escape }}"
+          }
+        ]{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      };
+
+      console.log('Feature Grid variantCards:', variantCards);
+
+      // Listen for variant change from main-product.liquid
+      // Reusable function to update cards for a given variant
+      function updateFeatureCards(variantId) {
+          var items = variantCards[variantId];
+          var cards = featureGrid.querySelectorAll('.feature-card');
+          
+          console.log('Feature Grid: variant=' + variantId, 'items=', items);
+          
+          for (var c = 0; c < cards.length; c++) {
+             var card = cards[c];
+             var idx = parseInt(card.getAttribute('data-index'));
+             var item = (items && items[idx]) ? items[idx] : null;
+             
+             // Image: use metafield if set, else fallback to default
+             var imgEl = card.querySelector('img');
+             if (imgEl) {
+                 var newSrc = (item && item.img) ? item.img : card.getAttribute('data-original-img');
+                 if (newSrc) {
+                     imgEl.removeAttribute('srcset');
+                     imgEl.removeAttribute('sizes');
+                     imgEl.setAttribute('src', newSrc);
+                 }
+             }
+
+             // Title: use metafield if set, else fallback to default
+             var titleEl = card.querySelector('.feature-title');
+             if (titleEl) {
+                 var newTitle = (item && item.title) ? item.title : card.getAttribute('data-original-title');
+                 if (newTitle) titleEl.textContent = newTitle;
+             }
+
+             // Description: use metafield if set, else fallback to default
+             var descEl = card.querySelector('.feature-subtitle');
+             if (descEl) {
+                 var newDesc = (item && item.desc) ? item.desc : card.getAttribute('data-original-desc');
+                 if (newDesc) descEl.textContent = newDesc;
+             }
+          }
       }
+
+      // Apply metafields for the default variant on page load
+      var defaultVariantId = "{{ product.selected_or_first_available_variant.id }}";
+      updateFeatureCards(defaultVariantId);
+
+      // Listen for variant change from main-product.liquid
+      document.addEventListener('pp:variant:change', function(e) {
+          if (!e.detail || !e.detail.variantId) return;
+          updateFeatureCards(String(e.detail.variantId));
+      });
     }
   });
 </script>

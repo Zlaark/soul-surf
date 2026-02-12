@@ -42,10 +42,16 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
 
+  {% assign selected_variant = product.selected_or_first_available_variant %}
+  {% assign current_bg = selected_variant.metafields.custom.background_color.value | default: section.settings.section_bg %}
+  {% assign current_highlight = selected_variant.metafields.custom.nutrition_color.value | default: section.settings.highlight_bg %}
+  {% assign current_generic_bg = selected_variant.metafields.custom.feature_background_color.value | default: 'rgba(19, 120, 90, 0.09)' %}
+  
   .comparison-section {
-    background-color: {{ section.settings.section_bg }};
+    background-color: var(--section-bg, {{ current_bg }});
     padding: 60px 0 80px;
     font-family: 'Plus Jakarta Sans', sans-serif;
+    transition: background-color 0.3s ease;
   }
 
   .cmp-container {
@@ -117,7 +123,7 @@
 
   /* SoulSurf Column (Dark Green) */
   .cmp-soul-col {
-    background-color: {{ section.settings.highlight_bg }};
+    background-color: var(--highlight-bg, {{ current_highlight }});
     color: #fff;
     border-radius: 16px; /* Keeping rounded */
     overflow: visible;
@@ -125,6 +131,7 @@
     box-shadow: 0 10px 40px rgba(19, 123, 86, 0.2);
     z-index: 2;
     padding-bottom: 10px;
+    transition: background-color 0.3s ease;
   }
 
   .cmp-soul-header {
@@ -143,6 +150,7 @@
     height: auto;
     filter: drop-shadow(0 8px 12px rgba(0,0,0,0.2));
     z-index: 10;
+    transition: opacity 0.3s ease;
   }
 
   .cmp-soul-row {
@@ -161,12 +169,13 @@
 
   /* Generic Column (Light) */
   .cmp-generic-col {
-    background-color: rgba(19, 120, 90, 0.09); /* #13785A at 9% opacity */
+    background-color: var(--generic-bg, {{ current_generic_bg }});
     border-radius: 16px; /* Fully rounded */
     overflow: visible;
     position: relative;
     z-index: 1;
     padding-bottom: 10px;
+    transition: background-color 0.3s ease;
   }
 
   .cmp-generic-header {
@@ -322,7 +331,12 @@
       <!-- SoulSurf Column -->
       <div class="cmp-soul-col">
         <div class="cmp-soul-header">
-          <img src="{{ 'bk2.png' | asset_url }}" alt="SoulSurf">
+          {% assign comparison_img = selected_variant.metafields.custom.comparison_image.value %}
+          {% if comparison_img %}
+             {{ comparison_img | image_url: width: 200 | image_tag: class: 'cmp-soul-img', alt: 'SoulSurf' }}
+          {% else %}
+             <img src="{{ 'bk2.png' | asset_url }}" alt="SoulSurf" class="cmp-soul-img">
+          {% endif %}
         </div>
         <div class="cmp-soul-row">Zero Added Sugar</div>
         <div class="cmp-soul-row">Supports Gut Health</div>
@@ -352,3 +366,57 @@
     </div>
   </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    
+    // Variant Data Map for Comparison Table
+    const variantComparisonData = {
+        {% for variant in product.variants %}
+        "{{ variant.id }}": {
+            "bg": "{{ variant.metafields.custom.background_color.value | default: section.settings.section_bg }}",
+            "highlight": "{{ variant.metafields.custom.nutrition_color.value | default: section.settings.highlight_bg }}",
+            "generic_bg": "{{ variant.metafields.custom.feature_background_color.value | default: 'rgba(19, 120, 90, 0.09)' }}",
+            "img": {% if variant.metafields.custom.comparison_image.value %}"{{ variant.metafields.custom.comparison_image.value | image_url: width: 200 }}"{% else %}null{% endif %}
+        }{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+    };
+
+    const section = document.querySelector('.comparison-section');
+    const soulCol = document.querySelector('.cmp-soul-col');
+    const genericCol = document.querySelector('.cmp-generic-col');
+    const soulImg = document.querySelector('.cmp-soul-img');
+
+    // Listen for variant change
+    document.addEventListener('pp:variant:change', function(e) {
+        if (!e.detail || !e.detail.variantId) return;
+        
+        const variantId = String(e.detail.variantId);
+        const data = variantComparisonData[variantId];
+        
+        if (data && section) {
+            // Update Background Color
+            section.style.setProperty('--section-bg', data.bg);
+            section.style.backgroundColor = data.bg; // Fallback
+            
+            // Update Highlight Color
+            if (soulCol) {
+                soulCol.style.setProperty('--highlight-bg', data.highlight);
+                soulCol.style.backgroundColor = data.highlight; // Fallback
+            }
+            
+            // Update Generic Column Color
+            if (genericCol) {
+                genericCol.style.setProperty('--generic-bg', data.generic_bg);
+                genericCol.style.backgroundColor = data.generic_bg; // Fallback
+            }
+            
+            // Update Comparison Image
+            if (soulImg && data.img) {
+                soulImg.removeAttribute('srcset'); // Remove srcset to ensure src update works
+                soulImg.src = data.img;
+            }
+        }
+    });
+});
+</script>
