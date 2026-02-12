@@ -133,10 +133,10 @@
         <div class="philosophy-row layout-{{ block.settings.layout }}" {{ block.shopify_attributes }}>
           
           <div class="philosophy-image-wrapper">
-             {% if block.settings.svg_filename != blank %}
-               <img src="{{ block.settings.svg_filename | asset_url }}" loading="lazy" class="philosophy-image" alt="{{ block.settings.heading | escape }}">
-             {% elsif block.settings.image != blank %}
+             {% if block.settings.image != blank %}
                {{ block.settings.image | image_url: width: 800 | image_tag: loading: 'lazy', class: 'philosophy-image' }}
+             {% elsif block.settings.svg_filename != blank %}
+               <img src="{{ block.settings.svg_filename | asset_url }}" loading="lazy" class="philosophy-image" alt="{{ block.settings.heading | escape }}">
              {% else %}
                {{ 'image' | placeholder_svg_tag: 'philosophy-image placeholder-svg' }}
              {% endif %}

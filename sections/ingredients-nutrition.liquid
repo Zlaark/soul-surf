@@ -124,7 +124,7 @@
   .ing-section {
     /* === CSS Variables for DRY Principles === */
     --section-bg: {{ section.settings.section_bg }};
-    --nut-color: {{ product.selected_or_first_available_variant.metafields.custom.color | default: section.settings.border_color }};
+    --nut-color: {{ product.selected_or_first_available_variant.metafields.custom.nutrition_color.value | default: product.metafields.custom.nutrition_color.value | default: section.settings.border_color }};
     --font-primary: 'Plus Jakarta Sans', sans-serif;
     --font-display: 'Playfair Display', serif;
     --border-thin: 2px;
@@ -225,7 +225,7 @@
     border-radius: 12px;
     padding: var(--spacing-lg);
     box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-    min-height: 600px;
+    min-height: auto;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -460,13 +460,78 @@
       <div class="ing-grid">
         {% for block in section.blocks %}
           {% if block.type == 'ingredient' %}
-            <div class="ing-item">
+            {% assign ing_image = block.settings.image %}
+            {% assign ing_title = block.settings.title %}
+            
+            {% comment %} Conditional Overrides for 2nd and Last Item {% endcomment %}
+            {% assign variant_meta = product.selected_or_first_available_variant.metafields.custom %}
+            
+            {% if forloop.index == 2 %}
+                 {% if variant_meta.ingredient_2_image.value != blank %}
+                      {% assign ing_image = variant_meta.ingredient_2_image.value %}
+                 {% endif %}
+                 {% if variant_meta.ingredient_2_text.value != blank %}
+                      {% assign ing_title = variant_meta.ingredient_2_text.value %}
+                 {% endif %}
+            {% endif %}
+            
+            {% assign ingredients_count = 0 %}
+            {% for b in section.blocks %}
+               {% if b.type == 'ingredient' %}{% assign ingredients_count = ingredients_count | plus: 1 %}{% endif %}
+            {% endfor %}
+            
+            {% comment %} We need to know if this is the last INGREDIENT block, checking section.blocks loop directly is risky if mixed types {% endcomment %}
+            {% comment %} But here forloop.rindex0 doesn't distinguish block types. Let's rely on standard count or just check if it's the 9th item etc. {% endcomment %}
+            {% comment %} Safer: assume the structure is consistently only ingredient items in this loop (filtered by type)
+              Wait, the loop iterates all blocks. The type check filters. 
+              The 'forloop' object refers to the blocks loop.
+              We can't rely on forloop.last if there are marquee items after. 
+              Let's use a counter.
+            {% endcomment %}
+          {% endif %}
+        {% endfor %}
+        
+        {% assign ing_counter = 0 %}
+        {% for block in section.blocks %}
+          {% if block.type == 'ingredient' %}
+            {% assign ing_counter = ing_counter | plus: 1 %}
+          {% endif %}
+        {% endfor %}
+        
+        {% assign current_ing_index = 0 %}
+        {% for block in section.blocks %}
+          {% if block.type == 'ingredient' %}
+            {% assign current_ing_index = current_ing_index | plus: 1 %}
+            
+            {% assign ing_image = block.settings.image %}
+            {% assign ing_title = block.settings.title %}
+             {% assign variant_meta = product.selected_or_first_available_variant.metafields.custom %}
+            
+            {% if current_ing_index == 2 %}
+                 {% if variant_meta.ingredient_2_image.value != blank %}
+                      {% assign ing_image = variant_meta.ingredient_2_image.value %}
+                 {% endif %}
+                 {% if variant_meta.ingredient_2_text.value != blank %}
+                      {% assign ing_title = variant_meta.ingredient_2_text.value %}
+                 {% endif %}
+            {% endif %}
+            
+            {% if current_ing_index == ing_counter %}
+                 {% if variant_meta.ingredient_last_image.value != blank %}
+                      {% assign ing_image = variant_meta.ingredient_last_image.value %}
+                 {% endif %}
+                 {% if variant_meta.ingredient_last_text.value != blank %}
+                      {% assign ing_title = variant_meta.ingredient_last_text.value %}
+                 {% endif %}
+            {% endif %}
+
+            <div class="ing-item" data-index="{{ current_ing_index }}" data-is-second="{% if current_ing_index == 2 %}true{% endif %}" data-is-last="{% if current_ing_index == ing_counter %}true{% endif %}">
               <div class="ing-circle">
-                {% if block.settings.image != blank %}
-                  {{ block.settings.image | image_url: width: 200 | image_tag: loading: 'lazy' }}
+                {% if ing_image != blank %}
+                  {{ ing_image | image_url: width: 200 | image_tag: loading: 'lazy' }}
                 {% endif %}
               </div>
-              <div class="ing-label">{{ block.settings.title | newline_to_br }}</div>
+              <div class="ing-label">{{ ing_title | newline_to_br }}</div>
             </div>
           {% endif %}
         {% endfor %}
@@ -550,114 +615,79 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function() {
-    // Standardize variant data for lookup
-    const variantColors = {
-      {% for variant in product.variants %}
-        "{{ variant.options | join: '-' | escape }}": "{{ variant.metafields.custom.color | default: section.settings.border_color }}",
-      {% endfor %}
-    };
-    
-    // Also map by ID just in case
-    const variantIdColors = {
-        {% for variant in product.variants %}
-        "{{ variant.id }}": "{{ variant.metafields.custom.color | default: section.settings.border_color }}",
-      {% endfor %}
-    };
-    
     const sectionContainer = document.querySelector('.ing-section');
+    if (!sectionContainer) return;
 
-    function updateColor() {
-      // Try to find the selected variant from the main product form
-      // Method 1: Look for checked radios in .pp-form
-      const form = document.querySelector('.pp-form') || document.querySelector('form[action*="/cart/add"]');
-      if (!form) return;
-
-      const formData = new FormData(form);
-      // Construct key from options
-      const options = [];
-      // We assume options are ordered Option1, Option2, Option3...
-      // But standard FormData might not preserve order or might be missing keys if not checked.
-      // Safer way: Iterate product options from DOM if available, or just guess.
-      
-      // Let's try to find the inputs by name "Flavour", "Size", etc.
-      // But we need the order: Option1, Option2, Option3.
-      
-      // Alternative: Look for the hidden ID input
-      const idInput = form.querySelector('input[name="id"]');
-      if (idInput && variantIdColors[idInput.value]) {
-         sectionContainer.style.setProperty('--nut-color', variantIdColors[idInput.value]);
-         return;
-      }
-      
-      // If hidden input isn't updated (as we suspected), try standard radio sniffing
-      // This is brittle without knowing exact option names, but we can try observing all radios.
-    }
-
-    // Listen for changes on any radio input in the document (global delegation)
-    document.addEventListener('change', function(e) {
-        if (e.target.type === 'radio' && e.target.closest('form')) {
-            // Give a small delay for any other scripts to update the hidden ID input
-            setTimeout(() => {
-                const form = e.target.closest('form');
-                const idInput = form.querySelector('input[name="id"]');
-                 if (idInput && variantIdColors[idInput.value]) {
-                     sectionContainer.style.setProperty('--nut-color', variantIdColors[idInput.value]);
-                 } else {
-                     // Fallback: Try to reconstruct options
-                     // This is tricky without the full option map. 
-                     // For now, let's assume the ID update is effectively handled or request user to ensure their product-form updates the ID.
-                     // IMPORTANT: The main-product.liquid we saw DOES NOT update the hidden field. 
-                     // We must implement a Finder.
-                     
-                     // Quick find: Iterate all variants and check if their options match the checked radios
-                     const checkedValues = Array.from(form.querySelectorAll('input[type="radio"]:checked')).map(r => r.value);
-                     
-                     // We need to match these values against the variant map.
-                     // Since we don't have the variant options in JS easily structured without outputting a huge object,
-                     // let's output a simplified structure above.
-                 }
-            }, 50);
-        }
-    });
-    
-    // Inject a robust variant finder
+    // Variant data for dynamic updates
     const variants = [
       {% for variant in product.variants %}
         {
           id: "{{ variant.id }}",
-          options: [
-            "{{ variant.option1 | escape }}",
-            "{{ variant.option2 | escape }}",
-            "{{ variant.option3 | escape }}"
-          ].filter(Boolean),
-          color: "{{ variant.metafields.custom.color | default: section.settings.border_color }}"
+          color: "{{ variant.metafields.custom.nutrition_color.value | default: product.metafields.custom.nutrition_color.value | default: section.settings.border_color }}",
+          ing2_img: "{% if variant.metafields.custom.ingredient_2_image.value %}{{ variant.metafields.custom.ingredient_2_image.value | image_url: width: 200 }}{% endif %}",
+          ing2_text: `{{ variant.metafields.custom.ingredient_2_text.value | newline_to_br }}`,
+          ingLast_img: "{% if variant.metafields.custom.ingredient_last_image.value %}{{ variant.metafields.custom.ingredient_last_image.value | image_url: width: 200 }}{% endif %}",
+          ingLast_text: `{{ variant.metafields.custom.ingredient_last_text.value | newline_to_br }}`
         },
       {% endfor %}
     ];
 
-    document.addEventListener('change', function(e) {
-        if (e.target.type === 'radio' && e.target.closest('form')) {
-            const form = e.target.closest('form');
-            // Get all checked values
-            const checked = Array.from(form.querySelectorAll('input[type="radio"]:checked')).map(i => i.value);
-            
-            // Find variant that matches ALL these values (ignoring order or partials, assume exact set match or subset)
-            // It's safer to match length and containment
-            
-            const match = variants.find(v => {
-                // Check if every option of the variant is present in the checked values
-                // Note: checked values might include non-variant properties potentially, but usually just options
-                // Also variant.options includes ALL options for that variant.
-                
-                if (v.options.length !== checked.length) return false;
-                return v.options.every(opt => checked.includes(opt));
-            });
-            
-            if (match) {
-                 sectionContainer.style.setProperty('--nut-color', match.color);
+    // Listen for custom event dispatched by main-product.liquid
+    document.addEventListener('pp:variant:change', function(e) {
+        if (!e.detail || !e.detail.variantId) return;
+        
+        const variantId = String(e.detail.variantId);
+        const match = variants.find(v => String(v.id) === variantId);
+        if (!match) return;
+
+        // Update nutrition card color
+        sectionContainer.style.setProperty('--nut-color', match.color);
+
+        // Update 2nd Ingredient Item
+        const secondItem = sectionContainer.querySelector('.ing-item[data-is-second="true"]');
+        if (secondItem) {
+            if (match.ing2_img) {
+                const img = secondItem.querySelector('.ing-circle img');
+                if (img) {
+                    img.src = match.ing2_img;
+                } else {
+                    const circle = secondItem.querySelector('.ing-circle');
+                    if (circle) {
+                        const newImg = document.createElement('img');
+                        newImg.src = match.ing2_img;
+                        newImg.loading = 'lazy';
+                        circle.appendChild(newImg);
+                    }
+                }
+            }
+            if (match.ing2_text) {
+                const label = secondItem.querySelector('.ing-label');
+                if (label) label.innerHTML = match.ing2_text;
+            }
+        }
+
+        // Update Last Ingredient Item
+        const lastItem = sectionContainer.querySelector('.ing-item[data-is-last="true"]');
+        if (lastItem) {
+            if (match.ingLast_img) {
+                const img = lastItem.querySelector('.ing-circle img');
+                if (img) {
+                    img.src = match.ingLast_img;
+                } else {
+                    const circle = lastItem.querySelector('.ing-circle');
+                    if (circle) {
+                        const newImg = document.createElement('img');
+                        newImg.src = match.ingLast_img;
+                        newImg.loading = 'lazy';
+                        circle.appendChild(newImg);
+                    }
+                }
+            }
+            if (match.ingLast_text) {
+                const label = lastItem.querySelector('.ing-label');
+                if (label) label.innerHTML = match.ingLast_text;
             }
         }
     });
-
   });
 </script>

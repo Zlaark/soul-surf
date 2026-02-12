@@ -70,10 +70,10 @@
 
       <!-- Image Side -->
       <div class="vision-image-wrapper">
-        {% if section.settings.svg_filename != blank %}
-          <img src="{{ section.settings.svg_filename | asset_url }}" loading="lazy" class="vision-image" alt="{{ section.settings.heading | escape }}">
-        {% elsif section.settings.image != blank %}
+        {% if section.settings.image != blank %}
           {{ section.settings.image | image_url: width: 800 | image_tag: loading: 'lazy', class: 'vision-image' }}
+        {% elsif section.settings.svg_filename != blank %}
+          <img src="{{ section.settings.svg_filename | asset_url }}" loading="lazy" class="vision-image" alt="{{ section.settings.heading | escape }}">
         {% else %}
           {{ 'image' | placeholder_svg_tag: 'vision-image placeholder-svg' }}
         {% endif %}

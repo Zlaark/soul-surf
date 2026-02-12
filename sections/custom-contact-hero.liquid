@@ -224,4 +224,52 @@
       height: 25px;
     }
   }
-</style>
+    /* Animations */
+    @keyframes fadeInDown {
+      0% {
+        opacity: 0;
+        transform: translateY(-40px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .contact-hero-heading {
+      opacity: 0;
+      animation: fadeInDown 1s cubic-bezier(0.215, 0.610, 0.355, 1.000) 0.2s forwards;
+    }
+
+    .contact-hero-subtext {
+      opacity: 0;
+      animation: fadeInDown 1s cubic-bezier(0.215, 0.610, 0.355, 1.000) 0.4s forwards;
+    }
+
+    /* Animate the image itself to avoid conflict with wrapper centering */
+    .contact-hero-img {
+      opacity: 0;
+      animation: fadeInUp 1.2s cubic-bezier(0.215, 0.610, 0.355, 1.000) 0.1s forwards; /* Starts quickly but moves smoothly */
+    }
+    
+    /* Ensure mobile animations are also smooth */
+    @media (prefers-reduced-motion: reduce) {
+      .contact-hero-heading,
+      .contact-hero-subtext,
+      .contact-hero-img {
+        animation: none;
+        opacity: 1;
+      }
+    }
+  </style>

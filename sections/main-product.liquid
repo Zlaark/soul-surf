@@ -11,12 +11,42 @@
   Dynamic background color from variant metafield, fallback to product metafield
 {% endcomment %}
 {% assign selected_variant = product.selected_or_first_available_variant %}
-{% assign variant_bg_color = selected_variant.metafields.custom.color %}
-{% assign bg_color = variant_bg_color | default: product.metafields.custom.background_color | default: '#E6F4EA' %}
-{% assign variant_feature_color = selected_variant.metafields.custom.feature_color %}
-{% assign feature_color = variant_feature_color | default: product.metafields.custom.feature_color | default: '#1A4D3E' %}
+{% assign variant_bg_color = selected_variant.metafields.custom.background_color.value %}
+{% assign bg_color = variant_bg_color | default: product.metafields.custom.background_color.value | default: '#E6F4EA' %}
+{% assign variant_feature_color = selected_variant.metafields.custom.feature_color.value %}
+{% assign feature_color = variant_feature_color | default: product.metafields.custom.feature_color.value | default: '#1A4D3E' %}
 
-<section class="pp-product-section" style="--pp-bg: {{ bg_color }}; --pp-feature-color: {{ feature_color }};" data-section-id="{{ section.id }}" data-variant-colors='{% for variant in product.variants %}"{{ variant.id }}":{"bg":"{{ variant.metafields.custom.color | default: bg_color }}","feature":"{{ variant.metafields.custom.feature_color | default: feature_color }}"}{% unless forloop.last %},{% endunless %}{% endfor %}'>
+{% assign variant_heading_color = selected_variant.metafields.custom.heading_color.value %}
+{% assign heading_color = variant_heading_color | default: product.metafields.custom.heading_color.value | default: '#000000' %}
+{% assign variant_feature_bg = selected_variant.metafields.custom.feature_background_color.value %}
+{% assign feature_bg = variant_feature_bg | default: product.metafields.custom.feature_background_color.value | default: '#ffffff' %}
+
+<section class="pp-product-section" style="--pp-bg: {{ bg_color }}; --pp-feature-color: {{ feature_color }}; --pp-heading-color: {{ heading_color }}; --pp-feature-bg: {{ feature_bg }};" data-section-id="{{ section.id }}" data-variant-config='{
+  {% for variant in product.variants %}
+    "{{ variant.id }}": {
+      "bg": "{{ variant.metafields.custom.background_color.value | default: bg_color }}",
+      "feature": "{{ variant.metafields.custom.feature_color.value | default: feature_color }}",
+      "heading": "{{ variant.metafields.custom.heading_color.value | default: heading_color }}",
+      "feature_bg": "{{ variant.metafields.custom.feature_background_color.value | default: feature_bg }}",
+      "images": [
+        {% assign image_list = variant.metafields.custom.variant_images.value %}
+        {% if image_list %}
+          {% for img in image_list %}
+            "{{ img | image_url: width: 1000 }}"{% unless forloop.last %},{% endunless %}
+          {% endfor %}
+        {% endif %}
+      ],
+      "feature_icons": [
+        {% assign icon_list = variant.metafields.custom.feature_icons.value %}
+        {% if icon_list %}
+          {% for icon in icon_list %}
+            "{{ icon | image_url }}"{% unless forloop.last %},{% endunless %}
+          {% endfor %}
+        {% endif %}
+      ]
+    }{% unless forloop.last %},{% endunless %}
+  {% endfor %}
+}'>
   <div class="pp-container">
     <div class="pp-grid">
       
@@ -28,12 +58,14 @@
           {% if product.images.size > 1 %}
             <div class="pp-thumbnails">
               {% for image in product.images %}
+                {% unless image.alt contains 'variant-swatch-img' %}
                 <div 
                   class="pp-thumbnail {% if forloop.first %}active{% endif %}"
                   data-target-image="{{ image | image_url: width: 800 }}"
                 >
                   <img src="{{ image | image_url: width: 150 }}" alt="{{ image.alt | escape }}" loading="lazy">
                 </div>
+                {% endunless %}
               {% endfor %}
             </div>
           {% endif %}
@@ -45,6 +77,7 @@
                src="{{ product.featured_image | image_url: width: 1000 }}" 
                alt="{{ product.title | escape }}"
                class="pp-main-image"
+               style="border-radius: 19px;"
                loading="eager"
              >
           </div>
@@ -61,7 +94,7 @@
         </div>
 
         <!-- Title & Tagline -->
-        <h1 class="pp-title">{{ product.title }}</h1>
+        <h1 class="pp-title" style="color: var(--pp-heading-color);">{{ product.title }}</h1>
         {% if product.metafields.custom.tagline %}
           <p class="pp-tagline">{{ product.metafields.custom.tagline }}</p>
         {% else %}
@@ -71,26 +104,26 @@
         <!-- Feature Icons Row -->
         <div class="pp-features-row">
             <div class="pp-feature-item">
-                <div class="pp-feature-icon">
-                    <img src="{{ 'spfeature1.svg' | asset_url }}" alt="Real fruit flavour" width="24" height="24">
+                <div class="pp-feature-icon" style="background: var(--pp-feature-bg);">
+                    <img class="pp-feature-icon-img" data-index="0" src="{{ 'spfeature1.svg' | asset_url }}" alt="Real fruit flavour" width="24" height="24">
                 </div>
                 <span class="pp-feature-text">Real fruit flavour</span>
             </div>
             <div class="pp-feature-item">
-                <div class="pp-feature-icon">
-                    <img src="{{ 'spfeature2.svg' | asset_url }}" alt="Prebiotic fibre" width="24" height="24">
+                <div class="pp-feature-icon" style="background: var(--pp-feature-bg);">
+                    <img class="pp-feature-icon-img" data-index="1" src="{{ 'spfeature2.svg' | asset_url }}" alt="Prebiotic fibre" width="24" height="24">
                 </div>
                 <span class="pp-feature-text">Prebiotic fibre</span>
             </div>
             <div class="pp-feature-item">
-                <div class="pp-feature-icon">
-                    <img src="{{ 'spfeature3.svg' | asset_url }}" alt="Low sugar" width="24" height="24">
+                <div class="pp-feature-icon" style="background: var(--pp-feature-bg);">
+                    <img class="pp-feature-icon-img" data-index="2" src="{{ 'spfeature3.svg' | asset_url }}" alt="Low sugar" width="24" height="24">
                 </div>
                 <span class="pp-feature-text">Low sugar</span>
             </div>
             <div class="pp-feature-item">
-                <div class="pp-feature-icon">
-                    <img src="{{ 'spfeature4.svg' | asset_url }}" alt="No Artificial Additives" width="24" height="24">
+                <div class="pp-feature-icon" style="background: var(--pp-feature-bg);">
+                    <img class="pp-feature-icon-img" data-index="3" src="{{ 'spfeature4.svg' | asset_url }}" alt="No Artificial Additives" width="24" height="24">
                 </div>
                 <span class="pp-feature-text">No Artificial Additives</span>
             </div>
@@ -149,13 +182,13 @@
           {% endif %}
 
           <!-- Variant Switcher 2: Pack Size (Pills) -->
-          {% assign pack_option = product.options_with_values | where: "name", "Size" | first %}
-          {% unless pack_option %}
-             {% assign pack_option = product.options_with_values | where: "name", "Pack" | first %}
-          {% endunless %}
-          {% unless pack_option %}
-             {% assign pack_option = product.options_with_values | where: "name", "Pack Size" | first %}
-          {% endunless %}
+          {% assign pack_option = nil %}
+          {% for option in product.options_with_values %}
+            {% assign opt_name = option.name | downcase %}
+            {% if opt_name contains 'pack' or opt_name contains 'size' or opt_name contains 'quantity' %}
+              {% assign pack_option = option %}
+            {% endif %}
+          {% endfor %}
 
           {% if pack_option %}
             <div class="pp-option-group">
@@ -170,8 +203,8 @@
                         
                         <!-- NOTE: Assuming price is dependent on pack size primarily -->
                         
-                        <label class="pp-swatch-pack-item {% if pack_option.selected_value == value %}selected{% endif %}">
-                             <input type="radio" name="{{ pack_option.name }}" value="{{ value }}" {% if pack_option.selected_value == value %}checked{% endif %}>
+                         <label class="pp-swatch-pack-item {% if pack_option.selected_value == value %}selected{% endif %}">
+                             <input type="radio" name="{{ pack_option.name }}" value="{{ value }}" data-variant-id="{{ variant_for_pack.id }}" {% if pack_option.selected_value == value %}checked{% endif %}>
                              <span class="pp-pack-name">{% unless value contains 'Pack' %}Pack of {% endunless %}{{ value }}</span>
                              <div class="pp-pack-price-box">
                                  <span class="pp-pack-price">{{ variant_for_pack.price | money_without_trailing_zeros }}</span>
@@ -218,7 +251,9 @@
             {% endif %}
           </button>
           
-          <p class="pp-delivery-note">Delivery expected by 12–15 January</p>
+          {% if section.settings.delivery_text != blank %}
+            <p class="pp-delivery-note">{{ section.settings.delivery_text }}</p>
+          {% endif %}
 
         {%- endform -%}
 
@@ -260,6 +295,19 @@
   </div>
 </section>
 
+<!-- Hidden Variant Content for Rich Text -->
+<div id="pp-variant-content-store" style="display: none;">
+  {% for variant in product.variants %}
+    <div id="variant-description-{{ variant.id }}">
+      {% if variant.metafields.custom.variant_content != blank %}
+        {{ variant.metafields.custom.variant_content | metafield_tag }}
+      {% else %}
+        {{ product.description }}
+      {% endif %}
+    </div>
+  {% endfor %}
+</div>
+
 <style>
 /* 
   Ideally move to assets/section-main-product.css
@@ -290,17 +338,38 @@ document.addEventListener('DOMContentLoaded', function() {
      });
   });
   
-  // Variant Logic with color updates
+ // Variant Logic with color updates
   const variantInputs = section.querySelectorAll('input[type="radio"]');
   const priceBtn = section.querySelector('.pp-add-to-cart');
   
-  // Parse variant colors for dynamic background and feature color update
-  const variantColorsData = section.dataset.variantColors;
-  let variantColors = {};
+  // Parse variant config for dynamic background, feature color, and images
+  const variantConfigData = section.dataset.variantConfig;
+  let variantConfig = {};
   try {
-      variantColors = JSON.parse('{' + variantColorsData + '}');
+      variantConfig = JSON.parse(variantConfigData);
+      
+      // Image Preloading Logic
+      if (variantConfig) {
+        Object.values(variantConfig).forEach(config => {
+           // Preload Product Images
+           if (config.images && config.images.length) {
+              config.images.forEach(url => {
+                 const img = new Image();
+                 img.src = url;
+              });
+           }
+           
+           // Preload Feature Icons
+           if (config.feature_icons && config.feature_icons.length) {
+              config.feature_icons.forEach(url => {
+                 const icon = new Image();
+                 icon.src = url;
+              });
+           }
+        });
+      }
   } catch(e) {
-      console.log('Could not parse variant colors');
+      console.log('Could not parse variant config');
   }
   
   variantInputs.forEach(input => {
@@ -312,15 +381,103 @@ document.addEventListener('DOMContentLoaded', function() {
               this.parentElement.classList.add('selected');
           }
           
-          // Update background and feature color based on variant selection
-          const variantId = this.dataset.variantId;
-          if (variantId && variantColors[variantId]) {
-              const colors = variantColors[variantId];
-              if (colors.bg) {
-                  section.style.setProperty('--pp-bg', colors.bg);
+          // Update Label Text (e.g. Flavour: Apple)
+          const optionGroup = this.closest('.pp-option-group');
+          if (optionGroup) {
+              const labelVal = optionGroup.querySelector('.pp-flavor-label-val');
+              if (labelVal) {
+                  labelVal.textContent = this.value;
               }
-              if (colors.feature) {
-                  section.style.setProperty('--pp-feature-color', colors.feature);
+          }
+          
+          // Resolve the CORRECT variant based on ALL selected options
+          // (not just the data-variant-id on this single radio, which may be stale for multi-option products)
+          const allVariants = [
+            {% for variant in product.variants %}
+              { id: "{{ variant.id }}", options: ["{{ variant.option1 | escape }}", "{{ variant.option2 | escape }}", "{{ variant.option3 | escape }}"].filter(Boolean) },
+            {% endfor %}
+          ];
+          
+          const form = this.closest('form');
+          const selectedValues = form ? Array.from(form.querySelectorAll('input[type="radio"]:checked')).map(r => r.value) : [];
+          
+          let variantId = this.dataset.variantId; // Fallback
+          
+          // Find the exact variant matching all selected options
+          const resolvedVariant = allVariants.find(v => {
+              if (v.options.length !== selectedValues.length) return false;
+              return v.options.every(opt => selectedValues.includes(opt));
+          });
+          
+          if (resolvedVariant) {
+              variantId = resolvedVariant.id;
+          }
+          
+          // Dispatch Custom Event for other sections (like Ingredients/Nutrition) to listen to
+          document.dispatchEvent(new CustomEvent('pp:variant:change', { 
+              detail: { variantId: variantId } 
+          }));
+
+          if (variantId && variantConfig[variantId]) {
+              const config = variantConfig[variantId];
+              
+              // 1. Update Background
+              if (config.bg) {
+                  section.style.setProperty('--pp-bg', config.bg);
+              }
+              
+              // 2. Update Feature Color
+              if (config.feature) {
+                  section.style.setProperty('--pp-feature-color', config.feature);
+              }
+              
+              // 2.1 Update Heading Color
+              if (config.heading) {
+                  section.style.setProperty('--pp-heading-color', config.heading);
+              }
+
+              // 2.2 Update Feature Background Color
+              if (config.feature_bg) {
+                  section.style.setProperty('--pp-feature-bg', config.feature_bg);
+              }
+
+              // 3. Update Images (The 4 Images)
+              if (config.images && config.images.length > 0) {
+                  
+                  // Update Main Image (Set to the first one in the list)
+                  const mainImage = section.querySelector('.pp-main-image');
+                  if (mainImage) mainImage.src = config.images[0];
+          
+                  // Update Thumbnails loop
+                  const thumbnails = section.querySelectorAll('.pp-thumbnail');
+                  config.images.forEach((imgUrl, index) => {
+                      if (thumbnails[index]) {
+                          // Update the click data attribute
+                          thumbnails[index].dataset.targetImage = imgUrl; 
+                          
+                          // Update the visible thumbnail image
+                          const thumbImgTag = thumbnails[index].querySelector('img');
+                          if (thumbImgTag) thumbImgTag.src = imgUrl; 
+                      }
+                  });
+              }
+
+              // 4. Update Rich Text Description
+              const descriptionContent = section.querySelector('.pp-accordion-content');
+              const newContentDiv = document.getElementById(`variant-description-${variantId}`);
+              
+              if (descriptionContent && newContentDiv) {
+                  descriptionContent.innerHTML = newContentDiv.innerHTML;
+              }
+
+              // 5. Update Feature Icons
+              if (config.feature_icons && config.feature_icons.length > 0) {
+                  const featureIcons = section.querySelectorAll('.pp-feature-icon-img');
+                  config.feature_icons.forEach((iconUrl, index) => {
+                      if (featureIcons[index]) {
+                          featureIcons[index].src = iconUrl;
+                      }
+                  });
               }
           }
       });
@@ -331,7 +488,14 @@ document.addEventListener('DOMContentLoaded', function() {
 {% schema %}
 {
   "name": "Main Product (Pixel)",
-  "settings": [],
+  "settings": [
+    {
+      "type": "text",
+      "id": "delivery_text",
+      "label": "Delivery Text",
+      "default": "Delivery expected by 12–15 January"
+    }
+  ],
   "presets": [
     {
       "name": "Main Product (Pixel)"

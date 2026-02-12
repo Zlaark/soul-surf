@@ -129,10 +129,10 @@
 
       <div class="intro-content-wrapper">
         <div class="intro-image-wrapper">
-          {% if section.settings.intro_svg_filename != blank %}
-            <img src="{{ section.settings.intro_svg_filename | asset_url }}" loading="lazy" class="intro-image" alt="{{ section.settings.intro_heading | escape }}">
-          {% elsif section.settings.intro_image != blank %}
+          {% if section.settings.intro_image != blank %}
             {{ section.settings.intro_image | image_url: width: 800 | image_tag: loading: 'lazy', class: 'intro-image' }}
+          {% elsif section.settings.intro_svg_filename != blank %}
+            <img src="{{ section.settings.intro_svg_filename | asset_url }}" loading="lazy" class="intro-image" alt="{{ section.settings.intro_heading | escape }}">
           {% else %}
             {{ 'image' | placeholder_svg_tag: 'intro-image placeholder-svg' }}
           {% endif %}
@@ -163,10 +163,10 @@
       {% for block in section.blocks %}
         <div class="gallery-card" {{ block.shopify_attributes }}>
           <div class="gallery-image-container">
-            {% if block.settings.svg_filename != blank %}
-              <img src="{{ block.settings.svg_filename | asset_url }}" loading="lazy" class="gallery-image" alt="{{ block.settings.overlay_text | escape }}">
-            {% elsif block.settings.image != blank %}
+            {% if block.settings.image != blank %}
               {{ block.settings.image | image_url: width: 600 | image_tag: loading: 'lazy', class: 'gallery-image' }}
+            {% elsif block.settings.svg_filename != blank %}
+              <img src="{{ block.settings.svg_filename | asset_url }}" loading="lazy" class="gallery-image" alt="{{ block.settings.overlay_text | escape }}">
             {% else %}
               {{ 'image' | placeholder_svg_tag: 'gallery-image placeholder-svg' }}
             {% endif %}
