@@ -18,23 +18,28 @@
       "blocks": {
         "subtotal": {
           "type": "subtotal",
-          "settings": {
-          }
+          "settings": {}
         },
         "buttons": {
           "type": "buttons",
-          "settings": {
-          }
+          "settings": {}
         }
       },
       "block_order": [
         "subtotal",
         "buttons"
       ]
+    },
+    "text-banner": {
+      "type": "custom-text-banner",
+      "settings": {
+        "wave_color": "#D6A348"
+      }
     }
   },
   "order": [
     "cart-items",
-    "cart-footer"
+    "cart-footer",
+    "text-banner"
   ]
 }

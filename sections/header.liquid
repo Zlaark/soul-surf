@@ -129,14 +129,14 @@
       left: 0;
       width: 100%;
       z-index: 1000000000; /* Increased to ensure header and sidebar sit above all content */
-      background-color: {% if page.handle == 'contact' or page.handle == 'about-us' %}#FFF5E6{% else %}transparent{% endif %};
-      padding: {% if page.handle == 'contact' or page.handle == 'about-us' %}15px 50px 20px{% else %}39px 50px 20px{% endif %};
+      background-color: {% if request.page_type != 'index' and request.page_type != 'product' %}#FFF5E6{% else %}transparent{% endif %};
+      padding: {% if request.page_type != 'index' and request.page_type != 'product' %}15px 50px 20px{% else %}39px 50px 20px{% endif %};
       transition: background-color 0.3s ease, box-shadow 0.3s ease;
-      {% if page.handle == 'contact' or page.handle == 'about-us' %}box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);{% endif %}
+      {% if request.page_type != 'index' and request.page_type != 'product' %}box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);{% endif %}
     }
     
-    /* Contact page: Golden border by default */
-    {% if page.handle == 'contact' or page.handle == 'about-us' %}
+    /* Non-homepage/product pages: Golden border by default */
+    {% if request.page_type != 'index' and request.page_type != 'product' %}
     .custom-transparent-header::after {
       content: '';
       position: absolute;
@@ -223,7 +223,7 @@
     }
     
     .custom-logo {
-      max-width: 210px; /* Adjust based on actual logo ratio */
+      max-width: 180px; /* Reduced from 210px */
       height: auto;
     }
 
@@ -247,6 +247,7 @@
     }
 
     .icon-btn-wrapper {
+        position: relative; /* Needed for cart count badge positioning */
         width: 45px;
         height: 45px;
         background-color: rgba(236, 135, 0, 0.11); /* EC8700 at 11% opacity */
@@ -264,6 +265,26 @@
     .icon-btn-wrapper:hover {
         transform: scale(1.05);
         background-color: rgba(236, 135, 0, 0.2);
+    }
+
+    /* Cart count badge - position at top-right of cart icon */
+    #cart-icon-bubble .cart-count-bubble {
+        position: absolute;
+        top: -2px;
+        right: -2px;
+        left: auto;
+        bottom: auto;
+        background-color: #C57E00;
+        color: #ffffff;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 10px;
+        font-weight: 700;
+        line-height: 1;
     }
 
     .icon-svg {
@@ -415,9 +436,9 @@
             left: 0;
             width: 100%;
             padding: 20px 15px;
-            background-color: {% if page.handle == 'contact' or page.handle == 'about-us' %}#FFF5E6{% else %}transparent{% endif %};
+            background-color: {% if request.page_type != 'index' and request.page_type != 'product' %}#FFF5E6{% else %}transparent{% endif %};
             transition: background-color 0.3s ease, box-shadow 0.3s ease;
-            {% if page.handle == 'contact' or page.handle == 'about-us' %}box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);{% endif %}
+            {% if request.page_type != 'index' and request.page_type != 'product' %}box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);{% endif %}
         }
         
         /* When scrolled, header gets cream background */
@@ -487,7 +508,7 @@
             padding: 15px 10px;
         }
         .custom-logo {
-            max-width: 130px;
+            max-width: 120px;
         }
         .mobile-menu-toggle {
             width: 33px; /* Match icon-btn-wrapper */
@@ -533,7 +554,7 @@
     <!-- Center: Logo -->
     <div class="header-center">
         <a href="{{ routes.root_url }}" class="header__heading-link link link--text focus-inset">
-             {%- if page.handle == 'contact' or page.handle == 'about-us' -%}
+             {%- if page.handle == 'contact' or page.handle == 'about-us' or request.page_type == 'cart' -%}
                <img src="{{ 'footerlogo.svg' | asset_url }}" class="custom-logo" alt="{{ shop.name }}" width="200" height="auto" loading="lazy">
              {%- else -%}
                <img src="{{ 'logo soulsurf.png' | asset_url }}" class="custom-logo" alt="{{ shop.name }}" width="200" height="auto" loading="lazy">

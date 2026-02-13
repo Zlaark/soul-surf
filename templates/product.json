@@ -347,6 +347,10 @@
             "settings": {
                 "bg_color": "#FFD65B"
             }
+        },
+        "sticky-atc": {
+            "type": "sticky-add-to-cart",
+            "settings": {}
         }
     },
     "order": [
@@ -358,6 +362,7 @@
         "reviews",
         "product-grid",
         "gallery-grid",
-        "text-banner"
+        "text-banner",
+        "sticky-atc"
     ]
 }

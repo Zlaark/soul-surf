@@ -438,6 +438,112 @@
 }
 
 /* Responsive - Tablet */
+
+/* Small Laptops (13-inch MacBook Air, etc.) */
+@media screen and (max-width: 1366px) and (min-width: 991px) {
+  .pp-product-section {
+    padding: 120px 0 60px;
+  }
+
+  .pp-container {
+    max-width: 100%;
+    padding: 0 25px;
+  }
+
+  .pp-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .pp-thumbnails {
+    width: 100px;
+    gap: 15px;
+  }
+
+  .pp-thumbnail {
+    width: 100px;
+    height: 100px;
+  }
+
+  .pp-gallery-inner {
+    gap: 15px;
+  }
+
+  .pp-main-image {
+    max-width: 90%;
+    max-height: 480px;
+  }
+
+  .pp-title {
+    font-size: 36px;
+  }
+
+  .pp-features-row {
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  .pp-feature-item {
+    width: 85px;
+  }
+
+  .pp-feature-icon {
+    width: 65px;
+    height: 65px;
+  }
+
+  .pp-feature-icon img {
+    width: 45px;
+    height: 45px;
+  }
+
+  .pp-feature-text {
+    font-size: 12px;
+    white-space: normal;
+    max-width: 85px;
+  }
+
+  .pp-swatches-flavor {
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  .pp-swatch-flavor-item {
+    width: 85px;
+  }
+
+  .pp-flavor-circle {
+    width: 55px;
+    height: 55px;
+  }
+
+  .pp-flavor-name {
+    font-size: 12px;
+  }
+
+  .pp-swatches-pack {
+    max-width: 100%;
+  }
+
+  .pp-pack-name {
+    font-size: 13px;
+  }
+
+  .pp-pack-price {
+    font-size: 13px;
+  }
+
+  .pp-add-to-cart {
+    max-width: 100%;
+    font-size: 14px;
+    padding: 16px;
+  }
+
+  .pp-accordion-item {
+    padding: 16px 20px;
+  }
+}
+
 @media screen and (max-width: 990px) {
   .pp-product-section {
     padding: 100px 0 60px;

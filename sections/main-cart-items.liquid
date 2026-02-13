@@ -19,6 +19,121 @@
   }
 {%- endstyle -%}
 
+<style>
+  /* Cart page custom theme styling */
+  cart-items {
+    background-color: #FFF5E6;
+    padding-top: 100px !important; /* Push below the fixed header */
+  }
+
+  cart-items .title-wrapper-with-link {
+    padding-top: 20px;
+    display: flex;
+    justify-content: flex-end; /* Align continue button to right side as per user request */
+  }
+
+  cart-items .title-wrapper-with-link .title--primary {
+    display: none; /* Remove cart page heading as per user request */
+  }
+
+  cart-items .cart__warnings {
+    padding-top: 40px;
+  }
+
+  cart-items .cart__empty-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: #1A1A1A;
+  }
+
+  cart-items .cart__warnings .button,
+  cart-items .title-wrapper-with-link .underlined-link {
+    background-color: #C57E00;
+    color: #ffffff;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    border-radius: 8px;
+    padding: 12px 28px;
+    font-family: 'Gilroy Medium', 'Plus Jakarta Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: inline-block;
+  }
+
+  /* Remove any pseudo-element borders/outlines */
+  cart-items .cart__warnings .button::after,
+  cart-items .title-wrapper-with-link .underlined-link::after {
+    display: none !important;
+    content: none !important;
+    box-shadow: none !important;
+  }
+
+  cart-items .cart__warnings .button:hover,
+  cart-items .title-wrapper-with-link .underlined-link:hover {
+    background-color: #A86B00;
+    transform: translateY(-1px);
+  }
+
+  cart-items .cart__login-title {
+    font-family: 'Playfair Display', serif;
+    color: #1A1A1A;
+  }
+
+  cart-items .cart__login-paragraph a {
+    color: #C57E00;
+    text-decoration: underline;
+    font-weight: 500;
+  }
+
+  cart-items .cart__login-paragraph a:hover {
+    color: #A86B00;
+  }
+
+  /* Cart items table styling */
+  cart-items .cart-item__name {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: #1A1A1A;
+    font-weight: 600;
+  }
+
+  cart-items .cart-item__name:hover {
+    color: #C57E00;
+  }
+
+  /* Quantity buttons */
+  cart-items .quantity__button {
+    border-color: #C57E00;
+    color: #C57E00;
+  }
+
+  cart-items .quantity__button:hover {
+    background-color: rgba(197, 126, 0, 0.1);
+  }
+
+  @media screen and (max-width: 749px) {
+    cart-items {
+      padding-top: 80px !important; /* Smaller header on mobile */
+    }
+
+    cart-items .title-wrapper-with-link .title--primary {
+      font-size: 26px;
+    }
+
+    cart-items .cart__empty-text {
+      font-size: 22px;
+    }
+  }
+
+  /* Remove border bottom from items to avoid double lines */
+  .cart__items {
+    border-bottom: none !important;
+  }
+</style>
+
 {%- unless settings.cart_type == 'drawer' -%}
   <script src="{{ 'cart.js' | asset_url }}" defer="defer"></script>
 {%- endunless -%}
@@ -29,14 +144,14 @@
   <div class="page-width">
     <div class="title-wrapper-with-link">
       <h1 class="title title--primary">{{ 'sections.cart.title' | t }}</h1>
-      <a href="{{ routes.all_products_collection_url }}" class="underlined-link">
+      <a href="{{ section.settings.continue_shopping_link | default: routes.all_products_collection_url }}" class="underlined-link">
         {{- 'general.continue_shopping' | t -}}
       </a>
     </div>
 
     <div class="cart__warnings">
       <h1 class="cart__empty-text">{{ 'sections.cart.empty' | t }}</h1>
-      <a href="{{ routes.all_products_collection_url }}" class="button">
+      <a href="{{ section.settings.continue_shopping_link | default: routes.all_products_collection_url }}" class="button">
         {{ 'general.continue_shopping' | t }}
       </a>
 
@@ -87,8 +202,35 @@
                     {% endif %}
                   >
                     <td class="cart-item__media">
-                      {% if item.image %}
-                        {% comment %} Leave empty space due to a:empty CSS display: none rule {% endcomment %}
+                      {% comment %} Get first variant metafield image via for loop (array indexing doesnt work on metafield lists) {% endcomment %}
+                      {% assign cart_meta_img_src = '' %}
+                      {% for v in item.product.variants %}
+                        {% if v.id == item.variant_id %}
+                          {% assign v_images = v.metafields.custom.variant_images.value %}
+                          {% if v_images != blank and v_images.size > 0 %}
+                            {% for img in v_images limit: 1 %}
+                              {% assign cart_meta_img_src = img | image_url: width: 300 %}
+                            {% endfor %}
+                          {% endif %}
+                          {% break %}
+                        {% endif %}
+                      {% endfor %}
+
+                      {% if cart_meta_img_src != '' and cart_meta_img_src != blank %}
+                        <a href="{{ item.url }}" class="cart-item__link" aria-hidden="true" tabindex="-1"> </a>
+                        <div class="cart-item__image-container gradient {% if item.parent_relationship.parent == null %}global-media-settings{% endif %}">
+                          <img
+                            src="{{ cart_meta_img_src }}"
+                            class="cart-item__image {% if item.parent_relationship.parent != null %}global-media-settings{% endif %}"
+                            alt="{{ item.product.title | escape }}"
+                            loading="lazy"
+                            width="150"
+                            height="150"
+                            style="border-radius: 20px; object-fit: cover;"
+                          >
+                        </div>
+                      {% elsif item.image %}
+                        {% comment %} Fallback to default item image {% endcomment %}
                         <a href="{{ item.url }}" class="cart-item__link" aria-hidden="true" tabindex="-1"> </a>
                         <div class="cart-item__image-container gradient {% if item.parent_relationship.parent == null %}global-media-settings{% endif %}">
                           <img
@@ -98,6 +240,7 @@
                             loading="lazy"
                             width="150"
                             height="{{ 150 | divided_by: item.image.aspect_ratio | ceil }}"
+                            style="border-radius: 20px; object-fit: cover;"
                           >
                         </div>
                       {% endif %}
@@ -466,6 +609,12 @@
       "id": "color_scheme",
       "label": "t:sections.all.colors.label",
       "default": "scheme-1"
+    },
+    {
+      "type": "url",
+      "id": "continue_shopping_link",
+      "label": "Continue Shopping Link",
+      "info": "Leave blank to use default 'All Products' collection."
     },
     {
       "type": "header",

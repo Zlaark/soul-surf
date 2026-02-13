@@ -1,0 +1,370 @@
+{%- assign product_form_id = 'product-form-' | append: section.id -%}
+{%- assign current_variant = product.selected_or_first_available_variant -%}
+{%- assign variant_heading = current_variant.metafields.custom.product_heading | default: product.title -%}
+
+{%- comment -%} Compute fallback colors matching main-product.liquid logic {%- endcomment -%}
+{%- assign product_feature_color = product.metafields.custom.feature_color.value | default: '#1A4D3E' -%}
+{%- assign product_heading_color = product.metafields.custom.heading_color.value | default: '#000000' -%}
+{%- assign variant_feature_color = current_variant.metafields.custom.feature_color.value | default: product_feature_color -%}
+{%- assign variant_heading_color = current_variant.metafields.custom.heading_color.value | default: product_heading_color -%}
+
+<script>
+  window.stickyAtcConfig = {
+    {% for variant in product.variants %}
+      "{{ variant.id }}": {
+        "heading": "{{ variant.metafields.custom.product_heading | default: product.title | escape }}",
+        "feature_color": "{{ variant.metafields.custom.feature_color.value | default: product_feature_color }}",
+        "heading_color": "{{ variant.metafields.custom.heading_color.value | default: product_heading_color }}",
+        "price": {{ variant.price }},
+        "compare_at_price": {{ variant.compare_at_price | default: 0 }},
+        "available": {{ variant.available }}
+      }{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  };
+  
+  window.shopMoneyFormat = {{ shop.money_format | json }};
+</script>
+
+<style>
+  .sticky-atc {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #FFF5E6; /* Cream background */
+    border-top: 1px solid rgba(0,0,0,0.05);
+    padding: 16px 0;
+    z-index: 999; /* Below header (1000+) but above content */
+    transform: translateY(100%);
+    transition: transform 0.3s ease-in-out;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+    visibility: hidden;
+  }
+
+  .sticky-atc.is-visible {
+    transform: translateY(0);
+    visibility: visible;
+  }
+
+  .sticky-atc__inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .sticky-atc__info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .sticky-atc__title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .sticky-atc__title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #13785A; /* Default dark green */
+    margin: 0;
+    line-height: 1;
+    transition: color 0.3s ease;
+  }
+
+  .sticky-atc__subtitle {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #C51868; /* Pink color for sale text */
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .sticky-atc__subtitle svg {
+    width: 12px;
+    height: 12px;
+    fill: currentColor;
+  }
+
+  .sticky-atc__actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .sticky-atc__delivery-text {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 12px;
+    color: #1A4D3E;
+    text-align: right;
+    line-height: 1.2;
+  }
+
+  .sticky-atc__price-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+
+  .sticky-atc__price {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #13785A;
+  }
+  
+  .sticky-atc__compare-price {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
+    color: #666;
+    text-decoration: line-through;
+  }
+
+  .sticky-atc__compare-price.hidden {
+    display: none;
+  }
+
+  .sticky-atc__button {
+    background-color: #13785A; /* Dark green button */
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 32px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    text-transform: capitalize;
+  }
+
+  .sticky-atc__button:hover {
+    background-color: #0E5942;
+  }
+
+  .sticky-atc__button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+
+  @media screen and (max-width: 768px) {
+    .sticky-atc__inner {
+      flex-direction: row;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    
+    .sticky-atc__delivery-text {
+      display: none; /* Hide on mobile to save space */
+    }
+    
+    .sticky-atc__title {
+      font-size: 16px;
+    }
+    
+    .sticky-atc__subtitle {
+       font-size: 10px;
+    }
+
+    .sticky-atc__button {
+      padding: 10px 20px;
+      font-size: 14px;
+    }
+  }
+</style>
+
+<div class="sticky-atc" id="StickyAddToCart">
+  <div class="sticky-atc__inner">
+    
+    <!-- LEFT: Variant Info -->
+    <div class="sticky-atc__info">
+      <div class="sticky-atc__title-row">
+        <h3 class="sticky-atc__title" style="color: {{ variant_heading_color }};">
+          {{ variant_heading }}
+        </h3>
+      </div>
+      <!-- Hardcoded sale text as per reference image request context -->
+      <div class="sticky-atc__subtitle">
+        <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        Valentine's Day Sale: 20% off sitewide!
+      </div>
+    </div>
+
+    <!-- RIGHT: Actions -->
+    <div class="sticky-atc__actions">
+      
+      <div class="sticky-atc__delivery-text">
+        12 Cans delivered one time<br>
+        <div class="sticky-atc__price-box">
+          <span class="sticky-atc__price" style="color: {{ variant_heading_color }};">{{ current_variant.price | money }}</span>
+          <span class="sticky-atc__compare-price {% unless current_variant.compare_at_price > current_variant.price %}hidden{% endunless %}">
+            {{ current_variant.compare_at_price | money }}
+          </span>
+        </div>
+      </div>
+
+      <product-form>
+        {%- form 'product', product, id: product_form_id, class: 'form', novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
+          <input type="hidden" name="id" value="{{ current_variant.id }}">
+          <button
+            type="submit"
+            name="add"
+            class="sticky-atc__button"
+            style="background-color: {{ variant_heading_color }};"
+            {% if current_variant.available == false %}disabled{% endif %}
+          >
+            <span>
+              {%- if current_variant.available -%}
+                Add to Cart
+              {%- else -%}
+                Sold Out
+              {%- endif -%}
+            </span>
+          </button>
+        {%- endform -%}
+      </product-form>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const stickyBar = document.getElementById('StickyAddToCart');
+    const triggerPoint = 600; // Show after scrolling down a bit
+
+    // Scroll Visibility
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > triggerPoint) {
+        stickyBar.classList.add('is-visible');
+      } else {
+        stickyBar.classList.remove('is-visible');
+      }
+    });
+
+    // Money Formatter (Basic Implementation)
+    function formatMoney(cents, format) {
+      if (typeof cents == 'string') { cents = cents.replace('.',''); }
+      let value = '';
+      const placeholderRegex = /\{\{\s*(\w+)\s*\}\}/;
+      const formatString = format || window.shopMoneyFormat || "${{amount}}";
+
+      function defaultOption(opt, def) {
+        return (typeof opt == 'undefined' ? def : opt);
+      }
+
+      function formatWithDelimiters(number, precision, thousands, decimal) {
+        precision = defaultOption(precision, 2);
+        thousands = defaultOption(thousands, ',');
+        decimal   = defaultOption(decimal, '.');
+
+        if (isNaN(number) || number == null) { return 0; }
+
+        number = (number/100.0).toFixed(precision);
+
+        var parts   = number.split('.'),
+            dollars = parts[0].replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1' + thousands),
+            cents   = parts[1] ? (decimal + parts[1]) : '';
+
+        return dollars + cents;
+      }
+
+      switch(formatString.match(placeholderRegex)[1]) {
+        case 'amount':
+          value = formatWithDelimiters(cents, 2);
+          break;
+        case 'amount_no_decimals':
+          value = formatWithDelimiters(cents, 0);
+          break;
+        case 'amount_with_comma_separator':
+          value = formatWithDelimiters(cents, 2, '.', ',');
+          break;
+        case 'amount_no_decimals_with_comma_separator':
+          value = formatWithDelimiters(cents, 0, '.', ',');
+          break;
+      }
+
+      return formatString.replace(placeholderRegex, value);
+    }
+
+    // Variant Change Listener
+    // Listens to the custom event dispatched by main-product.liquid
+    function onVariantChange(event) {
+      const variantId = event.detail.variantId;
+      if (!variantId) return;
+
+      const config = window.stickyAtcConfig[variantId];
+      if (!config) return;
+
+      const headingColor = config.heading_color;
+      const featureColor = config.feature_color;
+
+      // 1. Update Title + heading color
+      const titleEl = stickyBar.querySelector('.sticky-atc__title');
+      if (titleEl) {
+        titleEl.textContent = config.heading;
+        titleEl.style.color = headingColor;
+      }
+
+      // 2. Update hidden variant ID
+      const input = stickyBar.querySelector('input[name="id"]');
+      if (input) input.value = variantId;
+
+      // 3. Update Price (text + heading color)
+      const priceEl = stickyBar.querySelector('.sticky-atc__price');
+      if (priceEl) {
+        priceEl.textContent = formatMoney(config.price, window.shopMoneyFormat);
+        priceEl.style.color = headingColor;
+      }
+
+      // 4. Update Compare Price
+      const compareEl = stickyBar.querySelector('.sticky-atc__compare-price');
+      if (compareEl) {
+        if (config.compare_at_price && config.compare_at_price > config.price) {
+          compareEl.textContent = formatMoney(config.compare_at_price, window.shopMoneyFormat);
+          compareEl.classList.remove('hidden');
+        } else {
+          compareEl.classList.add('hidden');
+        }
+      }
+
+      // 5. Update Button (text + feature color background)
+      const button = stickyBar.querySelector('.sticky-atc__button');
+      const buttonSpan = button ? button.querySelector('span') : null;
+      if (button && buttonSpan) {
+        if (config.available) {
+          button.removeAttribute('disabled');
+          buttonSpan.textContent = 'Add to Cart';
+        } else {
+          button.setAttribute('disabled', 'disabled');
+          buttonSpan.textContent = 'Sold Out';
+        }
+        button.style.backgroundColor = headingColor;
+      }
+    }
+
+    // Listen for the custom variant change event from main-product.liquid
+    document.addEventListener('pp:variant:change', onVariantChange);
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Sticky Add to Cart",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Sticky Add to Cart"
+    }
+  ]
+}
+{% endschema %}

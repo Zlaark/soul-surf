@@ -29,6 +29,9 @@
       "heading": "{{ variant.metafields.custom.heading_color.value | default: heading_color }}",
       "heading_text": "{{ variant.metafields.custom.product_heading | default: product.title | escape }}",
       "feature_bg": "{{ variant.metafields.custom.feature_background_color.value | default: feature_bg }}",
+      "price": {{ variant.price }},
+      "compare_at_price": {{ variant.compare_at_price | default: 0 }},
+      "available": {{ variant.available }},
       "images": [
         {% assign image_list = variant.metafields.custom.variant_images.value %}
         {% if image_list %}
@@ -320,6 +323,33 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   const section = document.querySelector('[data-section-id="{{ section.id }}"]');
+
+  // Money Formatter
+  const moneyFormat = {{ shop.money_format | json }};
+  function formatMoneyMain(cents) {
+    if (typeof cents == 'string') { cents = cents.replace('.',''); }
+    let value = '';
+    const placeholderRegex = /\{\{\s*(\w+)\s*\}\}/;
+    const formatString = moneyFormat || "${{amount}}";
+    function formatWithDelimiters(number, precision, thousands, decimal) {
+      precision = (typeof precision == 'undefined' ? 2 : precision);
+      thousands = (typeof thousands == 'undefined' ? ',' : thousands);
+      decimal = (typeof decimal == 'undefined' ? '.' : decimal);
+      if (isNaN(number) || number == null) { return 0; }
+      number = (number/100.0).toFixed(precision);
+      var parts = number.split('.'),
+          dollars = parts[0].replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1' + thousands),
+          cents = parts[1] ? (decimal + parts[1]) : '';
+      return dollars + cents;
+    }
+    switch(formatString.match(placeholderRegex)[1]) {
+      case 'amount': value = formatWithDelimiters(cents, 2); break;
+      case 'amount_no_decimals': value = formatWithDelimiters(cents, 0); break;
+      case 'amount_with_comma_separator': value = formatWithDelimiters(cents, 2, '.', ','); break;
+      case 'amount_no_decimals_with_comma_separator': value = formatWithDelimiters(cents, 0, '.', ','); break;
+    }
+    return formatString.replace(placeholderRegex, value);
+  }
   
   // Thumbnail Switcher
   const thumbnails = section.querySelectorAll('.pp-thumbnail');
@@ -373,9 +403,107 @@ document.addEventListener('DOMContentLoaded', function() {
       console.log('Could not parse variant config');
   }
   
+  // 1. Define allVariants outside the listener for efficiency
+  const allVariants = [
+    {% for variant in product.variants %}
+      { id: "{{ variant.id }}", options: ["{{ variant.option1 | escape }}", "{{ variant.option2 | escape }}", "{{ variant.option3 | escape }}"].filter(Boolean) },
+    {% endfor %}
+  ];
+
+  // 2. Define Update Function
+  function updateVariantUI(variantId) {
+      // Dispatch Custom Event for other sections (like Ingredients/Nutrition, Sticky ATC) to listen to
+      document.dispatchEvent(new CustomEvent('pp:variant:change', { 
+          detail: { variantId: variantId } 
+      }));
+
+      if (variantId && variantConfig[variantId]) {
+          const config = variantConfig[variantId];
+          
+          // 1. Update Background
+          if (config.bg) {
+              section.style.setProperty('--pp-bg', config.bg);
+          }
+          
+          // 2. Update Feature Color
+          if (config.feature) {
+              section.style.setProperty('--pp-feature-color', config.feature);
+          }
+          
+          // 2.1 Update Heading Color & Text
+          if (config.heading) {
+              section.style.setProperty('--pp-heading-color', config.heading);
+          }
+          if (config.heading_text) {
+              const titleEl = section.querySelector('.pp-title');
+              if (titleEl) titleEl.textContent = config.heading_text;
+          }
+
+          // 2.2 Update Feature Background Color
+          if (config.feature_bg) {
+              section.style.setProperty('--pp-feature-bg', config.feature_bg);
+          }
+
+          // 3. Update Images (The 4 Images)
+          if (config.images && config.images.length > 0) {
+              
+              // Update Main Image (Set to the first one in the list)
+              const mainImage = section.querySelector('.pp-main-image');
+              if (mainImage) mainImage.src = config.images[0];
+      
+              // Update Thumbnails loop
+              const thumbnails = section.querySelectorAll('.pp-thumbnail');
+              config.images.forEach((imgUrl, index) => {
+                  if (thumbnails[index]) {
+                      // Update the click data attribute
+                      thumbnails[index].dataset.targetImage = imgUrl; 
+                      
+                      // Update the visible thumbnail image
+                      const thumbImgTag = thumbnails[index].querySelector('img');
+                      if (thumbImgTag) thumbImgTag.src = imgUrl; 
+                  }
+              });
+          }
+
+          // 4. Update Rich Text Description
+          const descriptionWrapper = section.querySelector('.pp-accordion-content');
+          // Note: The unique ID must match what is generated in liquid loop
+          const newContentDiv = document.getElementById(`variant-description-${variantId}`);
+          
+          if (descriptionWrapper && newContentDiv) {
+              descriptionWrapper.innerHTML = newContentDiv.innerHTML;
+          }
+
+          // 5. Update Feature Icons
+          if (config.feature_icons && config.feature_icons.length > 0) {
+              const featureIcons = section.querySelectorAll('.pp-feature-icon-img');
+              config.feature_icons.forEach((iconUrl, index) => {
+                  if (featureIcons[index]) {
+                      featureIcons[index].src = iconUrl;
+                  }
+              });
+          }
+
+          // 6. Update Add to Cart Button Price
+          if (config.price !== undefined) {
+              const priceBtn = section.querySelector('.pp-add-to-cart');
+              if (priceBtn) {
+                  if (config.available) {
+                      priceBtn.disabled = false;
+                      priceBtn.textContent = 'ADD TO CART – ' + formatMoneyMain(config.price);
+                  } else {
+                      priceBtn.disabled = true;
+                      priceBtn.textContent = 'SOLD OUT';
+                  }
+              }
+          }
+      }
+  }
+
+  // 3. Attach Event Listeners
   variantInputs.forEach(input => {
       input.addEventListener('change', function() {
-          // Update visual selected state
+          // Update visual selected state (swatches)
           const group = this.closest('.pp-swatches-flavor') || this.closest('.pp-swatches-pack');
           if (group) {
               group.querySelectorAll('label').forEach(l => l.classList.remove('selected'));
@@ -392,13 +520,6 @@ document.addEventListener('DOMContentLoaded', function() {
           }
           
           // Resolve the CORRECT variant based on ALL selected options
-          // (not just the data-variant-id on this single radio, which may be stale for multi-option products)
-          const allVariants = [
-            {% for variant in product.variants %}
-              { id: "{{ variant.id }}", options: ["{{ variant.option1 | escape }}", "{{ variant.option2 | escape }}", "{{ variant.option3 | escape }}"].filter(Boolean) },
-            {% endfor %}
-          ];
-          
           const form = this.closest('form');
           const selectedValues = form ? Array.from(form.querySelectorAll('input[type="radio"]:checked')).map(r => r.value) : [];
           
@@ -414,79 +535,25 @@ document.addEventListener('DOMContentLoaded', function() {
               variantId = resolvedVariant.id;
           }
           
-          // Dispatch Custom Event for other sections (like Ingredients/Nutrition) to listen to
-          document.dispatchEvent(new CustomEvent('pp:variant:change', { 
-              detail: { variantId: variantId } 
-          }));
-
-          if (variantId && variantConfig[variantId]) {
-              const config = variantConfig[variantId];
-              
-              // 1. Update Background
-              if (config.bg) {
-                  section.style.setProperty('--pp-bg', config.bg);
-              }
-              
-              // 2. Update Feature Color
-              if (config.feature) {
-                  section.style.setProperty('--pp-feature-color', config.feature);
-              }
-              
-              // 2.1 Update Heading Color & Text
-              if (config.heading) {
-                  section.style.setProperty('--pp-heading-color', config.heading);
-              }
-              if (config.heading_text) {
-                  const titleEl = section.querySelector('.pp-title');
-                  if (titleEl) titleEl.textContent = config.heading_text;
-              }
-
-              // 2.2 Update Feature Background Color
-              if (config.feature_bg) {
-                  section.style.setProperty('--pp-feature-bg', config.feature_bg);
-              }
-
-              // 3. Update Images (The 4 Images)
-              if (config.images && config.images.length > 0) {
-                  
-                  // Update Main Image (Set to the first one in the list)
-                  const mainImage = section.querySelector('.pp-main-image');
-                  if (mainImage) mainImage.src = config.images[0];
-          
-                  // Update Thumbnails loop
-                  const thumbnails = section.querySelectorAll('.pp-thumbnail');
-                  config.images.forEach((imgUrl, index) => {
-                      if (thumbnails[index]) {
-                          // Update the click data attribute
-                          thumbnails[index].dataset.targetImage = imgUrl; 
-                          
-                          // Update the visible thumbnail image
-                          const thumbImgTag = thumbnails[index].querySelector('img');
-                          if (thumbImgTag) thumbImgTag.src = imgUrl; 
-                      }
-                  });
-              }
-
-              // 4. Update Rich Text Description
-              const descriptionContent = section.querySelector('.pp-accordion-content');
-              const newContentDiv = document.getElementById(`variant-description-${variantId}`);
-              
-              if (descriptionContent && newContentDiv) {
-                  descriptionContent.innerHTML = newContentDiv.innerHTML;
-              }
-
-              // 5. Update Feature Icons
-              if (config.feature_icons && config.feature_icons.length > 0) {
-                  const featureIcons = section.querySelectorAll('.pp-feature-icon-img');
-                  config.feature_icons.forEach((iconUrl, index) => {
-                      if (featureIcons[index]) {
-                          featureIcons[index].src = iconUrl;
-                      }
-                  });
-              }
-          }
+          // Execute UI updates
+          updateVariantUI(variantId);
       });
   });
+
+  // 4. Initial Run on Page Load (Fix for correct initial state)
+  // We need to determine the currently selected variant based on the checked inputs
+  const initialForm = section.querySelector('form');
+  if (initialForm) {
+      const initialSelectedValues = Array.from(initialForm.querySelectorAll('input[type="radio"]:checked')).map(r => r.value);
+      const initialResolvedVariant = allVariants.find(v => {
+          if (v.options.length !== initialSelectedValues.length) return false;
+          return v.options.every(opt => initialSelectedValues.includes(opt));
+      });
+
+      if (initialResolvedVariant) {
+          updateVariantUI(initialResolvedVariant.id);
+      }
+  }
 });
 </script>
 

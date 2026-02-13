@@ -116,14 +116,20 @@
         {
              "type": "image_picker",
              "id": "custom_image",
-             "label": "Custom Image (Optional)",
-             "info": "Overrides product image"
+             "label": "Custom Image",
+             "info": "Overrides product image. Important."
         },
         {
              "type": "image_picker",
              "id": "floating_icon",
-             "label": "Floating Icon (Fruit)",
+             "label": "Custom Floating Icon (Fruit)",
              "info": "Small icon top right"
+        },
+        {
+             "type": "text",
+             "id": "variant_id",
+             "label": "Variant ID",
+             "info": "Required to pick a specific variant. To find ID: Go to Admin > Products > Select Variant. The ID is the number at the end of the URL."
         }
       ]
     }
@@ -621,7 +627,7 @@
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     flex-wrap: nowrap;
-    gap: 30px; /* Consistent gap */
+    gap: 15px; /* Consistent gap with grid mode */
     padding-bottom: 30px; /* Space for hover effects/shadows */
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -766,29 +772,31 @@
         <div class="pg-card" style="--bg: {{ card_bg }}; --text: {{ text_color }}; --btn-bg: {{ btn_bg }}; --btn-text: {{ btn_text }};" data-index="{{ forloop.index }}">
            
            <div class="pg-icon-float">
-             {% case forloop.index %}
-               {% when 1 %}
-                 <img src="{{ 'pg1.png' | asset_url }}" alt="Icon 1" width="75" height="75" loading="lazy">
-               {% when 2 %}
-                 <img src="{{ 'pg2.png' | asset_url }}" alt="Icon 2" width="75" height="75" loading="lazy">
-               {% when 3 %}
-                 <img src="{{ 'pg3.png' | asset_url }}" alt="Icon 3" width="75" height="75" loading="lazy">
-               {% when 4 %}
-                 <img src="{{ 'pg4.png' | asset_url }}" alt="Icon 4" width="75" height="75" loading="lazy">
-               {% else %}
-                 {% if block.settings.floating_icon != blank %}
-                   {{ block.settings.floating_icon | image_url: width: 100 | image_tag: loading: 'lazy' }}
-                 {% else %}
-                   <img src="{{ 'icon-apple.svg' | asset_url }}" alt="Fruit Icon" width="75" height="75" loading="lazy">
-                 {% endif %}
-             {% endcase %}
+              {% if block.settings.floating_icon != blank %}
+                {{ block.settings.floating_icon | image_url: width: 150 | image_tag: loading: "lazy", width: 75, height: 75 }}
+              {% else %}
+                {% assign fallback_icon = "icon-apple.svg" %}
+                {% case forloop.index %}
+                  {% when 1 %}{% assign fallback_icon = "pg1.png" %}
+                  {% when 2 %}{% assign fallback_icon = "pg2.png" %}
+                  {% when 3 %}{% assign fallback_icon = "pg3.png" %}
+                  {% when 4 %}{% assign fallback_icon = "pg4.png" %}
+                {% endcase %}
+                <img src="{{ fallback_icon | asset_url }}" alt="Fruit Icon" width="75" height="75" loading="lazy">
+              {% endif %}
            </div>
 
            <div class="pg-card-content">
               <div class="pg-card-title-group">
-                 <h3 class="pg-card-title">{{ block.settings.title }}</h3>
-                 <div class="pg-card-tagline">{{ block.settings.tagline }}</div>
-                 <p class="pg-card-desc">{{ block.settings.description }}</p>
+                  {% if product != blank %}
+                    <h3 class="pg-card-title">{{ product.metafields.custom.product_heading | default: product.title }}</h3>
+                    <div class="pg-card-tagline">{{ product.metafields.custom.tagline | default: block.settings.tagline }}</div>
+                    <p class="pg-card-desc">{{ product.metafields.custom.grid_description | default: block.settings.description }}</p>
+                  {% else %}
+                    <h3 class="pg-card-title">{{ block.settings.title }}</h3>
+                    <div class="pg-card-tagline">{{ block.settings.tagline }}</div>
+                    <p class="pg-card-desc">{{ block.settings.description }}</p>
+                  {% endif %}
               </div>
            </div>
 
@@ -812,16 +820,27 @@
            </div>
 
            <div class="pg-atc-wrapper">
-             {% if product != blank and product.available %}
+             {% assign show_atc = false %}
+             {% if block.settings.variant_id != blank %}
+               {% assign show_atc = true %}
+             {% elsif product != blank and product.available %}
+               {% assign show_atc = true %}
+             {% endif %}
+             
+             {% if show_atc %}
              <form method="post" action="/cart/add" class="pg-atc-form">
-                <input type="hidden" name="id" value="{{ product.variants.first.id }}">
+                {% if block.settings.variant_id != blank %}
+                  <input type="hidden" name="id" value="{{ block.settings.variant_id }}">
+                {% else %}
+                  <input type="hidden" name="id" value="{{ product.variants.first.id }}">
+                {% endif %}
                 <button type="submit" class="pg-atc-btn">
                   {{ block.settings.button_label }}
                 </button>
              </form>
              {% else %}
                <button type="button" class="pg-atc-btn" disabled>
-                  {% if product != blank %}SOLD OUT{% else %}ADD TO CART{% endif %}
+                  {% if product != blank %}SOLD OUT{% else %}{{ block.settings.button_label }}{% endif %}
                </button>
              {% endif %}
            </div>

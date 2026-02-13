@@ -6,9 +6,16 @@
         "padding_top": 28,
         "padding_bottom": 28
       }
+    },
+    "text_banner": {
+      "type": "custom-text-banner",
+      "settings": {
+        "wave_color": "#D6A348"
+      }
     }
   },
   "order": [
-    "main"
+    "main",
+    "text_banner"
   ]
 }

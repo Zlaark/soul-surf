@@ -14,12 +14,97 @@
   }
 {%- endstyle -%}
 
-<div class="page-width page-width--narrow section-{{ section.id }}-padding">
-  <h1 class="main-page-title page-title h0{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
-    {{ page.title | escape }}
-  </h1>
-  <div class="rte{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
-    {{ page.content }}
+<style>
+  /* Content page theme styling */
+  .main-page-wrapper {
+    background-color: #FFF5E6;
+    min-height: 100vh;
+    padding-top: 100px;
+    padding-bottom: 40px;
+  }
+
+  .main-page-wrapper .page-width--narrow {
+    max-width: 1000px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .main-page-wrapper {
+      padding-top: 80px;
+    }
+  }
+
+  .main-page-wrapper .main-page-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 42px;
+    font-weight: 700;
+    color: #1A1A1A;
+    margin-bottom: 24px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .main-page-wrapper .main-page-title {
+      font-size: 30px;
+    }
+  }
+
+  .main-page-wrapper .rte {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    color: #333333;
+  }
+
+  .main-page-wrapper .rte h2,
+  .main-page-wrapper .rte h3,
+  .main-page-wrapper .rte h4 {
+    font-family: 'Playfair Display', serif;
+    color: #1A1A1A;
+    margin-top: 28px;
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+
+  .main-page-wrapper .rte a {
+    color: #C57E00;
+    text-decoration: underline;
+    transition: color 0.2s ease;
+  }
+
+  .main-page-wrapper .rte a:hover {
+    color: #A86B00;
+  }
+
+  .main-page-wrapper .rte strong,
+  .main-page-wrapper .rte b {
+    font-weight: 700;
+    color: #1A1A1A;
+  }
+
+  .main-page-wrapper .rte p {
+    margin-bottom: 16px;
+  }
+
+  .main-page-wrapper .rte ul,
+  .main-page-wrapper .rte ol {
+    margin-bottom: 16px;
+    padding-left: 24px;
+  }
+
+  .main-page-wrapper .rte li {
+    margin-bottom: 8px;
+  }
+</style>
+
+<div class="main-page-wrapper">
+  <div class="page-width page-width--narrow section-{{ section.id }}-padding">
+    <h1 class="main-page-title page-title h0{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
+      {{ page.title | escape }}
+    </h1>
+    <div class="rte{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+      {{ page.content }}
+    </div>
   </div>
 </div>
 

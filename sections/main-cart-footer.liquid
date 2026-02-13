@@ -17,6 +17,64 @@
   }
 {%- endstyle -%}
 
+<style>
+  /* Cart footer custom theme styling */
+  #main-cart-footer {
+    background-color: #FFF5E6;
+  }
+
+  #main-cart-footer .totals__total {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: #1A1A1A;
+  }
+
+  #main-cart-footer .totals__total-value {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    color: #C57E00;
+    font-size: 20px;
+  }
+
+  #main-cart-footer .cart__checkout-button {
+    background-color: #C57E00;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Gilroy Medium', 'Plus Jakarta Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    box-shadow: none !important;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+
+  /* Remove any pseudo-element borders/outlines */
+  #main-cart-footer .cart__checkout-button::after {
+    display: none !important;
+    content: none !important;
+    box-shadow: none !important;
+  }
+
+  #main-cart-footer .cart__checkout-button:hover {
+    background-color: #A86B00;
+    transform: translateY(-1px);
+  }
+
+  #main-cart-footer .tax-note {
+    color: #666;
+  }
+
+  #main-cart-footer .tax-note a {
+    color: #C57E00;
+  }
+  
+  /* Remove border top from footer */
+  .cart__footer {
+    border-top: none !important;
+  }
+</style>
+
 <div
   class="gradient color-{{ section.settings.color_scheme }}{% if cart == empty %} is-empty{% endif %}"
   id="main-cart-footer"
