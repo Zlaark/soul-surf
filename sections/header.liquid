@@ -524,9 +524,9 @@
 
         <!-- Desktop Nav -->
         <nav class="desktop-nav" style="display: flex; gap: 60px;">
-            <a href="/collections/all" class="nav-link">Shop</a>
-            <a href="/pages/about-us" class="nav-link">About us</a>
-            <a href="/pages/contact" class="nav-link">Contact us</a>
+            {%- for link in section.settings.menu.links -%}
+              <a href="{{ link.url }}" class="nav-link">{{ link.title }}</a>
+            {%- endfor -%}
         </nav>
     </div>
 
@@ -570,9 +570,9 @@
   <div class="mobile-drawer-overlay" onclick="toggleMobileMenu()"></div>
   <div class="mobile-drawer">
       <div class="drawer-menu-list">
-           <a href="/collections/all" class="drawer-link">Shop</a>
-           <a href="/pages/about-us" class="drawer-link">About us</a>
-           <a href="/pages/contact" class="drawer-link">Contact us</a>
+           {%- for link in section.settings.menu.links -%}
+              <a href="{{ link.url }}" class="drawer-link">{{ link.title }}</a>
+           {%- endfor -%}
            <a href="#" class="drawer-link">Find in store</a>
            {%- if shop.customer_accounts_enabled -%}
               <a href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}" class="drawer-link">Account</a>
