@@ -207,11 +207,27 @@
       font-weight: 500;
       color: #1A1A1A; /* Dark text for contrast against assumed light bg */
       text-decoration: none;
-      transition: opacity 0.2s;
+      transition: opacity 0.2s, color 0.2s;
       line-height: 1.2;
+      position: relative;
+      padding-bottom: 2px;
     }
     .nav-link:hover {
       opacity: 0.7;
+    }
+    .nav-link.active {
+      font-weight: 700;
+      color: #E2981A;
+      opacity: 1;
+    }
+    .nav-link.active::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background-color: #E2981A;
     }
 
     /* Center: Logo */
@@ -427,6 +443,13 @@
         font-weight: 500;
         color: #1A1A1A;
         text-decoration: none;
+        transition: color 0.2s, font-weight 0.2s;
+        display: block;
+        padding: 8px 0;
+    }
+    .drawer-link.active {
+        color: #E2981A;
+        font-weight: 700;
     }
 
     @media screen and (max-width: 900px) {
@@ -602,7 +625,40 @@
   </div>
 
   <script>
+    // Highlight active menu items
+    function setActiveMenuItems() {
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll('.nav-link, .drawer-link');
+        
+        navLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            
+            // Extract path from href
+            let linkPath = href;
+            try {
+                // Handle both relative and absolute URLs
+                if (href.startsWith('http')) {
+                    linkPath = new URL(href).pathname;
+                }
+            } catch (e) {
+                // If URL parsing fails, use href as-is
+            }
+            
+            // Match current path with link path
+            if (linkPath === currentPath || 
+                (linkPath !== '/' && currentPath.startsWith(linkPath)) ||
+                (linkPath === '/' && currentPath === '/')) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+    }
+    
+    // Set active items on page load
     document.addEventListener('DOMContentLoaded', function() {
+        setActiveMenuItems();
+        
         const drawer = document.querySelector('.mobile-drawer');
         const overlay = document.querySelector('.mobile-drawer-overlay');
         const header = document.querySelector('.custom-transparent-header');

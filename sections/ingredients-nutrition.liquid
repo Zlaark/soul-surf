@@ -481,39 +481,6 @@
       <h2 class="ing-heading">{{ section.settings.heading }}</h2>
       
       <div class="ing-grid">
-        {% for block in section.blocks %}
-          {% if block.type == 'ingredient' %}
-            {% assign ing_image = block.settings.image %}
-            {% assign ing_title = block.settings.title %}
-            
-            {% comment %} Conditional Overrides for 2nd and Last Item {% endcomment %}
-            {% assign variant_meta = product.selected_or_first_available_variant.metafields.custom %}
-            
-            {% if forloop.index == 2 %}
-                 {% if variant_meta.ingredient_2_image.value != blank %}
-                      {% assign ing_image = variant_meta.ingredient_2_image.value %}
-                 {% endif %}
-                 {% if variant_meta.ingredient_2_text.value != blank %}
-                      {% assign ing_title = variant_meta.ingredient_2_text.value %}
-                 {% endif %}
-            {% endif %}
-            
-            {% assign ingredients_count = 0 %}
-            {% for b in section.blocks %}
-               {% if b.type == 'ingredient' %}{% assign ingredients_count = ingredients_count | plus: 1 %}{% endif %}
-            {% endfor %}
-            
-            {% comment %} We need to know if this is the last INGREDIENT block, checking section.blocks loop directly is risky if mixed types {% endcomment %}
-            {% comment %} But here forloop.rindex0 doesn't distinguish block types. Let's rely on standard count or just check if it's the 9th item etc. {% endcomment %}
-            {% comment %} Safer: assume the structure is consistently only ingredient items in this loop (filtered by type)
-              Wait, the loop iterates all blocks. The type check filters. 
-              The 'forloop' object refers to the blocks loop.
-              We can't rely on forloop.last if there are marquee items after. 
-              Let's use a counter.
-            {% endcomment %}
-          {% endif %}
-        {% endfor %}
-        
         {% assign ing_counter = 0 %}
         {% for block in section.blocks %}
           {% if block.type == 'ingredient' %}
@@ -548,7 +515,11 @@
                  {% endif %}
             {% endif %}
 
-            <div class="ing-item" data-index="{{ current_ing_index }}" data-is-second="{% if current_ing_index == 2 %}true{% endif %}" data-is-last="{% if current_ing_index == ing_counter %}true{% endif %}">
+            <div class="ing-item" data-index="{{ current_ing_index }}" data-is-second="{% if current_ing_index == 2 %}true{% endif %}" data-is-last="{% if current_ing_index == ing_counter %}true{% endif %}"
+              {%- if current_ing_index == 2 or current_ing_index == ing_counter %}
+                data-default-img="{% if block.settings.image != blank %}{{ block.settings.image | image_url: width: 200 }}{% endif %}"
+                data-default-text="{{ block.settings.title | escape }}"
+              {%- endif -%}>
               <div class="ing-circle">
                 {% if ing_image != blank %}
                   {{ ing_image | image_url: width: 200 | image_tag: loading: 'lazy' }}
@@ -638,11 +609,15 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function() {
-    const sectionContainer = document.querySelector('.ing-section');
+    var sectionContainer = document.querySelector('.ing-section');
     if (!sectionContainer) return;
 
+    // Cache target elements
+    var secondItem = sectionContainer.querySelector('.ing-item[data-is-second="true"]');
+    var lastItem = sectionContainer.querySelector('.ing-item[data-is-last="true"]');
+
     // Variant data for dynamic updates
-    const variants = [
+    var variants = [
       {% for variant in product.variants %}
         {
           id: "{{ variant.id }}",
@@ -655,62 +630,59 @@
       {% endfor %}
     ];
 
+    /**
+     * Updates an ingredient item's image and label.
+     * Falls back to data-default-img / data-default-text when variant has no override.
+     */
+    function updateIngredientItem(item, variantImg, variantText) {
+        if (!item) return;
+
+        // Use variant value if available, otherwise fall back to block default
+        var finalImg  = variantImg  || item.getAttribute('data-default-img')  || '';
+        var finalText = variantText || item.getAttribute('data-default-text') || '';
+
+        // --- Update image ---
+        var circle = item.querySelector('.ing-circle');
+        if (circle) {
+            var img = circle.querySelector('img');
+            if (finalImg) {
+                if (img) {
+                    img.src = finalImg;
+                    // CRITICAL: remove srcset/sizes so the browser uses the new src
+                    img.removeAttribute('srcset');
+                    img.removeAttribute('sizes');
+                } else {
+                    img = document.createElement('img');
+                    img.src = finalImg;
+                    img.loading = 'lazy';
+                    circle.appendChild(img);
+                }
+            } else if (img) {
+                img.remove();
+            }
+        }
+
+        // --- Update label ---
+        var label = item.querySelector('.ing-label');
+        if (label && finalText) {
+            label.innerHTML = finalText;
+        }
+    }
+
     // Listen for custom event dispatched by main-product.liquid
     document.addEventListener('pp:variant:change', function(e) {
         if (!e.detail || !e.detail.variantId) return;
-        
-        const variantId = String(e.detail.variantId);
-        const match = variants.find(v => String(v.id) === variantId);
+
+        var variantId = String(e.detail.variantId);
+        var match = variants.find(function(v) { return String(v.id) === variantId; });
         if (!match) return;
 
         // Update nutrition card color
         sectionContainer.style.setProperty('--nut-color', match.color);
 
-        // Update 2nd Ingredient Item
-        const secondItem = sectionContainer.querySelector('.ing-item[data-is-second="true"]');
-        if (secondItem) {
-            if (match.ing2_img) {
-                const img = secondItem.querySelector('.ing-circle img');
-                if (img) {
-                    img.src = match.ing2_img;
-                } else {
-                    const circle = secondItem.querySelector('.ing-circle');
-                    if (circle) {
-                        const newImg = document.createElement('img');
-                        newImg.src = match.ing2_img;
-                        newImg.loading = 'lazy';
-                        circle.appendChild(newImg);
-                    }
-                }
-            }
-            if (match.ing2_text) {
-                const label = secondItem.querySelector('.ing-label');
-                if (label) label.innerHTML = match.ing2_text;
-            }
-        }
-
-        // Update Last Ingredient Item
-        const lastItem = sectionContainer.querySelector('.ing-item[data-is-last="true"]');
-        if (lastItem) {
-            if (match.ingLast_img) {
-                const img = lastItem.querySelector('.ing-circle img');
-                if (img) {
-                    img.src = match.ingLast_img;
-                } else {
-                    const circle = lastItem.querySelector('.ing-circle');
-                    if (circle) {
-                        const newImg = document.createElement('img');
-                        newImg.src = match.ingLast_img;
-                        newImg.loading = 'lazy';
-                        circle.appendChild(newImg);
-                    }
-                }
-            }
-            if (match.ingLast_text) {
-                const label = lastItem.querySelector('.ing-label');
-                if (label) label.innerHTML = match.ingLast_text;
-            }
-        }
+        // Update 2nd and Last ingredient items (auto-falls back to defaults)
+        updateIngredientItem(secondItem, match.ing2_img, match.ing2_text);
+        updateIngredientItem(lastItem,   match.ingLast_img, match.ingLast_text);
     });
   });
 </script>

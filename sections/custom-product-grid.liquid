@@ -127,9 +127,15 @@
         },
         {
              "type": "text",
+             "id": "product_url",
+             "label": "Product URL (Full Link)",
+             "info": "Optional: Paste the full product URL with variant (e.g., /products/lemon-lime?variant=123). This is used for the card click link."
+        },
+        {
+             "type": "text",
              "id": "variant_id",
-             "label": "Variant ID",
-             "info": "Required to pick a specific variant. To find ID: Go to Admin > Products > Select Variant. The ID is the number at the end of the URL."
+             "label": "Variant ID (Numeric Only)",
+             "info": "Required for Add to Cart: Enter ONLY the numeric variant ID (e.g., 12345678). Find it at the end of the variant URL in your admin."
         }
       ]
     }
@@ -376,6 +382,18 @@
 
   .pg-card:hover {
     z-index: 5; /* Ensure overlapping elements stay on top */
+  }
+
+  .pg-card-link {
+    display: contents;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .pg-card-link:hover {
+    text-decoration: none;
+    color: inherit;
   }
   
   .pg-card-content {
@@ -771,6 +789,21 @@
         
         <div class="pg-card" style="--bg: {{ card_bg }}; --text: {{ text_color }}; --btn-bg: {{ btn_bg }}; --btn-text: {{ btn_text }};" data-index="{{ forloop.index }}">
            
+           {% comment %} Clickable card area — links to product page with selected variant {% endcomment %}
+           {% liquid
+             assign card_url = '#'
+             
+             if block.settings.product_url != blank
+               assign card_url = block.settings.product_url
+             elsif product != blank
+               assign card_url = product.url
+               if block.settings.variant_id != blank
+                 assign card_url = product.url | append: '?variant=' | append: block.settings.variant_id
+               endif
+             endif
+           %}
+           <a href="{{ card_url }}" class="pg-card-link">
+
            <div class="pg-icon-float">
               {% if block.settings.floating_icon != blank %}
                 {{ block.settings.floating_icon | image_url: width: 150 | image_tag: loading: "lazy", width: 75, height: 75 }}
@@ -818,6 +851,8 @@
                 <img src="{{ fallback_image | asset_url }}" class="pg-product-img" alt="{{ block.settings.title }}" loading="lazy" width="400" height="auto">
              {% endif %}
            </div>
+
+           </a>{% comment %} End of pg-card-link {% endcomment %}
 
            <div class="pg-atc-wrapper">
              {% assign show_atc = false %}
@@ -877,6 +912,53 @@ document.addEventListener("DOMContentLoaded", function() {
 
   const grids = document.querySelectorAll('.pg-grid');
   grids.forEach(grid => observer.observe(grid));
+
+  /* ── AJAX Add to Cart for Custom Product Grid ── */
+  document.querySelectorAll('.pg-atc-form').forEach(function(form) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      var btn = form.querySelector('.pg-atc-btn');
+      var variantId = form.querySelector('input[name="id"]').value;
+      var originalLabel = btn.textContent;
+
+      btn.disabled = true;
+      btn.textContent = 'ADDING...';
+
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: [{ id: parseInt(variantId), quantity: 1 }] })
+      })
+      .then(function(res) { return res.json(); })
+      .then(function() {
+        btn.textContent = 'ADDED ✓';
+        /* Update cart bubble / drawer */
+        return fetch('/cart.js').then(function(r) { return r.json(); }).then(function(cart) {
+          document.querySelectorAll('.cart-count-bubble span[aria-hidden]').forEach(function(el) { el.textContent = cart.item_count; });
+          document.dispatchEvent(new CustomEvent('cart:updated', { detail: { cart: cart } }));
+        });
+      })
+      .then(function() {
+        setTimeout(function() {
+          btn.textContent = originalLabel;
+          btn.disabled = false;
+        }, 1500);
+      })
+      .catch(function(err) {
+        console.error('Add to cart error:', err);
+        btn.textContent = 'ERROR';
+        setTimeout(function() {
+          btn.textContent = originalLabel;
+          btn.disabled = false;
+        }, 2000);
+      });
+    });
+
+    /* Stop button click from bubbling up to the card link */
+    form.addEventListener('click', function(e) { e.stopPropagation(); });
+  });
 });
 
 function scrollProductGrid(sectionId, direction) {

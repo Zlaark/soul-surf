@@ -10,6 +10,8 @@
 
 <script>
   window.stickyAtcConfig = {
+    subtitle_text: "{{ section.settings.sale_subtitle_text }}",
+    subtitle_color: "{{ section.settings.sale_subtitle_color }}",
     {% for variant in product.variants %}
       "{{ variant.id }}": {
         "heading": "{{ variant.metafields.custom.product_heading | default: product.title | escape }}",
@@ -192,10 +194,10 @@
           {{ variant_heading }}
         </h3>
       </div>
-      <!-- Hardcoded sale text as per reference image request context -->
-      <div class="sticky-atc__subtitle">
+      <!-- Sale text - editable via section settings -->
+      <div class="sticky-atc__subtitle" style="color: {{ section.settings.sale_subtitle_color }};">
         <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-        Valentine's Day Sale: 20% off sitewide!
+        {{ section.settings.sale_subtitle_text }}
       </div>
     </div>
 
@@ -214,11 +216,12 @@
 
       <product-form>
         {%- form 'product', product, id: product_form_id, class: 'form', novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
-          <input type="hidden" name="id" value="{{ current_variant.id }}">
+          <input type="hidden" name="id" value="{{ current_variant.id }}" class="sticky-atc-variant-id">
+          <input type="hidden" name="quantity" value="1" class="sticky-atc-quantity">
           <button
             type="submit"
             name="add"
-            class="sticky-atc__button"
+            class="sticky-atc__button sticky-atc-submit-btn"
             style="background-color: {{ variant_heading_color }};"
             {% if current_variant.available == false %}disabled{% endif %}
           >
@@ -250,6 +253,79 @@
         stickyBar.classList.remove('is-visible');
       }
     });
+
+    // Form Submission Handler
+    const form = stickyBar.querySelector('form');
+    const submitBtn = stickyBar.querySelector('.sticky-atc-submit-btn');
+
+    if (form && submitBtn) {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Get variant ID and quantity
+        const variantId = stickyBar.querySelector('.sticky-atc-variant-id').value;
+        const quantity = parseInt(stickyBar.querySelector('.sticky-atc-quantity').value);
+
+        // Disable button and show loading state
+        submitBtn.disabled = true;
+        const originalText = submitBtn.querySelector('span').textContent;
+        submitBtn.querySelector('span').textContent = 'Adding...';
+
+        // Add to cart via Shopify's API
+        fetch('/cart/add.js', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            items: [
+              {
+                id: variantId,
+                quantity: quantity
+              }
+            ]
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          // Fetch updated cart data
+          return fetch('/cart.js').then(res => res.json()).then(cartData => {
+            // Show success feedback
+            submitBtn.querySelector('span').textContent = 'Added!';
+            setTimeout(() => {
+              submitBtn.querySelector('span').textContent = originalText;
+              submitBtn.disabled = false;
+            }, 2000);
+
+            // Dispatch custom event for cart updates (works with most Shopify themes)
+            document.dispatchEvent(new CustomEvent('cart:updated', {
+              detail: { cart: cartData }
+            }));
+
+            // Dispatch alternative event names for different theme compatibility
+            document.dispatchEvent(new CustomEvent('product:added', {
+              detail: { variant: variantId, quantity: quantity, cart: cartData }
+            }));
+
+            // If using Shopify's native cart drawer, trigger its update
+            if (window.ShopifyAnalytics) {
+              window.ShopifyAnalytics.lib.track('Added to Cart', {
+                product_id: variantId,
+                quantity: quantity
+              });
+            }
+          });
+        })
+        .catch(error => {
+          console.error('Error adding to cart:', error);
+          submitBtn.querySelector('span').textContent = 'Error - Try Again';
+          submitBtn.disabled = false;
+          setTimeout(() => {
+            submitBtn.querySelector('span').textContent = originalText;
+          }, 2000);
+        });
+      });
+    }
 
     // Money Formatter (Basic Implementation)
     function formatMoney(cents, format) {
@@ -316,7 +392,7 @@
       }
 
       // 2. Update hidden variant ID
-      const input = stickyBar.querySelector('input[name="id"]');
+      const input = stickyBar.querySelector('.sticky-atc-variant-id');
       if (input) input.value = variantId;
 
       // 3. Update Price (text + heading color)
@@ -350,6 +426,12 @@
         }
         button.style.backgroundColor = headingColor;
       }
+
+      // 6. Update Subtitle if needed (uses config values set at page load)
+      const subtitleEl = stickyBar.querySelector('.sticky-atc__subtitle');
+      if (subtitleEl) {
+        subtitleEl.style.color = window.stickyAtcConfig.subtitle_color;
+      }
     }
 
     // Listen for the custom variant change event from main-product.liquid
@@ -360,7 +442,20 @@
 {% schema %}
 {
   "name": "Sticky Add to Cart",
-  "settings": [],
+  "settings": [
+    {
+      "type": "text",
+      "id": "sale_subtitle_text",
+      "label": "Sale Subtitle Text",
+      "default": "Valentine's Day Sale: 20% off sitewide!"
+    },
+    {
+      "type": "color",
+      "id": "sale_subtitle_color",
+      "label": "Sale Subtitle Color",
+      "default": "#C51868"
+    }
+  ],
   "presets": [
     {
       "name": "Sticky Add to Cart"
