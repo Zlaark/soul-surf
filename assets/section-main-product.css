@@ -472,6 +472,7 @@
   .pp-main-image {
     max-width: 90%;
     max-height: 480px;
+    object-fit: contain;
   }
 
   .pp-title {
@@ -550,7 +551,7 @@
   }
 
   .pp-container {
-    padding: 0 20px;
+    padding: 0 0px;
   }
 
   .pp-grid {
@@ -619,7 +620,7 @@
   }
 
   .pp-container {
-    padding: 0 15px;
+    padding: 0px;
   }
 
   .pp-gallery-inner {
@@ -632,8 +633,12 @@
   }
 
   .pp-main-image {
-    max-width: 100%;
+    max-width: 90vw;
     max-height: 500px;
+  }
+
+  .pp-info {
+    padding: 0px 15px 15px 15px;
   }
 
   .pp-thumbnails {
@@ -643,7 +648,7 @@
     gap: 10px;
     overflow-x: auto;
     padding-bottom: 10px;
-    justify-content: flex-start;
+    justify-content: center;
     -webkit-overflow-scrolling: touch;
   }
 
@@ -691,7 +696,7 @@
   }
 
   .pp-swatches-flavor {
-    gap: 20px;
+    gap: 9px !important;
     flex-wrap: wrap;
     justify-content: center;
   }
@@ -800,32 +805,212 @@
 
   .pp-feature-text {
     font-size: 11px;
-    white-space: normal;
-    /* Allow wrapping to reduce width */
     max-width: 75px;
   }
 
   .pp-swatches-flavor {
-    gap: 15px;
+    gap: 8px !important;
   }
 
   .pp-swatch-flavor-item {
     width: 75px;
-    /* Match feature item width */
   }
 
   .pp-flavor-circle {
     width: 55px;
-    /* Match feature icon size */
     height: 55px;
+  }
+}
+
+/* =========================================
+   TABLET SPECIFIC OVERRIDES (768px - 1024px)
+   "Increase size of all elements in tablets only"
+   ========================================= */
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+
+  /* 1. Container & Layout */
+  .pp-container {
+    padding: 0 40px;
+    /* Restore some padding */
+  }
+
+  /* 1.5 Gallery Layout (Desktop-like) */
+  .pp-gallery-inner {
+    flex-direction: row !important;
+    /* Force side-by-side */
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .pp-main-image-wrapper {
+    order: 1 !important;
+    /* Image on right */
+    flex: 1;
+    width: auto;
+    /* Let flex handle it */
+  }
+
+  /* 2. Typography Boost */
+  .pp-title {
+    font-size: 55px !important;
+    /* Significant increase */
+  }
+
+  .pp-tagline {
+    font-size: 14px;
+    letter-spacing: 2.5px;
+  }
+
+  .pp-accordion-title {
+    font-size: 16px;
+  }
+
+  .pp-accordion-content {
+    font-size: 15px;
+  }
+
+  /* 3. Main Image - Make it pop */
+  .pp-main-image {
+    max-width: 100% !important;
+    /* Fill the wrapper */
+    max-height: 600px !important;
+    width: 100%;
+    margin: 0;
+    /* Reset centering */
+  }
+
+  /* 4. Thumbnails - Larger touch targets */
+  .pp-thumbnails {
+    order: 0 !important;
+    /* Thumbnails on left */
+    flex-direction: column !important;
+    /* Stack vertically */
+    gap: 20px;
+    width: 130px !important;
+    /* Fixed width for column */
+    overflow-x: visible;
+    /* No scroll needed */
+    justify-content: flex-start;
+    margin-top: 0 !important;
+  }
+
+  .pp-thumbnail {
+    width: 130px !important;
+    height: 130px !important;
+    min-width: 130px;
+  }
+
+  /* 5. Features - High visibility & Left Aligned */
+  .pp-features-row {
+    gap: 40px;
+    justify-content: flex-start;
+    /* Left align */
+  }
+
+  .pp-feature-item {
+    width: 120px;
+  }
+
+  .pp-feature-icon {
+    width: 100px;
+    height: 100px;
+  }
+
+  .pp-feature-icon img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .pp-feature-text {
+    font-size: 15px;
+  }
+
+  /* 6. Swatches - Easy to tap & Left Aligned */
+  .pp-swatches-flavor {
+    gap: 25px !important;
+    justify-content: flex-start !important;
+    /* Left align */
+  }
+
+  .pp-swatch-flavor-item {
+    width: 110px;
+  }
+
+  .pp-flavor-circle {
+    width: 90px;
+    /* Huge touch target */
+    height: 90px;
   }
 
   .pp-flavor-name {
-    font-size: 10px;
-    white-space: normal;
-    /* Allow wrapping */
+    font-size: 15px;
   }
+
+  /* Pack Size Pills - Side-by-Side & Full Width */
+  .pp-swatches-pack {
+    width: 100% !important;
+    max-width: 100% !important;
+    /* Override desktop max-width */
+    flex-direction: row !important;
+    /* Side-by-side */
+    gap: 15px;
+    justify-content: space-between;
+  }
+
+  .pp-swatch-pack-item {
+    padding: 15px 10px;
+    flex: 1;
+    width: auto;
+    display: flex;
+    flex-direction: column !important;
+    /* Stack text inside button */
+    align-items: center;
+    justify-content: center;
+    border-radius: 50px;
+    height: auto;
+    min-height: 80px;
+  }
+
+  .pp-pack-name {
+    margin-bottom: 5px;
+    white-space: nowrap;
+  }
+
+  .pp-pack-price-box {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .pp-pack-name {
+    font-size: 15px;
+    /* Reduced from 18px */
+  }
+
+  .pp-pack-price {
+    font-size: 15px;
+    /* Reduced from 18px */
+  }
+
+  .pp-pack-compare {
+    font-size: 14px;
+  }
+
+  /* 7. Add to Cart */
+  .pp-add-to-cart {
+    padding: 22px;
+    font-size: 18px;
+    max-width: 100%;
+    /* Full width on tablet for easier access */
+    margin-top: 20px;
+  }
+
+  /* 8. Fix grid/flex alignment for Portrait Mode (768-990) specifically if needed */
+  /* The extensive overrides above should handle both portrait and landscape well 
+     by simply making components "chunkier". */
 }
+
+
 
 /* Hide Shop Pay button and View button on mobile */
 @media screen and (max-width: 768px) {

@@ -156,16 +156,31 @@
                 <div class="pp-swatches-flavor">
                     {% for value in flavour_option.values %}
                         {% comment %} Find the variant with this flavor value {% endcomment %}
-                        {% assign flavor_variant = nil %}
+                        {% assign flavor_variant = false %}
+                        {% assign found_flavor = false %}
                         {% for variant in product.variants %}
                             {% if variant.option1 == value or variant.option2 == value or variant.option3 == value %}
                                 {% assign flavor_variant = variant %}
+                                {% assign found_flavor = true %}
                                 {% break %}
                             {% endif %}
                         {% endfor %}
                         
-                        {% comment %} Get the variant image or fallback to product image {% endcomment %}
-                        {% if flavor_variant and flavor_variant.featured_image %}
+                        {% comment %} Reset image variable, then check swatch metafield {% endcomment %}
+                        {% assign variant_img = '' %}
+                        {% assign swatch_img = '' %}
+                        {% assign meta_images = '' %}
+
+                        {% if found_flavor %}
+                            {% assign swatch_img = flavor_variant.metafields.custom.variant_swatch_image.value %}
+                            {% assign meta_images = flavor_variant.metafields.custom.variant_images.value %}
+                        {% endif %}
+
+                        {% if swatch_img != blank %}
+                            {% assign variant_img = swatch_img | image_url: width: 150 %}
+                        {% elsif meta_images != blank and meta_images.size > 0 %}
+                            {% assign variant_img = meta_images[0] | image_url: width: 150 %}
+                        {% elsif found_flavor and flavor_variant.featured_image %}
                             {% assign variant_img = flavor_variant.featured_image | image_url: width: 150 %}
                         {% elsif product.featured_image %}
                             {% assign variant_img = product.featured_image | image_url: width: 150 %}
@@ -299,6 +314,9 @@
   </div>
 </section>
 
+<!-- Hidden Judge.me Review Widget (enables "Write a Review" button) -->
+<div id="judgeme_product_reviews" data-id="{{ product.id }}" style="display:none !important; visibility:hidden; height:0; overflow:hidden;"></div>
+
 <!-- Hidden Variant Content for Rich Text -->
 <div id="pp-variant-content-store" style="display: none;">
   {% for variant in product.variants %}
@@ -412,6 +430,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // 2. Define Update Function
   function updateVariantUI(variantId) {
+      // *** CRITICAL: Update the hidden form input so the correct variant gets added to cart ***
+      const form = section.querySelector('form');
+      if (form) {
+          const hiddenInput = form.querySelector('input[name="id"]');
+          if (hiddenInput) {
+              hiddenInput.value = variantId;
+          }
+      }
+
+      // Update URL with selected variant for bookmarking/sharing
+      if (variantId) {
+          const url = new URL(window.location.href);
+          url.searchParams.set('variant', variantId);
+          window.history.replaceState({}, '', url.toString());
+      }
+
       // Dispatch Custom Event for other sections (like Ingredients/Nutrition, Sticky ATC) to listen to
       document.dispatchEvent(new CustomEvent('pp:variant:change', { 
           detail: { variantId: variantId } 
@@ -553,7 +587,21 @@ document.addEventListener('DOMContentLoaded', function() {
       if (initialResolvedVariant) {
           updateVariantUI(initialResolvedVariant.id);
       }
-  }
+  } // Accordion Logic (Exclusive Opening)
+  const productAccordions = section.querySelectorAll('.pp-accordions details');
+  productAccordions.forEach((targetDetail) => {
+    targetDetail.addEventListener('click', (e) => {
+       // Check if we are about to open it (it is currently closed)
+       if (!targetDetail.open) { 
+          productAccordions.forEach((detail) => {
+             // Close all other open details
+             if (detail !== targetDetail && detail.open) {
+                detail.removeAttribute('open');
+             }
+          });
+       }
+    });
+  });
 });
 </script>
 

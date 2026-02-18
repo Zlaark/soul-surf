@@ -72,7 +72,7 @@
 
   .sticky-atc__title {
     font-family: 'Playfair Display', serif;
-    font-size: 20px;
+    font-size: 23px;
     font-weight: 700;
     color: #13785A; /* Default dark green */
     margin: 0;
@@ -194,27 +194,32 @@
           {{ variant_heading }}
         </h3>
       </div>
+      {%- if section.settings.sale_subtitle_text != blank -%}
       <!-- Sale text - editable via section settings -->
       <div class="sticky-atc__subtitle" style="color: {{ section.settings.sale_subtitle_color }};">
         <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
         {{ section.settings.sale_subtitle_text }}
       </div>
+      {%- endif -%}
     </div>
+
+    <!-- CENTER (Desktop Only for now, or unified): Price -->
+     <div class="sticky-atc__price-box">
+          <span class="sticky-atc__price" style="color: {{ variant_heading_color }};">{{ current_variant.price | money }}</span>
+          <span class="sticky-atc__compare-price {% unless current_variant.compare_at_price > current_variant.price %}hidden{% endunless %}">
+            {{ current_variant.compare_at_price | money }}
+          </span>
+      </div>
 
     <!-- RIGHT: Actions -->
     <div class="sticky-atc__actions">
       
       <div class="sticky-atc__delivery-text">
         12 Cans delivered one time<br>
-        <div class="sticky-atc__price-box">
-          <span class="sticky-atc__price" style="color: {{ variant_heading_color }};">{{ current_variant.price | money }}</span>
-          <span class="sticky-atc__compare-price {% unless current_variant.compare_at_price > current_variant.price %}hidden{% endunless %}">
-            {{ current_variant.compare_at_price | money }}
-          </span>
-        </div>
+        <!-- Price moved out for better mobile control -->
       </div>
 
-      <product-form>
+      <product-form class="sticky-atc__form-wrapper">
         {%- form 'product', product, id: product_form_id, class: 'form', novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
           <input type="hidden" name="id" value="{{ current_variant.id }}" class="sticky-atc-variant-id">
           <input type="hidden" name="quantity" value="1" class="sticky-atc-quantity">
@@ -239,6 +244,236 @@
 
   </div>
 </div>
+
+<style>
+/* ... (Existing Desktop Styles kept mostly same, adding overrides) ... */
+
+  .sticky-atc {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #FFF5E6; /* Cream background */
+    border-top: 1px solid rgba(0,0,0,0.05);
+    padding: 16px 0;
+    z-index: 999; 
+    transform: translateY(100%);
+    transition: transform 0.3s ease-in-out;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+    visibility: hidden;
+  }
+
+  .sticky-atc.is-visible {
+    transform: translateY(0);
+    visibility: visible;
+  }
+
+  .sticky-atc__inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .sticky-atc__info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .sticky-atc__title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .sticky-atc__title {
+    font-family: 'Playfair Display', serif;
+    font-size: 23px;
+    font-weight: 700;
+    color: #13785A;
+    margin: 0;
+    line-height: 1;
+    transition: color 0.3s ease;
+  }
+
+  .sticky-atc__subtitle {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #C51868; 
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .sticky-atc__subtitle svg {
+    width: 12px;
+    height: 12px;
+    fill: currentColor;
+  }
+
+  .sticky-atc__actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .sticky-atc__delivery-text {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 12px;
+    color: #1A4D3E;
+    text-align: right;
+    line-height: 1.2;
+  }
+
+  .sticky-atc__price-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    /* justify-content: flex-end; -- Removed to allow flex control */
+  }
+
+  .sticky-atc__price {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #13785A;
+  }
+  
+  .sticky-atc__compare-price {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
+    color: #666;
+    text-decoration: line-through;
+  }
+
+  .sticky-atc__compare-price.hidden {
+    display: none;
+  }
+
+  .sticky-atc__button {
+    background-color: #13785A; 
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 32px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    text-transform: capitalize;
+    white-space: nowrap;
+  }
+
+  .sticky-atc__button:hover {
+    background-color: #0E5942;
+  }
+
+  .sticky-atc__button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+
+  /* Desktop Specific Fixes since we moved price out */
+  @media screen and (min-width: 769px) {
+      .sticky-atc__price-box {
+          order: 2; /* Place price before actions */
+          margin-right: 20px;
+          margin-left: auto; /* Push to right */
+      }
+      .sticky-atc__actions {
+          order: 3;
+      }
+  }
+
+  /* MOBILE LAYOUT overrides */
+  @media screen and (max-width: 768px) {
+    .sticky-atc {
+        padding: 12px 0;
+        border-radius: 20px 20px 0 0; /* Slight radius on top */
+        box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+    }
+
+    .sticky-atc__inner {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      grid-template-rows: auto auto auto;
+      grid-template-areas:
+        "button button"
+        "title price"
+        "subtitle subtitle";
+      gap: 8px 0; /* Vertical gap 8px */
+      width: 100%;
+      padding: 0 16px;
+    }
+    
+    /* 1. Button Area */
+    .sticky-atc__form-wrapper {
+        grid-area: button;
+        width: 100%;
+    }
+    
+    .sticky-atc__button {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      justify-content: center;
+      display: flex;
+    }
+
+    /* 2. Title Area */
+    .sticky-atc__info {
+        display: contents; /* Flattens children for grid, or we just target children */
+    }
+    
+    .sticky-atc__title-row {
+        grid-area: title;
+        justify-self: start;
+        padding-top: 4px; /* Slight spacing from button */
+    }
+
+    .sticky-atc__title {
+      font-size: 18px;
+    }
+
+    /* 3. Price Area */
+    .sticky-atc__price-box {
+        grid-area: price;
+        justify-self: end;
+        align-self: center;
+        padding-top: 4px;
+    }
+    
+    .sticky-atc__price {
+        font-size: 16px;
+    }
+
+    /* 4. Subtitle Area */
+    .sticky-atc__subtitle {
+       grid-area: subtitle;
+       justify-self: center; /* Center the valentine text */
+       width: 100%;
+       justify-content: center;
+       font-size: 11px;
+       margin-top: 2px;
+       padding-bottom: 4px; /* bottom padding */
+    }
+    
+    /* Hide specific elements on mobile */
+    .sticky-atc__delivery-text {
+      display: none; 
+    }
+    
+    .sticky-atc__actions {
+        display: contents; /* Let children participate in grid */
+    }
+  }
+</style>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {

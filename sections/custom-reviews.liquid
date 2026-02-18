@@ -338,30 +338,39 @@
     <h2 class="cr-main-heading">{{ section.settings.heading }}</h2>
     
     <div class="cr-action-bar">
-      <div class="cr-count">{{ section.blocks.size }} Reviews</div>
-      <a href="{{ section.settings.button_link | default: '#' }}" class="cr-write-btn">{{ section.settings.button_text }}</a>
+      <div class="cr-count">{{ product.metafields.judgeme.review_count }} Reviews</div>
+      <a href="#judgeme_product_reviews" class="cr-write-btn jdgm-write-rev-link">
+        {{ section.settings.button_text }}
+      </a>
     </div>
 
-    <div class="cr-reviews-list">
-      {% for block in section.blocks %}
-        <div class="cr-card">
-          <div class="cr-card-left">
-            <div class="cr-author">{{ block.settings.author }}</div>
-            {% if block.settings.verified %}
+    {% assign reviews = product.metafields.judgeme.reviews %}
+
+    <div class="cr-reviews-list" id="cr-reviews-list-{{ section.id }}">
+      {% if reviews != blank %}
+        {% for review in reviews %}
+          <div class="cr-card">
+            <div class="cr-card-left">
+              <div class="cr-author">{{ review.reviewer_name }}</div>
+
               <div class="cr-badge">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
                 Verified buyer
               </div>
-            {% endif %}
-            <div class="cr-stars">
-              {% for i in (1..block.settings.stars) %}★{% endfor %}
+
+              <div class="cr-stars">
+                {% for i in (1..review.rating) %}★{% endfor %}
+              </div>
+            </div>
+
+            <div class="cr-card-right">
+              <div class="cr-content">{{ review.body }}</div>
             </div>
           </div>
-          <div class="cr-card-right">
-            <div class="cr-content">{{ block.settings.content }}</div>
-          </div>
-        </div>
-      {% endfor %}
+        {% endfor %}
+      {% else %}
+        <p>No reviews yet</p>
+      {% endif %}
     </div>
 
     <div class="cr-pagination" id="cr-pagination-{{ section.id }}">
@@ -440,3 +449,7 @@
     showPage(1);
   });
 </script>
+
+<div style="display:none">
+  {% render 'judgeme_widgets', widget_type: 'judgeme_review_widget', product: product %}
+</div>

@@ -262,7 +262,8 @@
         line-height: 1.2;
     }
 
-    .icon-btn-wrapper {
+    .icon-btn-wrapper,
+    .account-icon-wrapper {
         position: relative; /* Needed for cart count badge positioning */
         width: 45px;
         height: 45px;
@@ -278,7 +279,8 @@
         cursor: pointer;
     }
 
-    .icon-btn-wrapper:hover {
+    .icon-btn-wrapper:hover,
+    .account-icon-wrapper:hover {
         transform: scale(1.05);
         background-color: rgba(236, 135, 0, 0.2);
     }
@@ -513,7 +515,8 @@
            align-items: center; /* Vertically center icons */
         }
         .find-store-link { display: none; }
-        .icon-btn-wrapper {
+        .icon-btn-wrapper,
+        .account-icon-wrapper {
             width: 35px;
             height: 35px;
         }
@@ -537,7 +540,8 @@
             width: 33px; /* Match icon-btn-wrapper */
             height: 33px;
         }
-        .icon-btn-wrapper {
+        .icon-btn-wrapper,
+        .account-icon-wrapper {
             width: 33px;
             height: 33px;
         }
@@ -587,11 +591,13 @@
 
     <!-- Right: "Find in store" + User + Cart -->
     <div class="header-right">
-        <a href="#" class="find-store-link">Find in store</a>
+        {%- if section.settings.find_store_text != blank -%}
+        <a href="{{ section.settings.find_store_link | default: '#' }}" class="find-store-link">{{ section.settings.find_store_text }}</a>
+        {%- endif -%}
         
         {%- if shop.customer_accounts_enabled -%}
-        <a href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}" class="icon-btn-wrapper">
-             <img src="{{ 'login.svg' | asset_url }}" class="icon-svg" alt="Login" width="20" height="20" loading="lazy">
+        <a href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}" class="account-icon-wrapper" data-no-instant onclick="event.stopPropagation();">
+             <img src="{{ 'login.svg' | asset_url }}" class="icon-svg" alt="Login" width="20" height="20">
         </a>
         {%- endif -%}
 
@@ -617,7 +623,9 @@
            {%- for link in section.settings.menu.links -%}
               <a href="{{ link.url }}" class="drawer-link">{{ link.title }}</a>
            {%- endfor -%}
-           <a href="#" class="drawer-link">Find in store</a>
+           {%- if section.settings.find_store_text != blank -%}
+           <a href="{{ section.settings.find_store_link | default: '#' }}" class="drawer-link">{{ section.settings.find_store_text }}</a>
+           {%- endif -%}
            {%- if shop.customer_accounts_enabled -%}
               <a href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}" class="drawer-link">Account</a>
            {%- endif -%}
@@ -921,6 +929,19 @@
       "id": "menu",
       "default": "main-menu",
       "label": "t:sections.header.settings.menu.label"
+    },
+    {
+      "type": "text",
+      "id": "find_store_text",
+      "label": "Find in Store Text",
+      "default": "Find in store",
+      "info": "Text displayed for the store locator link"
+    },
+    {
+      "type": "url",
+      "id": "find_store_link",
+      "label": "Find in Store Link",
+      "info": "URL for the store locator page"
     },
     {
       "type": "select",

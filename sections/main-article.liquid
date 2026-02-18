@@ -1,68 +1,224 @@
 {{ 'section-blog-post.css' | asset_url | stylesheet_tag }}
 
+{%- style -%}
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+
+  /* Policy page style match for article */
+  #shopify-section-{{ section.id }} {
+    background-color: #FFF5E6;
+  }
+
+  .article-template {
+    padding-top: 50px;
+    padding-bottom: 60px;
+  }
+
+  /* Hero Card Styles */
+  .article-hero-card {
+    background-color: #D1EDE9; /* Mint Green */
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 5rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .article-hero-card__image-wrapper {
+    width: 100%;
+    height: 300px; /* Min height for mobile */
+    position: relative;
+    margin: 0 !important; /* Reset generic margins */
+  }
+  
+  .article-hero-card__image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 0; /* Let container handle radius */
+  }
+
+  .article-hero-card__content-wrapper {
+    padding: 3rem 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: left;
+    background-color: #FCDBA3; /* Warm golden background behind heading */
+  }
+
+  /* Desktop Hero Layout */
+  @media screen and (min-width: 990px) {
+    .article-hero-card {
+      flex-direction: row;
+      align-items: stretch;
+      min-height: 300px; /* Reduced from 400px */
+    }
+    
+    .article-hero-card__image-wrapper {
+      width: 25%; /* Reduced from 40% */
+      height: auto; /* Fill height */
+    }
+
+    .article-hero-card__content-wrapper {
+      width: 80%; /* Increased from 60% */
+      padding: 4rem 5rem;
+    }
+  }
+  
+  @media screen and (max-width: 749px) {
+    .article-template {
+      padding-top: 40px;
+      padding-bottom: 40px;
+    }
+  }
+
+  /* Widen content (reduce side padding effect) */
+  .article-template .page-width--narrow {
+    max-width: 100% !important; /* Full width */
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+
+  @media screen and (min-width: 750px) {
+    .article-template .page-width--narrow {
+        padding-left: 8rem;
+        padding-right: 8rem;
+    }
+  }
+  
+  /* Override any specific rte width constraints */
+  .article-template__content.rte,
+  .article-template__content div,
+  .article-template__content p {
+      max-width: 100% !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      width: 100% !important;
+  }
+
+  /* Increase font size details */
+  .article-template__content, 
+  .article-template__content p,
+  .article-template__content li,
+  .article-template__content div,
+  .article-template__content span {
+    font-size: 1.8rem !important; /* Reduced from 2.2rem */
+    line-height: 1.6 !important;
+    color: #1A1A1A; /* Ensure high contrast */
+  }
+  
+  @media screen and (min-width: 750px) {
+    .article-template__content,
+    .article-template__content p,
+    .article-template__content li,
+    .article-template__content div,
+    .article-template__content span {
+        font-size: 2.4rem !important; /* Reduced from 3.0rem */
+    }
+
+    .article-template__content h2 {
+        font-size: 3.2rem !important;
+        margin-top: 4rem;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .article-template__content h3 {
+        font-size: 2.8rem !important;
+        width: 100%;
+        max-width: 100%;
+    }
+  }
+
+  /* Ensure content images auto-resize */
+  .article-template__content img {
+    max-width: 85% !important;
+    height: auto !important;
+    display: block;
+    margin: 3rem auto;
+    border-radius: 8px;
+  }
+
+  /* Hero Typography */
+  h1.article-template__title {
+    font-family: 'Playfair Display', serif !important;
+    font-weight: 700;
+    font-size: 3.6rem !important; /* Larger on mobile too */
+    line-height: 1.1;
+    margin-bottom: 2rem;
+    color: #0d3b2e;
+    margin-top: 0;
+  }
+
+  @media screen and (min-width: 750px) {
+    h1.article-template__title {
+        font-size: 5.6rem !important; /* Much larger "Hero" size */
+    }
+  }
+{%- endstyle -%}
+
 <article class="article-template">
+  
+  {%- assign title_block = section.blocks | where: "type", "title" | first -%}
+  {%- assign featured_image_block = section.blocks | where: "type", "featured_image" | first -%}
+
+  <!-- HERO CARD SECTION -->
+  <div class="page-width">
+    <div class="article-hero-card">
+      
+      <!-- LEFT: Image -->
+      <div class="article-hero-card__image-wrapper">
+        {%- if article.image -%}
+          <img
+            srcset="
+              {% if article.image.width >= 350 %}{{ article.image | image_url: width: 350 }} 350w,{% endif %}
+              {% if article.image.width >= 750 %}{{ article.image | image_url: width: 750 }} 750w,{% endif %}
+              {% if article.image.width >= 1100 %}{{ article.image | image_url: width: 1100 }} 1100w,{% endif %}
+              {{ article.image | image_url }} {{ article.image.width }}w
+            "
+            sizes="(min-width: 1200px) 600px, (min-width: 990px) 50vw, 100vw"
+            src="{{ article.image | image_url: width: 1100 }}"
+            loading="eager"
+            fetchpriority="high"
+            width="{{ article.image.width }}"
+            height="{{ article.image.height }}"
+            alt="{{ article.image.alt | escape }}"
+          >
+        {%- endif -%}
+      </div>
+
+      <!-- RIGHT: Content -->
+      <div class="article-hero-card__content-wrapper">
+        
+        <!-- Metadata Row: Read Time -->
+        <div class="caption-with-letter-spacing" style="margin-bottom: 1rem; font-weight: 600; color: #0d3b2e;">
+            {%- assign word_count = article.content | strip_html | split: ' ' | size -%}
+            {%- assign read_time = word_count | divided_by: 200 | plus: 1 -%}
+            {{ read_time }} min read
+        </div>
+
+        <h1 class="article-template__title">
+          {{ article.title | escape }}
+        </h1>
+
+        <!-- Metadata Row: Date & Author -->
+        <div class="caption-with-letter-spacing" style="font-size: 1.4rem;">
+            {%- if block.settings.blog_show_date or title_block.settings.blog_show_date -%}
+                <span>Posted {{ article.published_at | date: "%b %d, %Y" }}</span>
+            {%- endif -%}
+            {%- if block.settings.blog_show_author or title_block.settings.blog_show_author -%}
+                <span> &bull; {{ article.author }}</span>
+            {%- endif -%}
+        </div>
+      </div>
+    
+    </div>
+  </div>
+
+  <!-- REST OF CONTENT -->
   {%- for block in section.blocks -%}
     {%- case block.type -%}
-      {%- when '@app' -%}
-        <div class="page-width page-width--narrow">
-          {% render block %}
-        </div>
-      {%- when 'featured_image' -%}
-        {%- if article.image -%}
-          <div
-            class="article-template__hero-container{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}"
-            {{ block.shopify_attributes }}
-          >
-            <div
-              class="article-template__hero-{{ block.settings.image_height }} media"
-              {% if block.settings.image_height == 'adapt' and article.image %}
-                style="padding-bottom: {{ 1 | divided_by: article.image.aspect_ratio | times: 100 }}%;"
-              {% endif %}
-            >
-              <img
-                srcset="
-                  {% if article.image.width >= 350 %}{{ article.image | image_url: width: 350 }} 350w,{% endif %}
-                  {% if article.image.width >= 750 %}{{ article.image | image_url: width: 750 }} 750w,{% endif %}
-                  {% if article.image.width >= 1100 %}{{ article.image | image_url: width: 1100 }} 1100w,{% endif %}
-                  {% if article.image.width >= 1500 %}{{ article.image | image_url: width: 1500 }} 1500w,{% endif %}
-                  {% if article.image.width >= 2200 %}{{ article.image | image_url: width: 2200 }} 2200w,{% endif %}
-                  {% if article.image.width >= 3000 %}{{ article.image | image_url: width: 3000 }} 3000w,{% endif %}
-                  {{ article.image | image_url }} {{ article.image.width }}w
-                "
-                sizes="(min-width: {{ settings.page_width }}px) {{ settings.page_width | minus: 100 }}px, (min-width: 750px) calc(100vw - 10rem), 100vw"
-                src="{{ article.image | image_url: width: 1100 }}"
-                loading="eager"
-                fetchpriority="high"
-                width="{{ article.image.width }}"
-                height="{{ article.image.height }}"
-                alt="{{ article.image.alt | escape }}"
-              >
-            </div>
-          </div>
-        {%- endif -%}
-
-      {%- when 'title' -%}
-        <header
-          class="page-width page-width--narrow{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}"
-          {{ block.shopify_attributes }}
-        >
-          <h1
-            class="article-template__title"
-          >
-            {{ article.title | escape }}
-          </h1>
-          {%- if block.settings.blog_show_date -%}
-            <span class="circle-divider caption-with-letter-spacing">
-              {{- article.published_at | time_tag: format: 'date' -}}
-            </span>
-          {%- endif -%}
-          {%- if block.settings.blog_show_author -%}
-            <span class="caption-with-letter-spacing">
-              <span>{{ article.author }}</span>
-            </span>
-          {%- endif -%}
-        </header>
-
       {%- when 'content' -%}
         <div
           class="article-template__content page-width page-width--narrow rte{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"

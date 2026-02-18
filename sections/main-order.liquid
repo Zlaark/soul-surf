@@ -55,10 +55,39 @@
                 data-label="{{ 'customer.order.product' | t }}"
               >
                 <div>
+                  {%- assign line_item_image = line_item.image -%}
+                  {%- if line_item.variant.metafields.custom.variant_images.value != blank -%}
+                    {%- assign line_item_image = line_item.variant.metafields.custom.variant_images.value | first -%}
+                  {%- endif -%}
+
                   {%- if line_item.url != blank -%}
-                    <a href="{{ line_item.url }}">{{ line_item.title | escape }}</a>
+                    <a href="{{ line_item.url }}">
+                      {%- if line_item_image -%}
+                        <img
+                          src="{{ line_item_image | image_url: width: 100 }}"
+                          alt="{{ line_item_image.alt | default: line_item.title | escape }}"
+                          loading="lazy"
+                          width="50"
+                          height="50"
+                          style="object-fit: cover; border-radius: 8px; margin-right: 10px; vertical-align: middle;"
+                        >
+                      {%- endif -%}
+                      {{ line_item.title | escape }}
+                    </a>
                   {%- else -%}
-                    <p>{{ line_item.title | escape }}</p>
+                    <p>
+                      {%- if line_item_image -%}
+                        <img
+                          src="{{ line_item_image | image_url: width: 100 }}"
+                          alt="{{ line_item_image.alt | default: line_item.title | escape }}"
+                          loading="lazy"
+                          width="50"
+                          height="50"
+                          style="object-fit: cover; border-radius: 8px; margin-right: 10px; vertical-align: middle;"
+                        >
+                      {%- endif -%}
+                      {{ line_item.title | escape }}
+                    </p>
                   {%- endif -%}
                   {%- assign property_size = line_item.properties | size -%}
                   {%- unless line_item.selling_plan_allocation == null and property_size == 0 -%}

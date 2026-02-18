@@ -108,13 +108,7 @@
       {% endfor %}
     </div>
 
-    {% if section.settings.button_text != blank %}
-      <div class="faq-action">
-        <a href="{{ section.settings.button_link | default: '#' }}" class="faq-button">
-          {{ section.settings.button_text }}
-        </a>
-      </div>
-    {% endif %}
+
   </div>
 
 
@@ -314,3 +308,21 @@
     }
   }
 </style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const details = document.querySelectorAll('.faq-list details');
+    details.forEach((targetDetail) => {
+      targetDetail.addEventListener('click', (e) => {
+        // Close others only if we are opening this one
+        if (!targetDetail.open) {
+          details.forEach((detail) => {
+            if (detail !== targetDetail && detail.open) {
+              detail.removeAttribute('open');
+            }
+          });
+        }
+      });
+    });
+  });
+</script>
