@@ -680,7 +680,7 @@
 
   .pp-features-row {
     gap: 15px;
-    justify-content: center;
+    justify-content: left;
   }
 
   .pp-feature-item {
@@ -707,7 +707,7 @@
   .pp-swatches-flavor {
     gap: 9px !important;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: left;
   }
 
   .pp-swatch-flavor-item {
