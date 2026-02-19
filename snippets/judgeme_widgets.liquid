@@ -1,0 +1,19 @@
+{% comment %}
+  Judge.me Widget Snippet (placeholder)
+  The Judge.me app injects its scripts via {{ content_for_header }} in theme.liquid.
+  This snippet exists as a mount-point so {% render 'judgeme_widgets' %} calls don't fail silently.
+  If Judge.me is uninstalled, this file can be safely deleted.
+{% endcomment %}
+
+{% if widget_type == 'judgeme_review_widget' and product %}
+  <div
+    class="jdgm-widget jdgm-review-widget"
+    data-product-title="{{ product.title | escape }}"
+    data-id="{{ product.id }}"
+  ></div>
+{% elsif widget_type == 'judgeme_preview_badge' and product %}
+  <div
+    class="jdgm-widget jdgm-preview-badge"
+    data-id="{{ product.id }}"
+  ></div>
+{% endif %}

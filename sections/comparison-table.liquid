@@ -29,6 +29,144 @@
       "id": "highlight_bg",
       "label": "Highlight Background",
       "default": "#137B56"
+    },
+    {
+      "type": "header",
+      "content": "Row 1"
+    },
+    {
+      "type": "text",
+      "id": "row1_label",
+      "label": "Row 1 – Category Label",
+      "default": "Sugar"
+    },
+    {
+      "type": "text",
+      "id": "row1_soul",
+      "label": "Row 1 – SoulSurf Value",
+      "default": "Zero Added Sugar"
+    },
+    {
+      "type": "text",
+      "id": "row1_generic",
+      "label": "Row 1 – Generic Value",
+      "default": "High"
+    },
+    {
+      "type": "header",
+      "content": "Row 2"
+    },
+    {
+      "type": "text",
+      "id": "row2_label",
+      "label": "Row 2 – Category Label",
+      "default": "Gut Health"
+    },
+    {
+      "type": "text",
+      "id": "row2_soul",
+      "label": "Row 2 – SoulSurf Value",
+      "default": "Supports Gut Health"
+    },
+    {
+      "type": "text",
+      "id": "row2_generic",
+      "label": "Row 2 – Generic Value",
+      "default": "Harms microbiome"
+    },
+    {
+      "type": "checkbox",
+      "id": "row2_cross",
+      "label": "Show ✕ icon before generic value",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Row 3"
+    },
+    {
+      "type": "text",
+      "id": "row3_label",
+      "label": "Row 3 – Category Label",
+      "default": "Additives"
+    },
+    {
+      "type": "text",
+      "id": "row3_soul",
+      "label": "Row 3 – SoulSurf Value",
+      "default": "No Chemicals"
+    },
+    {
+      "type": "text",
+      "id": "row3_generic",
+      "label": "Row 3 – Generic Value",
+      "default": "Artificial"
+    },
+    {
+      "type": "header",
+      "content": "Row 4"
+    },
+    {
+      "type": "text",
+      "id": "row4_label",
+      "label": "Row 4 – Category Label",
+      "default": "Energy After Drink"
+    },
+    {
+      "type": "text",
+      "id": "row4_soul",
+      "label": "Row 4 – SoulSurf Value",
+      "default": "Light & Energizing"
+    },
+    {
+      "type": "text",
+      "id": "row4_generic",
+      "label": "Row 4 – Generic Value",
+      "default": "Sluggish"
+    },
+    {
+      "type": "header",
+      "content": "Row 5"
+    },
+    {
+      "type": "text",
+      "id": "row5_label",
+      "label": "Row 5 – Category Label",
+      "default": "Flavour"
+    },
+    {
+      "type": "text",
+      "id": "row5_soul",
+      "label": "Row 5 – SoulSurf Value",
+      "default": "Natural Citrus Zing"
+    },
+    {
+      "type": "text",
+      "id": "row5_generic",
+      "label": "Row 5 – Generic Value",
+      "default": "Fake & Syrupy"
+    },
+    {
+      "type": "header",
+      "content": "Row 6"
+    },
+    {
+      "type": "text",
+      "id": "row6_label",
+      "label": "Row 6 – Category Label",
+      "default": "Calorie Count"
+    },
+    {
+      "type": "text",
+      "id": "row6_soul",
+      "label": "Row 6 – SoulSurf Value",
+      "default": "35 kcal"
+    },
+    {
+      "type": "text",
+      "id": "row6_generic",
+      "label": "Row 6 – Generic Value",
+      "default": "High"
     }
   ],
   "presets": [
@@ -80,24 +218,7 @@
     z-index: 1;
   }
 
-  /* Continuous horizontal lines bridging the gaps */
-  .cmp-grid::after {
-    content: "";
-    position: absolute;
-    top: 20px; /* Starts after the 20px header */
-    left: 0;
-    right: 0;
-    height: calc(70px * 5); /* Draws 5 lines for 6 rows */
-    background-image: linear-gradient(to bottom, 
-      transparent 68.5px, 
-      rgba(0,0,0,0.16) 68.5px, 
-      rgba(0,0,0,0.16) 70px
-    );
-    background-size: 100% 70px;
-    background-repeat: repeat-y;
-    pointer-events: none;
-    z-index: 5; /* On top of columns to bridge the gap */
-  }
+
 
   /* Labels Column */
   .cmp-labels {
@@ -111,7 +232,7 @@
     display: flex;
     align-items: center;
     font-weight: 600;
-    font-size: 22px; 
+    font-size: 20px; 
     color: #1A1A1A;
     padding-left: 10px;
     /* border-bottom removed - handled by cmp-grid::after */
@@ -158,7 +279,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 22px; 
+    font-size: 20px; 
     font-weight: 500;
     /* border-bottom removed - handled by cmp-grid::after */
   }
@@ -201,7 +322,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 22px; /* Reduced font size */
+    font-size: 20px; /* Reduced font size */
     font-weight: 500;
     color: #333;
     /* border-bottom removed - handled by cmp-grid::after */
@@ -244,15 +365,13 @@
       min-width: unset;
     }
 
-    .cmp-grid::after {
-      display: none; /* Hide bridging lines on mobile */
-    }
+
 
     .cmp-row-label {
       font-size: 13px;
       height: 60px;
       padding-left: 5px;
-      border-bottom: 1px solid rgba(0,0,0,0.1);
+
     }
 
     .cmp-soul-col {
@@ -273,7 +392,7 @@
       height: 60px;
       padding: 0 8px;
       text-align: center;
-      border-bottom: 1px solid rgba(255,255,255,0.15);
+
     }
 
     .cmp-soul-row:last-child {
@@ -298,7 +417,7 @@
       height: 60px;
       padding: 0 8px;
       text-align: center;
-      border-bottom: 1px solid rgba(0,0,0,0.08);
+
     }
 
     .cmp-generic-row:last-child {
@@ -320,12 +439,12 @@
       
       <!-- Labels Column -->
       <div class="cmp-labels">
-        <div class="cmp-row-label">Sugar</div>
-        <div class="cmp-row-label">Gut Health</div>
-        <div class="cmp-row-label">Additives</div>
-        <div class="cmp-row-label">Energy After Drink</div>
-        <div class="cmp-row-label">Flavour</div>
-        <div class="cmp-row-label">Calorie Count</div>
+        <div class="cmp-row-label">{{ section.settings.row1_label | default: 'Sugar' }}</div>
+        <div class="cmp-row-label">{{ section.settings.row2_label | default: 'Gut Health' }}</div>
+        <div class="cmp-row-label">{{ section.settings.row3_label | default: 'Additives' }}</div>
+        <div class="cmp-row-label">{{ section.settings.row4_label | default: 'Energy After Drink' }}</div>
+        <div class="cmp-row-label">{{ section.settings.row5_label | default: 'Flavour' }}</div>
+        <div class="cmp-row-label">{{ section.settings.row6_label | default: 'Calorie Count' }}</div>
       </div>
 
       <!-- SoulSurf Column -->
@@ -338,12 +457,12 @@
              <img src="{{ 'bk2.png' | asset_url }}" alt="SoulSurf" class="cmp-soul-img">
           {% endif %}
         </div>
-        <div class="cmp-soul-row">Zero Added Sugar</div>
-        <div class="cmp-soul-row">Supports Gut Health</div>
-        <div class="cmp-soul-row">No Chemicals</div>
-        <div class="cmp-soul-row">Light & Energizing</div>
-        <div class="cmp-soul-row">Natural Citrus Zing</div>
-        <div class="cmp-soul-row">35 kcal</div>
+        <div class="cmp-soul-row">{{ section.settings.row1_soul | default: 'Zero Added Sugar' }}</div>
+        <div class="cmp-soul-row">{{ section.settings.row2_soul | default: 'Supports Gut Health' }}</div>
+        <div class="cmp-soul-row">{{ section.settings.row3_soul | default: 'No Chemicals' }}</div>
+        <div class="cmp-soul-row">{{ section.settings.row4_soul | default: 'Light & Energizing' }}</div>
+        <div class="cmp-soul-row">{{ section.settings.row5_soul | default: 'Natural Citrus Zing' }}</div>
+        <div class="cmp-soul-row">{{ section.settings.row6_soul | default: '35 kcal' }}</div>
       </div>
 
       <!-- Generic Column -->
@@ -355,12 +474,12 @@
             <img src="{{ 'bk1.png' | asset_url }}" alt="Generic Can">
           {% endif %}
         </div>
-        <div class="cmp-generic-row">High</div>
-        <div class="cmp-generic-row"><span class="cmp-icon-cross">✕</span> Harms microbiome</div>
-        <div class="cmp-generic-row">Artificial</div>
-        <div class="cmp-generic-row">Sluggish</div>
-        <div class="cmp-generic-row">Fake & Syrupy</div>
-        <div class="cmp-generic-row">High</div>
+        <div class="cmp-generic-row">{{ section.settings.row1_generic | default: 'High' }}</div>
+        <div class="cmp-generic-row">{% if section.settings.row2_cross %}<span class="cmp-icon-cross">✕</span> {% endif %}{{ section.settings.row2_generic | default: 'Harms microbiome' }}</div>
+        <div class="cmp-generic-row">{{ section.settings.row3_generic | default: 'Artificial' }}</div>
+        <div class="cmp-generic-row">{{ section.settings.row4_generic | default: 'Sluggish' }}</div>
+        <div class="cmp-generic-row">{{ section.settings.row5_generic | default: 'Fake & Syrupy' }}</div>
+        <div class="cmp-generic-row">{{ section.settings.row6_generic | default: 'High' }}</div>
       </div>
 
     </div>

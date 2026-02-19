@@ -47,6 +47,14 @@
             "{{ icon | image_url }}"{% unless forloop.last %},{% endunless %}
           {% endfor %}
         {% endif %}
+      ],
+      "feature_texts": [
+        {% assign text_list = variant.metafields.custom.feature_texts.value %}
+        {% if text_list %}
+          {% for txt in text_list %}
+            {{ txt | json }}{% unless forloop.last %},{% endunless %}
+          {% endfor %}
+        {% endif %}
       ]
     }{% unless forloop.last %},{% endunless %}
   {% endfor %}
@@ -91,45 +99,60 @@
       <!-- RIGHT COLUMN: Product Info -->
       <div class="pp-info">
         
-        <!-- Star Rating -->
+        <!-- Star Rating (populated by Judge.me metafields + JS fallback from custom-reviews API) -->
         <div class="pp-rating">
+          {%- assign jm_count = product.metafields.judgeme.review_count | default: 0 -%}
           <span class="pp-stars">★★★★★</span>
-          <span class="pp-review-count">50 Reviews</span>
+          <span class="pp-review-count">{{ jm_count }} Review{% if jm_count != 1 %}s{% endif %}</span>
         </div>
 
         <!-- Title & Tagline -->
         <h1 class="pp-title" style="color: var(--pp-heading-color);">{{ product.selected_or_first_available_variant.metafields.custom.product_heading | default: product.title }}</h1>
-        {% if product.metafields.custom.tagline %}
-          <p class="pp-tagline">{{ product.metafields.custom.tagline }}</p>
+
+        {%- comment -%} Short description: read from VARIANT metafield (custom.short_description) {%- endcomment -%}
+        {%- assign pp_short_desc = selected_variant.metafields.custom.short_description.value -%}
+        {%- if pp_short_desc == blank -%}
+          {%- assign pp_short_desc = section.settings.short_description -%}
+        {%- endif -%}
+
+        {% if pp_short_desc != blank %}
+          <p class="pp-tagline" id="pp-short-desc">{{ pp_short_desc | newline_to_br }}</p>
         {% else %}
-          <p class="pp-tagline">TANGY. NOSTALGIC. UNEXPECTED.</p>
+          <p class="pp-tagline" id="pp-short-desc">TANGY. NOSTALGIC. UNEXPECTED.</p>
         {% endif %}
 
         <!-- Feature Icons Row -->
+        {% comment %} Read feature texts from the selected variant metafield {% endcomment %}
+        {% assign ft_list = selected_variant.metafields.custom.feature_texts.value %}
+        {% assign ft0 = ft_list[0] | default: 'Real fruit flavour' %}
+        {% assign ft1 = ft_list[1] | default: 'Prebiotic fibre' %}
+        {% assign ft2 = ft_list[2] | default: 'Low sugar' %}
+        {% assign ft3 = ft_list[3] | default: 'No Artificial Additives' %}
+
         <div class="pp-features-row">
             <div class="pp-feature-item">
                 <div class="pp-feature-icon" style="background: var(--pp-feature-bg);">
-                    <img class="pp-feature-icon-img" data-index="0" src="{{ 'spfeature1.svg' | asset_url }}" alt="Real fruit flavour" width="24" height="24">
+                    <img class="pp-feature-icon-img" data-index="0" src="{{ 'spfeature1.svg' | asset_url }}" alt="{{ ft0 }}" width="24" height="24">
                 </div>
-                <span class="pp-feature-text">Real fruit flavour</span>
+                <span class="pp-feature-text" data-index="0">{{ ft0 }}</span>
             </div>
             <div class="pp-feature-item">
                 <div class="pp-feature-icon" style="background: var(--pp-feature-bg);">
-                    <img class="pp-feature-icon-img" data-index="1" src="{{ 'spfeature2.svg' | asset_url }}" alt="Prebiotic fibre" width="24" height="24">
+                    <img class="pp-feature-icon-img" data-index="1" src="{{ 'spfeature2.svg' | asset_url }}" alt="{{ ft1 }}" width="24" height="24">
                 </div>
-                <span class="pp-feature-text">Prebiotic fibre</span>
+                <span class="pp-feature-text" data-index="1">{{ ft1 }}</span>
             </div>
             <div class="pp-feature-item">
                 <div class="pp-feature-icon" style="background: var(--pp-feature-bg);">
-                    <img class="pp-feature-icon-img" data-index="2" src="{{ 'spfeature3.svg' | asset_url }}" alt="Low sugar" width="24" height="24">
+                    <img class="pp-feature-icon-img" data-index="2" src="{{ 'spfeature2.svg' | asset_url }}" alt="{{ ft2 }}" width="24" height="24">
                 </div>
-                <span class="pp-feature-text">Low sugar</span>
+                <span class="pp-feature-text" data-index="2">{{ ft2 }}</span>
             </div>
             <div class="pp-feature-item">
                 <div class="pp-feature-icon" style="background: var(--pp-feature-bg);">
-                    <img class="pp-feature-icon-img" data-index="3" src="{{ 'spfeature4.svg' | asset_url }}" alt="No Artificial Additives" width="24" height="24">
+                    <img class="pp-feature-icon-img" data-index="3" src="{{ 'spfeature4.svg' | asset_url }}" alt="{{ ft3 }}" width="24" height="24">
                 </div>
-                <span class="pp-feature-text">No Artificial Additives</span>
+                <span class="pp-feature-text" data-index="3">{{ ft3 }}</span>
             </div>
         </div>
 
@@ -314,9 +337,6 @@
   </div>
 </section>
 
-<!-- Hidden Judge.me Review Widget (enables "Write a Review" button) -->
-<div id="judgeme_product_reviews" data-id="{{ product.id }}" style="display:none !important; visibility:hidden; height:0; overflow:hidden;"></div>
-
 <!-- Hidden Variant Content for Rich Text -->
 <div id="pp-variant-content-store" style="display: none;">
   {% for variant in product.variants %}
@@ -326,6 +346,11 @@
       {% else %}
         {{ product.description }}
       {% endif %}
+    </div>
+    <div id="variant-short-desc-{{ variant.id }}">
+      {%- if variant.metafields.custom.short_description.value != blank -%}
+        {{ variant.metafields.custom.short_description.value | newline_to_br }}
+      {%- endif -%}
     </div>
   {% endfor %}
 </div>
@@ -473,7 +498,16 @@ document.addEventListener('DOMContentLoaded', function() {
               if (titleEl) titleEl.textContent = config.heading_text;
           }
 
-          // 2.2 Update Feature Background Color
+          // 2.2 Update Short Description / Tagline
+          try {
+              const taglineEl = document.querySelector('#pp-short-desc');
+              const shortDescDiv = document.getElementById('variant-short-desc-' + variantId);
+              if (taglineEl && shortDescDiv && shortDescDiv.innerHTML.trim()) {
+                  taglineEl.innerHTML = shortDescDiv.innerHTML.trim();
+              }
+          } catch(e) { /* short desc update failed, continue */ }
+
+          // 2.3 Update Feature Background Color
           if (config.feature_bg) {
               section.style.setProperty('--pp-feature-bg', config.feature_bg);
           }
@@ -517,6 +551,16 @@ document.addEventListener('DOMContentLoaded', function() {
                   }
               });
           }
+
+           // 5.1 Update Feature Texts
+           if (config.feature_texts && config.feature_texts.length > 0) {
+               const featureTexts = section.querySelectorAll('.pp-feature-text');
+               config.feature_texts.forEach((text, index) => {
+                   if (featureTexts[index]) {
+                       featureTexts[index].textContent = text;
+                   }
+               });
+           }
 
           // 6. Update Add to Cart Button Price
           if (config.price !== undefined) {
@@ -609,6 +653,12 @@ document.addEventListener('DOMContentLoaded', function() {
 {
   "name": "Main Product (Pixel)",
   "settings": [
+    {
+      "type": "text",
+      "id": "short_description",
+      "label": "Short Description (below title)",
+      "info": "Appears below the product title. Leave blank to use the product metafield (custom.short_description) instead."
+    },
     {
       "type": "text",
       "id": "delivery_text",

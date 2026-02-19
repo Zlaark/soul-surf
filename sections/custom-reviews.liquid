@@ -10,20 +10,24 @@
     },
     {
       "type": "text",
-      "id": "review_count_text",
-      "label": "Review Count Text",
-      "default": "57 Reviews"
+      "id": "api_token",
+      "label": "Judge.me Public API Token",
+      "info": "Found in Judge.me dashboard → Settings → General"
     },
     {
       "type": "text",
       "id": "button_text",
-      "label": "Button Text",
+      "label": "Write Review Button Text",
       "default": "WRITE A REVIEW"
     },
     {
-      "type": "url",
-      "id": "button_link",
-      "label": "Button Link"
+      "type": "range",
+      "id": "reviews_per_page",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "label": "Reviews Per Page",
+      "default": 4
     },
     {
       "type": "color",
@@ -38,50 +42,9 @@
       "default": "#FCDBA3"
     }
   ],
-  "blocks": [
-    {
-      "type": "review_card",
-      "name": "Review Card",
-      "settings": [
-        {
-          "type": "text",
-          "id": "author",
-          "label": "Author Name",
-          "default": "Aditi S"
-        },
-        {
-          "type": "checkbox",
-          "id": "verified",
-          "label": "Verified Buyer",
-          "default": true
-        },
-        {
-          "type": "range",
-          "id": "stars",
-          "min": 1,
-          "max": 5,
-          "step": 1,
-          "label": "Stars",
-          "default": 5
-        },
-        {
-          "type": "textarea",
-          "id": "content",
-          "label": "Review Content",
-          "default": "I've never had a soda that feels this good. The flavour is bold and refreshing, and I love knowing it's good for my gut."
-        }
-      ]
-    }
-  ],
   "presets": [
     {
-      "name": "Custom Reviews",
-      "blocks": [
-        { "type": "review_card" },
-        { "type": "review_card" },
-        { "type": "review_card" },
-        { "type": "review_card" }
-      ]
+      "name": "Custom Reviews"
     }
   ]
 }
@@ -90,6 +53,7 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
 
+  /* ===== Section Layout ===== */
   .custom-reviews-section {
     background-color: {{ section.settings.section_bg }};
     padding: 80px 0;
@@ -112,6 +76,7 @@
     letter-spacing: -1px;
   }
 
+  /* ===== Action Bar ===== */
   .cr-action-bar {
     display: flex;
     justify-content: space-between;
@@ -131,11 +96,13 @@
     color: #fff;
     padding: 12px 28px;
     border-radius: 50px;
-    text-decoration: none;
+    border: none;
+    cursor: pointer;
     font-size: 13px;
     font-weight: 600;
     letter-spacing: 1px;
     text-transform: uppercase;
+    font-family: inherit;
     transition: background-color 0.2s;
   }
 
@@ -143,6 +110,7 @@
     background-color: #333;
   }
 
+  /* ===== Review Cards ===== */
   .cr-reviews-list {
     display: flex;
     flex-direction: column;
@@ -150,7 +118,7 @@
   }
 
   .cr-card {
-    background-color: transparent; /* Handled by individual sides */
+    background-color: transparent;
     border-radius: 20px;
     display: flex;
     overflow: hidden;
@@ -165,15 +133,16 @@
     flex-direction: column;
     justify-content: center;
     border-right: 5px solid #FFFFFF;
-    background-color: {{ section.settings.card_bg }}; /* Golden/yellow side */
+    background-color: {{ section.settings.card_bg }};
   }
 
   .cr-card-right {
     flex-grow: 1;
     padding: 30px 40px;
     display: flex;
-    align-items: center;
-    background-color: {{ section.settings.card_bg }}; /* Same golden color as left side */
+    flex-direction: column;
+    justify-content: center;
+    background-color: {{ section.settings.card_bg }};
   }
 
   .cr-author {
@@ -187,22 +156,34 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 14px; /* Increased */
-    color: #A37600; /* Updated color */
+    font-size: 14px;
+    color: #A37600;
     font-weight: 600;
     margin-bottom: 12px;
   }
 
   .cr-badge svg {
-    width: 20px; /* Increased size */
+    width: 20px;
     height: 20px;
-    fill: #A37600; /* Updated color */
+    fill: #A37600;
+  }
+
+  .cr-badge-pending {
+    color: #8B6914;
+    font-style: italic;
+  }
+  .cr-badge-pending svg {
+    fill: #8B6914;
+  }
+  .cr-card-pending {
+    border: 2px dashed #D4A84B;
+    position: relative;
   }
 
   .cr-stars {
-    color: #A37600; /* Updated color */
+    color: #A37600;
     letter-spacing: 2px;
-    font-size: 20px; /* Increased size */
+    font-size: 20px;
   }
 
   .cr-content {
@@ -212,6 +193,20 @@
     font-weight: 500;
   }
 
+  .cr-review-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 6px;
+  }
+
+  .cr-review-date {
+    font-size: 12px;
+    color: #888;
+    margin-top: 8px;
+  }
+
+  /* ===== Pagination ===== */
   .cr-pagination {
     display: flex;
     justify-content: center;
@@ -226,8 +221,9 @@
     text-decoration: none;
     color: #000;
     padding: 5px;
+    cursor: pointer;
   }
-  
+
   .cr-page-link.active {
     text-decoration: underline;
   }
@@ -238,16 +234,267 @@
     padding: 0 5px;
   }
 
-  .cr-page-link {
-    cursor: pointer;
-  }
-
   .cr-page-arrow.disabled {
     opacity: 0.3;
     cursor: default;
     pointer-events: none;
   }
 
+  /* ===== Loading Skeleton ===== */
+  .cr-skeleton-card {
+    background-color: {{ section.settings.card_bg }};
+    border-radius: 20px;
+    height: 140px;
+    animation: cr-pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes cr-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ===== Empty State ===== */
+  .cr-empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+    font-size: 16px;
+  }
+
+  .cr-empty-state p {
+    margin-bottom: 20px;
+  }
+
+  /* ===== Error / Retry ===== */
+  .cr-error-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+  }
+
+  .cr-retry-btn {
+    background: #000;
+    color: #fff;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 12px;
+  }
+
+  /* ===== Review Form Modal ===== */
+  .cr-form-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+
+  .cr-form-overlay.active {
+    display: flex;
+  }
+
+  .cr-form-container {
+    background: #fff;
+    max-width: 560px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 20px;
+    padding: 40px;
+    position: relative;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  .cr-form-close {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: #000;
+    line-height: 1;
+    padding: 4px;
+  }
+
+  .cr-form-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 500;
+    margin-bottom: 30px;
+    color: #000;
+  }
+
+  .cr-form-group {
+    margin-bottom: 20px;
+  }
+
+  .cr-form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .cr-form-group input,
+  .cr-form-group textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #E0E0E0;
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: inherit;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+  }
+
+  .cr-form-group input:focus,
+  .cr-form-group textarea:focus {
+    outline: none;
+    border-color: #A37600;
+  }
+
+  .cr-form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+
+  .cr-form-group .cr-field-error {
+    border-color: #E53935;
+  }
+
+  .cr-error-msg {
+    color: #E53935;
+    font-size: 12px;
+    margin-top: 4px;
+    display: none;
+  }
+
+  .cr-error-msg.visible {
+    display: block;
+  }
+
+  /* Star Picker */
+  .cr-star-picker {
+    display: flex;
+    gap: 8px;
+  }
+
+  .cr-star-picker-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 28px;
+    color: #D4D4D4;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.15s;
+  }
+
+  .cr-star-picker-btn.filled {
+    color: #A37600;
+  }
+
+  /* Honeypot */
+  .cr-hp-field {
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+    height: 0;
+    width: 0;
+    overflow: hidden;
+  }
+
+  /* Submit button */
+  .cr-form-submit {
+    background: #000;
+    color: #fff;
+    border: none;
+    padding: 14px 32px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-family: inherit;
+    width: 100%;
+    margin-top: 10px;
+    transition: background-color 0.2s, opacity 0.2s;
+  }
+
+  .cr-form-submit:hover {
+    background: #333;
+  }
+
+  .cr-form-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .cr-form-submit .cr-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #fff;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: cr-spin 0.6s linear infinite;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+
+  @keyframes cr-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Form Messages */
+  .cr-form-message {
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    margin-top: 16px;
+    display: none;
+  }
+
+  .cr-form-message.success {
+    background: #E8F5E9;
+    color: #2E7D32;
+    display: block;
+  }
+
+  .cr-form-message.error {
+    background: #FFEBEE;
+    color: #C62828;
+    display: block;
+  }
+
+  /* ===== Admin Warning ===== */
+  .cr-admin-warning {
+    background: #FFF3CD;
+    color: #856404;
+    padding: 16px;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 14px;
+  }
+
+  /* ===== Mobile Responsive ===== */
   @media (max-width: 768px) {
     .custom-reviews-section {
       padding: 50px 0;
@@ -280,11 +527,11 @@
     }
 
     .cr-card {
-      flex-direction: row; /* Side-by-side layout */
+      flex-direction: row;
       border-radius: 15px;
       min-height: 100px;
     }
-    
+
     .cr-card-left {
       width: 140px;
       border-right: 3px solid #FFFFFF;
@@ -292,11 +539,10 @@
       padding: 15px;
       flex-shrink: 0;
     }
-    
+
     .cr-card-right {
       padding: 15px;
       flex-grow: 1;
-      background-color: {{ section.settings.card_bg }}; /* Same golden color as left side */
     }
 
     .cr-author {
@@ -319,10 +565,19 @@
       font-size: 14px;
       letter-spacing: 1px;
     }
-    
+
     .cr-content {
       font-size: 12px;
       line-height: 1.5;
+    }
+
+    .cr-review-title {
+      font-size: 13px;
+    }
+
+    .cr-skeleton-card {
+      height: 100px;
+      border-radius: 15px;
     }
 
     .cr-pagination {
@@ -330,126 +585,865 @@
       gap: 10px;
       font-size: 14px;
     }
+
+    /* Form mobile */
+    .cr-form-container {
+      padding: 24px 20px;
+      border-radius: 16px;
+    }
+
+    .cr-form-heading {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+
+    .cr-star-picker-btn {
+      font-size: 32px;
+    }
   }
 </style>
 
+{% if product %}
 <div class="custom-reviews-section" id="custom-reviews-{{ section.id }}">
   <div class="cr-container">
     <h2 class="cr-main-heading">{{ section.settings.heading }}</h2>
-    
-    <div class="cr-action-bar">
-      <div class="cr-count">{{ product.metafields.judgeme.review_count }} Reviews</div>
-      <a href="#judgeme_product_reviews" class="cr-write-btn jdgm-write-rev-link">
-        {{ section.settings.button_text }}
-      </a>
-    </div>
 
-    {% assign reviews = product.metafields.judgeme.reviews %}
+    <div class="cr-action-bar">
+      <div class="cr-count">
+        <span id="cr-review-count-{{ section.id }}">Loading...</span>
+      </div>
+      <button type="button" class="cr-write-btn" id="cr-write-btn-{{ section.id }}">
+        {{ section.settings.button_text }}
+      </button>
+    </div>
 
     <div class="cr-reviews-list" id="cr-reviews-list-{{ section.id }}">
-      {% if reviews != blank %}
-        {% for review in reviews %}
-          <div class="cr-card">
-            <div class="cr-card-left">
-              <div class="cr-author">{{ review.reviewer_name }}</div>
-
-              <div class="cr-badge">
-                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
-                Verified buyer
-              </div>
-
-              <div class="cr-stars">
-                {% for i in (1..review.rating) %}★{% endfor %}
-              </div>
-            </div>
-
-            <div class="cr-card-right">
-              <div class="cr-content">{{ review.body }}</div>
-            </div>
-          </div>
-        {% endfor %}
-      {% else %}
-        <p>No reviews yet</p>
-      {% endif %}
+      <!-- Loading skeletons (replaced by JS) -->
+      <div class="cr-skeleton-card"></div>
+      <div class="cr-skeleton-card"></div>
+      <div class="cr-skeleton-card"></div>
+      <div class="cr-skeleton-card"></div>
     </div>
 
-    <div class="cr-pagination" id="cr-pagination-{{ section.id }}">
-      <!-- Pagination generated by JS -->
-    </div>
+    <div class="cr-pagination" id="cr-pagination-{{ section.id }}"></div>
   </div>
 </div>
 
+<!-- ===== Review Form Modal ===== -->
+<div class="cr-form-overlay" id="cr-form-overlay-{{ section.id }}">
+  <div class="cr-form-container">
+    <button type="button" class="cr-form-close" id="cr-form-close-{{ section.id }}" aria-label="Close review form">&times;</button>
+    <div class="cr-form-heading">Write a Review</div>
+
+    <form id="cr-review-form-{{ section.id }}" novalidate>
+      <!-- Honeypot (spam prevention) -->
+      <div class="cr-hp-field">
+        <label for="cr-hp-{{ section.id }}">Leave this empty</label>
+        <input type="text" id="cr-hp-{{ section.id }}" name="website" tabindex="-1" autocomplete="off">
+      </div>
+
+      <!-- Rating -->
+      <div class="cr-form-group">
+        <label>Rating <span style="color:#E53935">*</span></label>
+        <div class="cr-star-picker" id="cr-star-picker-{{ section.id }}" role="radiogroup" aria-label="Rating">
+          <button type="button" class="cr-star-picker-btn" data-value="1" aria-label="1 star">&#9733;</button>
+          <button type="button" class="cr-star-picker-btn" data-value="2" aria-label="2 stars">&#9733;</button>
+          <button type="button" class="cr-star-picker-btn" data-value="3" aria-label="3 stars">&#9733;</button>
+          <button type="button" class="cr-star-picker-btn" data-value="4" aria-label="4 stars">&#9733;</button>
+          <button type="button" class="cr-star-picker-btn" data-value="5" aria-label="5 stars">&#9733;</button>
+        </div>
+        <input type="hidden" id="cr-rating-{{ section.id }}" value="0">
+        <div class="cr-error-msg" id="cr-rating-error-{{ section.id }}">Please select a rating</div>
+      </div>
+
+      <!-- Name -->
+      <div class="cr-form-group">
+        <label for="cr-name-{{ section.id }}">Name <span style="color:#E53935">*</span></label>
+        <input type="text" id="cr-name-{{ section.id }}" placeholder="Your name" maxlength="100" required>
+        <div class="cr-error-msg" id="cr-name-error-{{ section.id }}">Please enter your name</div>
+      </div>
+
+      <!-- Email -->
+      <div class="cr-form-group">
+        <label for="cr-email-{{ section.id }}">Email <span style="color:#E53935">*</span></label>
+        <input type="email" id="cr-email-{{ section.id }}" placeholder="your@email.com" required>
+        <div class="cr-error-msg" id="cr-email-error-{{ section.id }}">Please enter a valid email address</div>
+      </div>
+
+      <!-- Review Title (optional) -->
+      <div class="cr-form-group">
+        <label for="cr-title-{{ section.id }}">Review Title</label>
+        <input type="text" id="cr-title-{{ section.id }}" placeholder="Summarize your experience" maxlength="150">
+      </div>
+
+      <!-- Review Body -->
+      <div class="cr-form-group">
+        <label for="cr-body-{{ section.id }}">Review <span style="color:#E53935">*</span></label>
+        <textarea id="cr-body-{{ section.id }}" placeholder="Tell us about your experience..." maxlength="5000" required></textarea>
+        <div class="cr-error-msg" id="cr-body-error-{{ section.id }}">Review must be at least 10 characters</div>
+      </div>
+
+      <button type="submit" class="cr-form-submit" id="cr-form-submit-{{ section.id }}">
+        Submit Review
+      </button>
+    </form>
+
+    <div class="cr-form-message" id="cr-form-message-{{ section.id }}"></div>
+  </div>
+</div>
+
+<!-- Judge.me server-rendered widget HTML (contains review data, parsed by JS) -->
+<div id="cr-jdgm-data-{{ section.id }}" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;" aria-hidden="true">
+  {{ product.metafields.judgeme.widget }}
+</div>
+
+<!-- Live Judge.me widget (in-flow but visually hidden; their script populates it) -->
+<div id="cr-jdgm-live-{{ section.id }}" style="height:1px;overflow:hidden;opacity:0;pointer-events:none;" aria-hidden="true">
+  <div class="jdgm-widget jdgm-review-widget" data-id="{{ product.id }}" data-product-title="{{ product.title | escape }}"></div>
+</div>
+
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const sectionId = "{{ section.id }}";
-    const container = document.querySelector(`#custom-reviews-${sectionId}`);
-    if (!container) return; // Should match the ID we added to the main wrapper
+(function() {
+  /* ===== Configuration from Liquid ===== */
+  var CONFIG = {
+    sectionId:    {{ section.id | json }},
+    shopDomain:   {{ shop.permanent_domain | json }},
+    apiToken:     {{ section.settings.api_token | json }},
+    productId:    {{ product.id | json }},
+    productHandle:{{ product.handle | json }},
+    productTitle: {{ product.title | json }},
+    productUrl:   {{ product.url | json }},
+    perPage:      {{ section.settings.reviews_per_page | json }}
+  };
 
-    const cards = container.querySelectorAll('.cr-card');
-    const paginationContainer = container.querySelector('.cr-pagination');
-    const itemsPerPage = 4;
-    const totalPages = Math.ceil(cards.length / itemsPerPage);
-    
-    let currentPage = 1;
+  /* ===== DOM References ===== */
+  var sectionEl     = document.getElementById('custom-reviews-' + CONFIG.sectionId);
+  if (!sectionEl) return;
 
-    function showPage(page) {
-      if (page < 1) page = 1;
-      if (page > totalPages) page = totalPages;
-      currentPage = page;
+  var reviewsList   = document.getElementById('cr-reviews-list-' + CONFIG.sectionId);
+  var paginationEl  = document.getElementById('cr-pagination-' + CONFIG.sectionId);
+  var countEl       = document.getElementById('cr-review-count-' + CONFIG.sectionId);
+  var writeBtn      = document.getElementById('cr-write-btn-' + CONFIG.sectionId);
+  var overlay       = document.getElementById('cr-form-overlay-' + CONFIG.sectionId);
+  var closeBtn      = document.getElementById('cr-form-close-' + CONFIG.sectionId);
+  var form          = document.getElementById('cr-review-form-' + CONFIG.sectionId);
+  var submitBtn     = document.getElementById('cr-form-submit-' + CONFIG.sectionId);
+  var formMessage   = document.getElementById('cr-form-message-' + CONFIG.sectionId);
+  var starPicker    = document.getElementById('cr-star-picker-' + CONFIG.sectionId);
+  var starBtns      = starPicker ? starPicker.querySelectorAll('.cr-star-picker-btn') : [];
+  var ratingInput   = document.getElementById('cr-rating-' + CONFIG.sectionId);
 
-      // Hide all cards
-      cards.forEach(card => card.style.display = 'none');
+  /* ===== State ===== */
+  var allReviews  = [];
+  var currentPage = 1;
+  var totalPages  = 1;
+  var isSubmitting = false;
+  var hasScrolled  = false;
 
-      // Show cards for current page
-      const start = (page - 1) * itemsPerPage;
-      const end = start + itemsPerPage;
-      
-      for (let i = start; i < end; i++) {
-        if (cards[i]) {
-          cards[i].style.display = 'flex'; // Restore flex display
+  /* ===== Utility: safe text (XSS prevention) ===== */
+  function esc(str) {
+    var d = document.createElement('div');
+    d.textContent = str || '';
+    return d.innerHTML;
+  }
+
+  /* ===== Utility: relative time ===== */
+  function timeAgo(dateStr) {
+    if (!dateStr) return '';
+    var now  = new Date();
+    var date = new Date(dateStr);
+    var secs = Math.floor((now - date) / 1000);
+    if (secs < 60)    return 'Just now';
+    var mins = Math.floor(secs / 60);
+    if (mins < 60)    return mins + (mins === 1 ? ' minute' : ' minutes') + ' ago';
+    var hrs = Math.floor(mins / 60);
+    if (hrs < 24)     return hrs  + (hrs  === 1 ? ' hour'   : ' hours')   + ' ago';
+    var days = Math.floor(hrs / 24);
+    if (days < 30)    return days + (days === 1 ? ' day'    : ' days')    + ' ago';
+    var months = Math.floor(days / 30);
+    if (months < 12)  return months + (months === 1 ? ' month' : ' months') + ' ago';
+    var years = Math.floor(months / 12);
+    return years + (years === 1 ? ' year' : ' years') + ' ago';
+  }
+
+  /* ===========================================================
+     FETCH REVIEWS - Multi-strategy approach:
+     1) Render instantly from server-side metafield (cached)
+     2) Load Judge.me widget script to get LIVE data
+     3) Always merge localStorage pending reviews on top
+     =========================================================== */
+  function fetchReviews() {
+    var dataDiv = document.getElementById('cr-jdgm-data-' + CONFIG.sectionId);
+    var metafieldCount = 0;
+
+    if (dataDiv) {
+      var revEls = dataDiv.querySelectorAll('.jdgm-rev');
+      if (revEls.length > 0) {
+        console.log('[Reviews] Metafield has ' + revEls.length + ' review(s) - rendering instantly');
+        parseReviewElements(revEls);
+        metafieldCount = revEls.length;
+      }
+    }
+
+    /* Now try to get fresher data from Judge.me live */
+    loadJudgeMeLive(metafieldCount);
+  }
+
+  /* ===========================================================
+     LOAD JUDGE.ME WIDGET SCRIPT
+     Judge.me's widget JS (loaded via content_for_header) may
+     not be available yet, or may not be installed at all.
+     We load it ourselves and let it populate the live widget
+     div, then scrape the fresh review data.
+
+     The script at cdn.judge.me/assets/installed.js scans the
+     page for .jdgm-widget elements, fetches review data from
+     Judge.me servers, and renders .jdgm-rev elements inside.
+     =========================================================== */
+  function loadJudgeMeLive(metafieldCount) {
+    var liveDiv = document.getElementById('cr-jdgm-live-' + CONFIG.sectionId);
+    if (!liveDiv) {
+      console.log('[Reviews] No live widget div found');
+      return;
+    }
+
+    console.log('[Reviews] Loading Judge.me widget script...');
+
+    /* Set required Judge.me configuration before loading their script */
+    window.JEYME_SHOP_DOMAIN = CONFIG.shopDomain;
+
+    /* Check if Judge.me script is already loaded */
+    if (window.jdgm && typeof jdgm.init === 'function') {
+      console.log('[Reviews] Judge.me already loaded, calling init()');
+      try { jdgm.init(); } catch(e) {}
+      pollForLiveReviews(metafieldCount, liveDiv);
+      return;
+    }
+
+    /* Load Judge.me's widget script */
+    var script = document.createElement('script');
+    script.src = 'https://cdn.judge.me/widget_preloader.js';
+    script.async = true;
+    script.onload = function() {
+      console.log('[Reviews] widget_preloader.js loaded');
+      /* Give it 1s to initialize, then try loading the full widget */
+      setTimeout(function() {
+        if (window.jdgm && typeof jdgm.init === 'function') {
+          console.log('[Reviews] jdgm.init() available, calling it');
+          try { jdgm.init(); } catch(e) {}
+        }
+        /* Also load installed.js as a backup */
+        var script2 = document.createElement('script');
+        script2.src = 'https://cdn.judge.me/assets/installed.js';
+        script2.async = true;
+        script2.onload = function() {
+          console.log('[Reviews] installed.js loaded');
+          setTimeout(function() {
+            if (window.jdgm && typeof jdgm.init === 'function') {
+              try { jdgm.init(); } catch(e) {}
+            }
+          }, 500);
+        };
+        document.head.appendChild(script2);
+      }, 1000);
+      pollForLiveReviews(metafieldCount, liveDiv);
+    };
+    script.onerror = function() {
+      console.log('[Reviews] widget_preloader.js failed, trying installed.js...');
+      var fallbackScript = document.createElement('script');
+      fallbackScript.src = 'https://cdn.judge.me/assets/installed.js';
+      fallbackScript.async = true;
+      fallbackScript.onload = function() {
+        console.log('[Reviews] installed.js loaded (fallback)');
+        setTimeout(function() {
+          if (window.jdgm && typeof jdgm.init === 'function') {
+            try { jdgm.init(); } catch(e) {}
+          }
+        }, 500);
+        pollForLiveReviews(metafieldCount, liveDiv);
+      };
+      fallbackScript.onerror = function() {
+        console.log('[Reviews] Both Judge.me scripts failed to load');
+      };
+      document.head.appendChild(fallbackScript);
+    };
+    document.head.appendChild(script);
+  }
+
+  /* ===========================================================
+     POLL for live reviews after Judge.me script loads.
+     Their script will populate .jdgm-widget divs with
+     .jdgm-rev elements containing review data.
+     =========================================================== */
+  function pollForLiveReviews(metafieldCount, liveDiv) {
+    var maxAttempts = 30;  /* 30 x 1s = 30s (Judge.me can be slow) */
+    var attempt = 0;
+
+    function check() {
+      /* Check the live widget div for Judge.me-populated reviews */
+      var revEls = liveDiv.querySelectorAll('.jdgm-rev');
+
+      /* Also check globally for any .jdgm-rev outside our data div */
+      if (revEls.length === 0) {
+        var allJdgm = document.querySelectorAll('.jdgm-rev');
+        var dataDiv = document.getElementById('cr-jdgm-data-' + CONFIG.sectionId);
+        var liveEls = [];
+        for (var i = 0; i < allJdgm.length; i++) {
+          if (!dataDiv || !dataDiv.contains(allJdgm[i])) {
+            liveEls.push(allJdgm[i]);
+          }
+        }
+        if (liveEls.length > 0) revEls = liveEls;
+      }
+
+      if (revEls.length > 0) {
+        var serverCount = allReviews.filter(function(r) { return !r.pending; }).length;
+        console.log('[Reviews] Live poll found ' + revEls.length + ' review(s), had ' + serverCount + ' from metafield');
+        if (revEls.length > serverCount || metafieldCount === 0) {
+          parseReviewElements(revEls);
+        }
+        return; /* done */
+      }
+
+      if (++attempt < maxAttempts) {
+        setTimeout(check, 1000);
+      } else {
+        console.log('[Reviews] Live poll timed out after ' + maxAttempts + 's');
+        if (metafieldCount === 0) {
+          allReviews = [];
+          mergePendingReviews();
+          updateHeroCounts();
+          totalPages = Math.ceil(allReviews.length / CONFIG.perPage);
+          if (allReviews.length > 0) { showPage(1); }
+          else { renderEmpty(); }
+          if (countEl) countEl.textContent = allReviews.length + ' Review' + (allReviews.length !== 1 ? 's' : '');
         }
       }
-
-      renderPagination();
     }
 
-    function renderPagination() {
-      paginationContainer.innerHTML = '';
+    check();
+  }
 
-      if (totalPages <= 1) return;
+  /* ===== Parse .jdgm-rev elements into our review array ===== */
+  function parseReviewElements(revEls) {
+    allReviews = [];
+    for (var i = 0; i < revEls.length; i++) {
+      var el = revEls[i];
+      var authorEl   = el.querySelector('.jdgm-rev__author');
+      var bodyEl     = el.querySelector('.jdgm-rev__body');
+      var ratingEl   = el.querySelector('.jdgm-rev__rating, [data-score]');
+      var titleEl    = el.querySelector('.jdgm-rev__title');
+      var dateEl     = el.querySelector('.jdgm-rev__timestamp');
+      var verifiedEl = el.querySelector('.jdgm-rev__buyer-badge, .jdgm-verified');
 
-      // Prev Button
-      const prevBtn = document.createElement('span');
-      prevBtn.innerHTML = '&lt;';
-      prevBtn.className = 'cr-page-arrow';
-      if (currentPage === 1) prevBtn.classList.add('disabled');
-      prevBtn.onclick = () => showPage(currentPage - 1);
-      paginationContainer.appendChild(prevBtn);
-
-      // Page Numbers
-      for (let i = 1; i <= totalPages; i++) {
-        const pageLink = document.createElement('span');
-        pageLink.className = 'cr-page-link';
-        if (i === currentPage) pageLink.classList.add('active');
-        pageLink.textContent = i;
-        pageLink.onclick = () => showPage(i);
-        paginationContainer.appendChild(pageLink);
-      }
-
-      // Next Button
-      const nextBtn = document.createElement('span');
-      nextBtn.innerHTML = '&gt;';
-      nextBtn.className = 'cr-page-arrow';
-      if (currentPage === totalPages) nextBtn.classList.add('disabled');
-      nextBtn.onclick = () => showPage(currentPage + 1);
-      paginationContainer.appendChild(nextBtn);
+      allReviews.push({
+        reviewer:   { name: authorEl ? authorEl.textContent.trim() : 'Anonymous' },
+        rating:     ratingEl ? (parseInt(ratingEl.getAttribute('data-score')) || 5) : 5,
+        body:       bodyEl   ? bodyEl.textContent.trim()   : '',
+        title:      titleEl  ? titleEl.textContent.trim()  : '',
+        created_at: dateEl   ? (dateEl.getAttribute('data-content') || dateEl.getAttribute('datetime') || dateEl.textContent.trim()) : '',
+        verified:   verifiedEl ? 'buyer' : ''
+      });
     }
-    
-    // Initial Render
+    /* Merge any pending reviews from localStorage */
+    mergePendingReviews();
+    updateHeroCounts();
+    totalPages = Math.ceil(allReviews.length / CONFIG.perPage);
     showPage(1);
-  });
+  }
+
+  /* ===== Update hero section counts ===== */
+  function updateHeroCounts() {
+    var countText = allReviews.length + ' Review' + (allReviews.length !== 1 ? 's' : '');
+
+    if (countEl) countEl.textContent = countText;
+
+    var heroCount = document.querySelector('.pp-review-count');
+    if (heroCount) heroCount.textContent = countText;
+
+    if (allReviews.length > 0) {
+      var sum = allReviews.reduce(function(a, r) { return a + (r.rating || 0); }, 0);
+      var avg = Math.round(sum / allReviews.length);
+      var heroStars = document.querySelector('.pp-stars');
+      if (heroStars) {
+        var s = '';
+        for (var i = 0; i < avg; i++) s += '\u2605';
+        for (var j = avg; j < 5; j++) s += '\u2606';
+        heroStars.textContent = s;
+      }
+    }
+  }
+
+  /* ===========================================================
+     RENDER SINGLE REVIEW CARD
+     =========================================================== */
+  function renderCard(review) {
+    var name       = esc(review.reviewer ? review.reviewer.name : 'Anonymous');
+    var rating     = Math.min(Math.max(parseInt(review.rating) || 5, 1), 5);
+    var body       = esc(review.body || '');
+    var title      = esc(review.title || '');
+    var isVerified = (review.verified === 'buyer');
+    var isPending  = review.pending === true;
+    var date       = timeAgo(review.created_at);
+
+    var stars = '';
+    for (var i = 0; i < rating; i++) stars += '\u2605';
+
+    var badgeHtml = '';
+    if (isPending) {
+      badgeHtml = '<div class="cr-badge cr-badge-pending">'
+        + '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm0-4h-2V7h2v8z"/></svg>'
+        + 'Pending approval'
+        + '</div>';
+    } else if (isVerified) {
+      badgeHtml = '<div class="cr-badge">'
+        + '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>'
+        + 'Verified buyer'
+        + '</div>';
+    }
+
+    var titleHtml = title ? '<div class="cr-review-title">' + title + '</div>' : '';
+    var dateHtml  = date  ? '<div class="cr-review-date">'  + date  + '</div>' : '';
+
+    return '<div class="cr-card' + (isPending ? ' cr-card-pending' : '') + '">'
+      + '<div class="cr-card-left">'
+        + '<div class="cr-author">' + name + '</div>'
+        + badgeHtml
+        + '<div class="cr-stars">' + stars + '</div>'
+      + '</div>'
+      + '<div class="cr-card-right">'
+        + titleHtml
+        + '<div class="cr-content">' + body + '</div>'
+        + dateHtml
+      + '</div>'
+    + '</div>';
+  }
+
+  /* ===========================================================
+     PAGINATION
+     =========================================================== */
+  function showPage(page) {
+    if (page < 1) page = 1;
+    if (page > totalPages) page = totalPages;
+    currentPage = page;
+
+    if (allReviews.length === 0) {
+      renderEmpty();
+      paginationEl.innerHTML = '';
+      return;
+    }
+
+    var start = (page - 1) * CONFIG.perPage;
+    var end   = start + CONFIG.perPage;
+    var slice = allReviews.slice(start, end);
+
+    var html = '';
+    for (var i = 0; i < slice.length; i++) {
+      html += renderCard(slice[i]);
+    }
+    reviewsList.innerHTML = html;
+
+    renderPagination();
+
+    /* Smooth scroll on page change (not initial load) */
+    if (hasScrolled) {
+      sectionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    hasScrolled = true;
+  }
+
+  function renderPagination() {
+    paginationEl.innerHTML = '';
+    if (totalPages <= 1) return;
+
+    /* Previous arrow */
+    var prev = document.createElement('span');
+    prev.innerHTML = '&lt;';
+    prev.className = 'cr-page-arrow' + (currentPage === 1 ? ' disabled' : '');
+    prev.onclick = function() { showPage(currentPage - 1); };
+    paginationEl.appendChild(prev);
+
+    /* Page numbers */
+    for (var i = 1; i <= totalPages; i++) {
+      (function(pg) {
+        var link = document.createElement('span');
+        link.className = 'cr-page-link' + (pg === currentPage ? ' active' : '');
+        link.textContent = pg;
+        link.onclick = function() { showPage(pg); };
+        paginationEl.appendChild(link);
+      })(i);
+    }
+
+    /* Next arrow */
+    var next = document.createElement('span');
+    next.innerHTML = '&gt;';
+    next.className = 'cr-page-arrow' + (currentPage === totalPages ? ' disabled' : '');
+    next.onclick = function() { showPage(currentPage + 1); };
+    paginationEl.appendChild(next);
+  }
+
+  /* ===== Empty & Error States ===== */
+  function renderEmpty() {
+    reviewsList.innerHTML = '<div class="cr-empty-state">'
+      + '<p>No reviews yet. Be the first to share your experience!</p>'
+      + '</div>';
+  }
+
+  function renderError() {
+    reviewsList.innerHTML = '<div class="cr-error-state">'
+      + '<p>Unable to load reviews right now.</p>'
+      + '<button type="button" class="cr-retry-btn" id="cr-retry-' + CONFIG.sectionId + '">Try Again</button>'
+      + '</div>';
+    var retryBtn = document.getElementById('cr-retry-' + CONFIG.sectionId);
+    if (retryBtn) {
+      retryBtn.onclick = function() {
+        reviewsList.innerHTML = '<div class="cr-skeleton-card"></div><div class="cr-skeleton-card"></div><div class="cr-skeleton-card"></div><div class="cr-skeleton-card"></div>';
+        fetchReviews();
+      };
+    }
+  }
+
+  /* ===========================================================
+     STAR PICKER
+     =========================================================== */
+  function initStarPicker() {
+    if (!starPicker || !starBtns.length) return;
+
+    /* Click: set rating */
+    starBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var val = parseInt(btn.getAttribute('data-value'));
+        ratingInput.value = val;
+        updateStars(val);
+        /* Clear validation error */
+        var err = document.getElementById('cr-rating-error-' + CONFIG.sectionId);
+        if (err) err.classList.remove('visible');
+      });
+
+      /* Hover: preview */
+      btn.addEventListener('mouseenter', function() {
+        updateStars(parseInt(btn.getAttribute('data-value')));
+      });
+    });
+
+    /* Mouse leave: restore actual selection */
+    starPicker.addEventListener('mouseleave', function() {
+      updateStars(parseInt(ratingInput.value) || 0);
+    });
+
+    /* Keyboard: arrow keys */
+    starPicker.addEventListener('keydown', function(e) {
+      var cur = parseInt(ratingInput.value) || 0;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        var nxt = Math.min(cur + 1, 5);
+        ratingInput.value = nxt;
+        updateStars(nxt);
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        var prv = Math.max(cur - 1, 1);
+        ratingInput.value = prv;
+        updateStars(prv);
+      }
+    });
+  }
+
+  function updateStars(val) {
+    starBtns.forEach(function(btn) {
+      var v = parseInt(btn.getAttribute('data-value'));
+      btn.classList.toggle('filled', v <= val);
+    });
+  }
+
+  /* ===========================================================
+     FORM MODAL - Open / Close
+     =========================================================== */
+  function openForm() {
+    if (!overlay) return;
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    /* Reset form visibility (may have been hidden after success) */
+    if (form) form.style.display = '';
+    if (formMessage) {
+      formMessage.className = 'cr-form-message';
+      formMessage.style.display = 'none';
+    }
+  }
+
+  function closeForm() {
+    if (!overlay) return;
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  if (writeBtn) writeBtn.addEventListener('click', openForm);
+  if (closeBtn) closeBtn.addEventListener('click', closeForm);
+  if (overlay) {
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) closeForm();
+    });
+  }
+
+  /* Escape key (idempotent -- safe for section re-renders) */
+  if (!window._crEscapeListenerAdded) {
+    window._crEscapeListenerAdded = true;
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        var active = document.querySelector('.cr-form-overlay.active');
+        if (active) {
+          active.classList.remove('active');
+          document.body.style.overflow = '';
+        }
+      }
+    });
+  }
+
+  /* ===========================================================
+     FORM VALIDATION
+     =========================================================== */
+  function validateForm() {
+    var valid = true;
+
+    /* Rating (1-5) */
+    var rating = parseInt(ratingInput.value);
+    var ratingErr = document.getElementById('cr-rating-error-' + CONFIG.sectionId);
+    if (!rating || rating < 1 || rating > 5) {
+      if (ratingErr) ratingErr.classList.add('visible');
+      valid = false;
+    } else {
+      if (ratingErr) ratingErr.classList.remove('visible');
+    }
+
+    /* Name (required) */
+    var nameEl  = document.getElementById('cr-name-' + CONFIG.sectionId);
+    var nameErr = document.getElementById('cr-name-error-' + CONFIG.sectionId);
+    if (!nameEl.value.trim()) {
+      nameEl.classList.add('cr-field-error');
+      if (nameErr) nameErr.classList.add('visible');
+      valid = false;
+    } else {
+      nameEl.classList.remove('cr-field-error');
+      if (nameErr) nameErr.classList.remove('visible');
+    }
+
+    /* Email (valid format) */
+    var emailEl  = document.getElementById('cr-email-' + CONFIG.sectionId);
+    var emailErr = document.getElementById('cr-email-error-' + CONFIG.sectionId);
+    var emailRe  = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRe.test(emailEl.value.trim())) {
+      emailEl.classList.add('cr-field-error');
+      if (emailErr) emailErr.classList.add('visible');
+      valid = false;
+    } else {
+      emailEl.classList.remove('cr-field-error');
+      if (emailErr) emailErr.classList.remove('visible');
+    }
+
+    /* Body (min 10 chars) */
+    var bodyEl  = document.getElementById('cr-body-' + CONFIG.sectionId);
+    var bodyErr = document.getElementById('cr-body-error-' + CONFIG.sectionId);
+    if (bodyEl.value.trim().length < 10) {
+      bodyEl.classList.add('cr-field-error');
+      if (bodyErr) bodyErr.classList.add('visible');
+      valid = false;
+    } else {
+      bodyEl.classList.remove('cr-field-error');
+      if (bodyErr) bodyErr.classList.remove('visible');
+    }
+
+    /* Honeypot (must be empty) */
+    var hp = document.getElementById('cr-hp-' + CONFIG.sectionId);
+    if (hp && hp.value) valid = false; /* silently reject bots */
+
+    return valid;
+  }
+
+  /* ===========================================================
+     SUBMIT REVIEW
+     Uses fetch() with mode:'no-cors' and form-urlencoded body.
+     This is a CORS "simple request" - no preflight is sent,
+     the POST goes directly to Judge.me and is processed.
+     The response is opaque (unreadable) but the review IS saved.
+     =========================================================== */
+  function handleSubmit(e) {
+    e.preventDefault();
+    if (isSubmitting) return;
+
+    /* Clear previous messages */
+    formMessage.className = 'cr-form-message';
+    formMessage.style.display = 'none';
+
+    if (!validateForm()) return;
+
+    isSubmitting = true;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="cr-spinner"></span> Submitting...';
+
+    var reviewData = {
+      name:          document.getElementById('cr-name-'  + CONFIG.sectionId).value.trim(),
+      email:         document.getElementById('cr-email-' + CONFIG.sectionId).value.trim(),
+      rating:        parseInt(ratingInput.value),
+      title:         document.getElementById('cr-title-' + CONFIG.sectionId).value.trim(),
+      body:          document.getElementById('cr-body-'  + CONFIG.sectionId).value.trim()
+    };
+
+    submitReview(reviewData);
+  }
+
+  /* ===== POST review via fetch (mode: no-cors) ===== */
+  /*
+   * Judge.me API v1 expects FLAT params (not Rails-style nested):
+   *   api_token, shop_domain, platform, name, email,
+   *   rating, title, body, product_external_id
+   *
+   * With mode:'no-cors' + form-urlencoded this is a "simple request"
+   * -- no CORS preflight. The POST goes through and Judge.me saves it.
+   * The response is opaque (unreadable) but that is OK.
+   */
+  function submitReview(reviewData) {
+    var params = new URLSearchParams();
+    params.append('api_token',            CONFIG.apiToken);
+    params.append('shop_domain',          CONFIG.shopDomain);
+    params.append('platform',             'shopify');
+    params.append('name',                 reviewData.name);
+    params.append('email',                reviewData.email);
+    params.append('rating',               String(reviewData.rating));
+    params.append('title',                reviewData.title);
+    params.append('body',                 reviewData.body);
+    params.append('product_external_id',  String(CONFIG.productId));
+
+    fetch('https://judge.me/api/v1/reviews', {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: params.toString()
+    })
+    .then(function() {
+      /* Opaque response (status 0) -- request was sent and processed */
+      onSubmitSuccess();
+    })
+    .catch(function() {
+      /* True network failure (offline, DNS, etc.) */
+      formMessage.className = 'cr-form-message error';
+      formMessage.textContent = 'Network error. Please check your connection and try again.';
+      formMessage.style.display = 'block';
+      isSubmitting = false;
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Review';
+    });
+  }
+
+  /* ===== Success handler ===== */
+  function onSubmitSuccess() {
+    /* Capture form values BEFORE reset */
+    var newReview = {
+      reviewer:   { name: document.getElementById('cr-name-'  + CONFIG.sectionId).value.trim() || 'Anonymous' },
+      rating:     parseInt(ratingInput.value) || 5,
+      title:      document.getElementById('cr-title-' + CONFIG.sectionId).value.trim(),
+      body:       document.getElementById('cr-body-'  + CONFIG.sectionId).value.trim(),
+      created_at: new Date().toISOString(),
+      verified:   '',
+      pending:    true   /* flag for "Pending approval" badge */
+    };
+
+    /* Inject into allReviews at position 0 (newest first) */
+    allReviews.unshift(newReview);
+
+    /* Persist to localStorage so it survives page refreshes */
+    savePendingReview(newReview);
+
+    /* Re-render page 1 with the new review visible */
+    totalPages = Math.ceil(allReviews.length / CONFIG.perPage);
+    updateHeroCounts();
+    hasScrolled = false; /* prevent scroll jump on this render */
+    showPage(1);
+
+    /* Hide form, show success message (message div is outside <form>) */
+    form.style.display = 'none';
+    formMessage.className = 'cr-form-message success';
+    formMessage.textContent = 'Thank you! Your review is now visible below.';
+    formMessage.style.display = 'block';
+
+    /* Reset form state for next open */
+    form.reset();
+    ratingInput.value = '0';
+    updateStars(0);
+    isSubmitting = false;
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit Review';
+
+    /* Close the modal after a short delay so user sees the success message */
+    setTimeout(function() {
+      closeForm();
+    }, 2000);
+  }
+
+  /* ===========================================================
+     LOCAL STORAGE: persist pending reviews across browser
+     sessions until the metafield cache catches up (~12 hrs).
+     Reviews auto-expire after 48 hours.
+     Key: 'cr_pending_reviews_<productId>'
+     =========================================================== */
+  var storageKey = 'cr_pending_reviews_' + CONFIG.productId;
+
+  function savePendingReview(review) {
+    try {
+      var stored = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      stored.unshift(review);
+      localStorage.setItem(storageKey, JSON.stringify(stored));
+    } catch (e) { /* storage full or unavailable -- ignore */ }
+  }
+
+  function loadPendingReviews() {
+    try {
+      var stored = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      /* Auto-expire entries older than 48 hours */
+      var cutoff = Date.now() - (48 * 60 * 60 * 1000);
+      return stored.filter(function(r) {
+        return r.created_at && new Date(r.created_at).getTime() > cutoff;
+      });
+    } catch (e) { return []; }
+  }
+
+  function mergePendingReviews() {
+    var pending = loadPendingReviews();
+    if (!pending.length) return;
+
+    for (var i = pending.length - 1; i >= 0; i--) {
+      var p = pending[i];
+      /* Check if this review already exists in allReviews (metafield caught up) */
+      var isDuplicate = allReviews.some(function(r) {
+        return r.body === p.body
+          && (r.reviewer ? r.reviewer.name : '') === (p.reviewer ? p.reviewer.name : '')
+          && r.rating === p.rating;
+      });
+      if (isDuplicate) {
+        /* Metafield now has this review -- remove from storage */
+        pending.splice(i, 1);
+      } else {
+        /* Still pending -- prepend to allReviews */
+        allReviews.unshift(p);
+      }
+    }
+
+    /* Update storage (remove any duplicates that were cleared) */
+    try {
+      if (pending.length > 0) {
+        localStorage.setItem(storageKey, JSON.stringify(pending));
+      } else {
+        localStorage.removeItem(storageKey);
+      }
+    } catch (e) { /* ignore */ }
+  }
+
+  if (form) form.addEventListener('submit', handleSubmit);
+
+  /* ===== INIT ===== */
+  initStarPicker();
+  fetchReviews();
+})();
 </script>
 
-<div style="display:none">
-  {% render 'judgeme_widgets', widget_type: 'judgeme_review_widget', product: product %}
-</div>
+{% else %}
+  <!-- Custom Reviews section requires a product context -->
+{% endif %}

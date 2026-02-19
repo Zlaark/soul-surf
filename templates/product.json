@@ -190,92 +190,10 @@
         },
         "reviews": {
             "type": "custom-reviews",
-            "blocks": {
-                "review_1": {
-                    "type": "review_card",
-                    "settings": {
-                        "author": "Aditi S",
-                        "verified": true,
-                        "stars": 5,
-                        "content": "I've never had a soda that feels this good. The flavour is bold and refreshing, and I love knowing it's good for my gut."
-                    }
-                },
-                "review_2": {
-                    "type": "review_card",
-                    "settings": {
-                        "author": "Rahul M",
-                        "verified": true,
-                        "stars": 5,
-                        "content": "Finally a soda that doesn't make me feel guilty! The mango flavor is spot on and the prebiotic fiber is a great bonus."
-                    }
-                },
-                "review_3": {
-                    "type": "review_card",
-                    "settings": {
-                        "author": "Priya K",
-                        "verified": true,
-                        "stars": 4,
-                        "content": "Love the citrus zing! It's become my go-to drink for hot summer days. Much healthier than regular sodas."
-                    }
-                },
-                "review_4": {
-                    "type": "review_card",
-                    "settings": {
-                        "author": "Vikram S",
-                        "verified": true,
-                        "stars": 5,
-                        "content": "My kids love it and I feel good giving it to them. Zero added sugar is a huge win for our family."
-                    }
-                },
-                "review_5": {
-                    "type": "review_card",
-                    "settings": {
-                        "author": "Sneha R",
-                        "verified": true,
-                        "stars": 5,
-                        "content": "The aam panna flavor takes me back to my childhood. Authentic taste with modern health benefits!"
-                    }
-                },
-                "review_6": {
-                    "type": "review_card",
-                    "settings": {
-                        "author": "Amit P",
-                        "verified": true,
-                        "stars": 4,
-                        "content": "Great alternative to sugary drinks. The light carbonation is perfect - not too fizzy, just right."
-                    }
-                },
-                "review_7": {
-                    "type": "review_card",
-                    "settings": {
-                        "author": "Meera J",
-                        "verified": true,
-                        "stars": 5,
-                        "content": "I stock up every month! SoulSurf has completely replaced my afternoon chai. Refreshing and energizing."
-                    }
-                },
-                "review_8": {
-                    "type": "review_card",
-                    "settings": {
-                        "author": "Karan D",
-                        "verified": true,
-                        "stars": 5,
-                        "content": "Best gut-friendly soda on the market. I can actually feel the difference in my digestion since I started drinking it."
-                    }
-                }
-            },
-            "block_order": [
-                "review_1",
-                "review_2",
-                "review_3",
-                "review_4",
-                "review_5",
-                "review_6",
-                "review_7",
-                "review_8"
-            ],
             "settings": {
                 "heading": "Taste worth raving about",
+                "api_token": "",
+                "reviews_per_page": 4,
                 "section_bg": "#FFF5E6",
                 "card_bg": "#FCDBA3"
             }
