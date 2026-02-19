@@ -421,86 +421,9 @@
       "default": "5.33"
     }
   ],
-  "blocks": [
-    {
-      "type": "ingredient",
-      "name": "Ingredient",
-      "settings": [
-        {
-          "type": "image_picker",
-          "id": "image",
-          "label": "Ingredient Image"
-        },
-        {
-          "type": "text",
-          "id": "title",
-          "label": "Ingredient Name",
-          "default": "Ingredient Name"
-        }
-      ]
-    },
-    {
-      "type": "marquee_item",
-      "name": "Marquee Text",
-      "settings": [
-        {
-          "type": "text",
-          "id": "text",
-          "label": "Text",
-          "default": "No Artificial Sweeteners"
-        }
-      ]
-    }
-  ],
   "presets": [
     {
-      "name": "Ingredients & Nutrition",
-      "blocks": [
-        {
-          "type": "ingredient",
-          "settings": { "title": "Carbonated water" }
-        },
-        {
-          "type": "ingredient",
-          "settings": { "title": "Real Mango Extract" }
-        },
-        {
-          "type": "ingredient",
-          "settings": { "title": "Lime extract" }
-        },
-        {
-          "type": "ingredient",
-          "settings": { "title": "Prebiotic fibre\n(plant-based inulin)" }
-        },
-        {
-          "type": "ingredient",
-          "settings": { "title": "Natural sweeteners" }
-        },
-        {
-          "type": "ingredient",
-          "settings": { "title": "Himalayan rock salt" }
-        },
-        {
-          "type": "ingredient",
-          "settings": { "title": "Natural flavours" }
-        },
-        {
-           "type": "marquee_item",
-           "settings": { "text": "No Artificial Sweeteners" }
-        },
-        {
-           "type": "marquee_item",
-           "settings": { "text": "No Preservatives" }
-        },
-        {
-           "type": "marquee_item",
-           "settings": { "text": "No Gluten" }
-        },
-         {
-           "type": "marquee_item",
-           "settings": { "text": "No Artificial Colours" }
-        }
-      ]
+      "name": "Ingredients & Nutrition"
     }
   ]
 }
@@ -567,37 +490,113 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 10px 55px; /* Increased column gap */
+    gap: 20px 30px; /* Adjusted gap */
   }
 
   .ing-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 140px; /* Increased for single-line text */
+    width: 120px; /* Reduced width */
     text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+  
+  .ing-item:hover {
+    transform: scale(1.05);
   }
 
   .ing-circle {
-    width: 140px;
-    height: 140px;
-    border-radius: 50%;
-    background-color: #E0E0E0;
+    width: 100px;
+    height: 100px;
     margin-bottom: var(--spacing-md);
-    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   .ing-circle img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
   }
 
   .ing-label {
-    font-size: 17px;
+    font-size: 15px;
     font-weight: 500;
     color: #333;
     line-height: 1.3;
+  }
+
+  /* Popup Styles */
+  .ing-popup-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2147483647;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .ing-popup-overlay.active {
+    display: flex;
+    opacity: 1;
+  }
+
+  .ing-popup-content {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    text-align: center;
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+  }
+
+  .ing-popup-overlay.active .ing-popup-content {
+    transform: translateY(0);
+  }
+
+  .ing-popup-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
+    line-height: 1;
+  }
+
+  .ing-popup-image {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    margin: 0 auto 20px;
+    display: block;
+  }
+
+  .ing-popup-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    margin-bottom: 15px;
+    color: #000;
+  }
+
+  .ing-popup-desc {
+    font-family: var(--font-primary);
+    font-size: 16px;
+    line-height: 1.6;
+    color: #444;
   }
 
   /* Right Side: Nutrition Facts */
@@ -932,53 +931,100 @@
       <h2 class="ing-heading">{{ section.settings.heading }}</h2>
       
       <div class="ing-grid">
-        {% assign ing_counter = 0 %}
-        {% for block in section.blocks %}
-          {% if block.type == 'ingredient' %}
-            {% assign ing_counter = ing_counter | plus: 1 %}
-          {% endif %}
+        {% assign current_variant = product.selected_or_first_available_variant %}
+        {% assign variant_meta = current_variant.metafields.custom %}
+        
+        {% assign variant_list = variant_meta.ingredients_list.value %}
+        {% assign product_list = product.metafields.custom.ingredients_list.value %}
+
+        {% assign metaobject_list = variant_list %}
+        {% if metaobject_list == blank %}
+          <!-- FALLBACK TO PRODUCT LIST -->
+          {% assign metaobject_list = product_list %}
+        {% endif %}
+
+        <div style="display:none;">
+            DEBUG:
+            Variant ID: {{ current_variant.id }}
+            Variant List Valid: {% if variant_list != blank %}YES ({{ variant_list | size }}){% else %}NO{% endif %}
+            Product List Valid: {% if product_list != blank %}YES ({{ product_list | size }}){% else %}NO{% endif %}
+            Final List Size: {{ metaobject_list | size }}
+            List Items:
+            {% for meta_item in metaobject_list %}
+              {{ forloop.index }}: {{ meta_item.name }} |
+            {% endfor %}
+        </div>
+
+        {% comment %} 
+           REFACTOR: Loop through list directly to avoid index access issues.
+           We populate 'slot_X' variables with the metaobject data.
+        {% endcomment %}
+
+        {% for item in metaobject_list limit: 9 %}
+          {% case forloop.index %}
+            {% when 1 %}{% assign slot_1 = item %}
+            {% when 2 %}{% assign slot_2 = item %}
+            {% when 3 %}{% assign slot_3 = item %}
+            {% when 4 %}{% assign slot_4 = item %}
+            {% when 5 %}{% assign slot_5 = item %}
+            {% when 6 %}{% assign slot_6 = item %}
+            {% when 7 %}{% assign slot_7 = item %}
+            {% when 8 %}{% assign slot_8 = item %}
+            {% when 9 %}{% assign slot_9 = item %}
+          {% endcase %}
         {% endfor %}
         
-        {% assign current_ing_index = 0 %}
-        {% for block in section.blocks %}
-          {% if block.type == 'ingredient' %}
-            {% assign current_ing_index = current_ing_index | plus: 1 %}
-            
-            {% assign ing_image = block.settings.image %}
-            {% assign ing_title = block.settings.title %}
-             {% assign variant_meta = product.selected_or_first_available_variant.metafields.custom %}
-            
-            {% if current_ing_index == 2 %}
-                 {% if variant_meta.ingredient_2_image.value != blank %}
-                      {% assign ing_image = variant_meta.ingredient_2_image.value %}
-                 {% endif %}
-                 {% if variant_meta.ingredient_2_text.value != blank %}
-                      {% assign ing_title = variant_meta.ingredient_2_text.value %}
-                 {% endif %}
-            {% endif %}
-            
-            {% if current_ing_index == ing_counter %}
-                 {% if variant_meta.ingredient_last_image.value != blank %}
-                      {% assign ing_image = variant_meta.ingredient_last_image.value %}
-                 {% endif %}
-                 {% if variant_meta.ingredient_last_text.value != blank %}
-                      {% assign ing_title = variant_meta.ingredient_last_text.value %}
-                 {% endif %}
-            {% endif %}
+        {% for i in (1..9) %}
+          {% assign default_title = "" %}
+          {% assign default_popup_desc = "Detailed information about this ingredient." %}
+          {% assign current_meta_item = nil %}
+          
+          {% case i %}
+            {% when 1 %}{% assign default_title = "Carbonated Water" %}{% assign current_meta_item = slot_1 %}
+            {% when 2 %}{% assign default_title = "Real Fruit Juice" %}{% assign current_meta_item = slot_2 %}
+            {% when 3 %}{% assign default_title = "Natural Flavors" %}{% assign current_meta_item = slot_3 %}
+            {% when 4 %}{% assign default_title = "Prebiotic Fiber" %}{% assign current_meta_item = slot_4 %}
+            {% when 5 %}{% assign default_title = "Stevia Leaf" %}{% assign current_meta_item = slot_5 %}
+            {% when 6 %}{% assign default_title = "Vitamin C" %}{% assign current_meta_item = slot_6 %}
+            {% when 7 %}{% assign default_title = "B-Vitamins" %}{% assign current_meta_item = slot_7 %}
+            {% when 8 %}{% assign default_title = "Electrolytes" %}{% assign current_meta_item = slot_8 %}
+            {% when 9 %}{% assign default_title = "No Added Sugar" %}{% assign current_meta_item = slot_9 %}
+          {% endcase %}
 
-            <div class="ing-item" data-index="{{ current_ing_index }}" data-is-second="{% if current_ing_index == 2 %}true{% endif %}" data-is-last="{% if current_ing_index == ing_counter %}true{% endif %}"
-              {%- if current_ing_index == 2 or current_ing_index == ing_counter %}
-                data-default-img="{% if block.settings.image != blank %}{{ block.settings.image | image_url: width: 200 }}{% endif %}"
-                data-default-text="{{ block.settings.title | escape }}"
-              {%- endif -%}>
-              <div class="ing-circle">
-                {% if ing_image != blank %}
-                  {{ ing_image | image_url: width: 200 | image_tag: loading: 'lazy' }}
-                {% endif %}
-              </div>
-              <div class="ing-label">{{ ing_title | newline_to_br }}</div>
-            </div>
+          {% assign img_key = 'ingredient_' | append: i | append: '_image' %}
+          {% assign title_key = 'ingredient_' | append: i | append: '_title' %}
+          {% assign popup_desc_key = 'ingredient_' | append: i | append: '_popup_description' %}
+
+          {% if current_meta_item %}
+             {% comment %} Metaobject Data Priority {% endcomment %}
+             {% assign ing_image = current_meta_item.image %}
+             {% assign ing_title = current_meta_item.name %}
+             {% assign popup_desc = current_meta_item.description | default: default_popup_desc %}
+          {% else %}
+             {% comment %} Legacy / Fallback Data {% endcomment %}
+             {% assign ing_image = variant_meta[img_key] | default: product.metafields.custom[img_key] %}
+             {% assign ing_title = variant_meta[title_key] | default: product.metafields.custom[title_key] | default: default_title %}
+             {% assign popup_desc = variant_meta[popup_desc_key] | default: product.metafields.custom[popup_desc_key] | default: default_popup_desc %}
           {% endif %}
+          
+          {% assign popup_title = ing_title %}
+
+          <!-- DEBUG LIQUID: i={{ i }} source="{% if current_meta_item %}metaobject{% else %}legacy{% endif %}" title="{{ ing_title }}" -->
+
+          {% assign has_content = true %}
+
+          <div class="ing-item" 
+               data-index="{{ i }}"
+               data-popup-title="{{ popup_title | escape }}"
+               data-popup-desc="{{ popup_desc | escape }}"
+               style="display: flex;">
+            <div class="ing-circle">
+              {% if ing_image != blank %}
+                {{ ing_image | image_url: width: 200 | image_tag: loading: 'lazy', class: 'ing-img-display' }}
+              {% endif %}
+            </div>
+            <div class="ing-label">{{ ing_title | newline_to_br }}</div>
+          </div>
         {% endfor %}
       </div>
     </div>
@@ -1194,82 +1240,231 @@
   </div>
 </div>
 
+  <!-- Popup Modal -->
+  <div class="ing-popup-overlay" id="ingPopup">
+    <div class="ing-popup-content">
+      <span class="ing-popup-close">&times;</span>
+      <img src="" alt="" class="ing-popup-image js-popup-image" width="200" height="200">
+      <h3 class="ing-popup-title js-popup-title"></h3>
+      <div class="ing-popup-desc js-popup-desc"></div>
+    </div>
+  </div>
+
+
+
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     var sectionContainer = document.querySelector('.ing-section');
     if (!sectionContainer) return;
 
-    // Cache target elements
-    var secondItem = sectionContainer.querySelector('.ing-item[data-is-second="true"]');
-    var lastItem = sectionContainer.querySelector('.ing-item[data-is-last="true"]');
-
-    // Variant data for dynamic updates
+    // --- Data Preparation ---
     var variants = [
       {% for variant in product.variants %}
         {
           id: "{{ variant.id }}",
           color: "{{ variant.metafields.custom.nutrition_color.value | default: product.metafields.custom.nutrition_color.value | default: section.settings.border_color }}",
-          ing2_img: "{% if variant.metafields.custom.ingredient_2_image.value %}{{ variant.metafields.custom.ingredient_2_image.value | image_url: width: 200 }}{% endif %}",
-          ing2_text: `{{ variant.metafields.custom.ingredient_2_text.value | newline_to_br }}`,
-          ingLast_img: "{% if variant.metafields.custom.ingredient_last_image.value %}{{ variant.metafields.custom.ingredient_last_image.value | image_url: width: 200 }}{% endif %}",
-          ingLast_text: `{{ variant.metafields.custom.ingredient_last_text.value | newline_to_br }}`
+          ingredients: [
+            {% assign metaobject_list = variant.metafields.custom.ingredients_list.value | default: product.metafields.custom.ingredients_list.value %}
+
+            {% comment %} Capture items for JS loop via loop to avoid index issues {% endcomment %}
+            {% for item in metaobject_list limit: 9 %}
+              {% case forloop.index %}
+                {% when 1 %}{% assign js_meta_1 = item %}
+                {% when 2 %}{% assign js_meta_2 = item %}
+                {% when 3 %}{% assign js_meta_3 = item %}
+                {% when 4 %}{% assign js_meta_4 = item %}
+                {% when 5 %}{% assign js_meta_5 = item %}
+                {% when 6 %}{% assign js_meta_6 = item %}
+                {% when 7 %}{% assign js_meta_7 = item %}
+                {% when 8 %}{% assign js_meta_8 = item %}
+                {% when 9 %}{% assign js_meta_9 = item %}
+              {% endcase %}
+            {% endfor %}
+
+            {% for i in (1..9) %}
+            {% assign default_title = "" %}
+            {% assign default_popup_desc = "Detailed information about this ingredient." %}
+            {% assign current_js_meta = nil %}
+
+            {% case i %}
+              {% when 1 %}{% assign default_title = "Carbonated Water" %}{% assign current_js_meta = js_meta_1 %}
+              {% when 2 %}{% assign default_title = "Real Fruit Juice" %}{% assign current_js_meta = js_meta_2 %}
+              {% when 3 %}{% assign default_title = "Natural Flavors" %}{% assign current_js_meta = js_meta_3 %}
+              {% when 4 %}{% assign default_title = "Prebiotic Fiber" %}{% assign current_js_meta = js_meta_4 %}
+              {% when 5 %}{% assign default_title = "Stevia Leaf" %}{% assign current_js_meta = js_meta_5 %}
+              {% when 6 %}{% assign default_title = "Vitamin C" %}{% assign current_js_meta = js_meta_6 %}
+              {% when 7 %}{% assign default_title = "B-Vitamins" %}{% assign current_js_meta = js_meta_7 %}
+              {% when 8 %}{% assign default_title = "Electrolytes" %}{% assign current_js_meta = js_meta_8 %}
+              {% when 9 %}{% assign default_title = "No Added Sugar" %}{% assign current_js_meta = js_meta_9 %}
+            {% endcase %}
+
+            {% assign img_k = 'ingredient_' | append: i | append: '_image' %}
+            {% assign title_k = 'ingredient_' | append: i | append: '_title' %}
+            {% assign pd_k = 'ingredient_' | append: i | append: '_popup_description' %}
+            
+            {% if current_js_meta %}
+              {% assign js_image = current_js_meta.image | image_url: width: 200 %}
+              {% assign js_title = current_js_meta.name | newline_to_br %}
+              {% assign js_popup_title = current_js_meta.name | escape %}
+              {% assign js_popup_desc = current_js_meta.description | default: default_popup_desc | escape %}
+            {% else %}
+               {% capture js_image %}{% if variant.metafields.custom[img_k] %}{{ variant.metafields.custom[img_k] | image_url: width: 200 }}{% elsif product.metafields.custom[img_k] %}{{ product.metafields.custom[img_k] | image_url: width: 200 }}{% endif %}{% endcapture %}
+               {% assign js_title = variant.metafields.custom[title_k] | default: product.metafields.custom[title_k] | default: default_title | newline_to_br %}
+               {% assign js_popup_title = variant.metafields.custom[title_k] | default: product.metafields.custom[title_k] | default: default_title | escape %}
+               {% assign js_popup_desc = variant.metafields.custom[pd_k] | default: product.metafields.custom[pd_k] | default: default_popup_desc | escape %}
+            {% endif %}
+
+              {
+                index: {{ i }},
+                image: "{{ js_image | strip }}",
+                title: `{{ js_title }}`,
+                popup_title: `{{ js_popup_title }}`,
+                popup_desc: `{{ js_popup_desc }}`
+              }{% unless forloop.last %},{% endunless %}
+            {% endfor %}
+          ]
         },
       {% endfor %}
     ];
+    console.log('Ing Section Variants Data:', variants);
 
-    /**
-     * Updates an ingredient item's image and label.
-     * Falls back to data-default-img / data-default-text when variant has no override.
-     */
-    function updateIngredientItem(item, variantImg, variantText) {
-        if (!item) return;
-
-        // Use variant value if available, otherwise fall back to block default
-        var finalImg  = variantImg  || item.getAttribute('data-default-img')  || '';
-        var finalText = variantText || item.getAttribute('data-default-text') || '';
-
-        // --- Update image ---
-        var circle = item.querySelector('.ing-circle');
-        if (circle) {
-            var img = circle.querySelector('img');
-            if (finalImg) {
-                if (img) {
-                    img.src = finalImg;
-                    // CRITICAL: remove srcset/sizes so the browser uses the new src
-                    img.removeAttribute('srcset');
-                    img.removeAttribute('sizes');
-                } else {
-                    img = document.createElement('img');
-                    img.src = finalImg;
-                    img.loading = 'lazy';
-                    circle.appendChild(img);
-                }
-            } else if (img) {
-                img.remove();
-            }
-        }
-
-        // --- Update label ---
-        var label = item.querySelector('.ing-label');
-        if (label && finalText) {
-            label.innerHTML = finalText;
-        }
-    }
-
-    // Listen for custom event dispatched by main-product.liquid
-    document.addEventListener('pp:variant:change', function(e) {
-        if (!e.detail || !e.detail.variantId) return;
-
-        var variantId = String(e.detail.variantId);
-        var match = variants.find(function(v) { return String(v.id) === variantId; });
+    // --- Update Logic ---
+    function updateSection(variantId) {
+        var match = variants.find(function(v) { return String(v.id) === String(variantId); });
         if (!match) return;
 
-        // Update nutrition card color
+        // 1. Update Nutrition Color
         sectionContainer.style.setProperty('--nut-color', match.color);
 
-        // Update 2nd and Last ingredient items (auto-falls back to defaults)
-        updateIngredientItem(secondItem, match.ing2_img, match.ing2_text);
-        updateIngredientItem(lastItem,   match.ingLast_img, match.ingLast_text);
+        // 2. Update Ingredients
+        var ingItems = sectionContainer.querySelectorAll('.ing-item');
+        ingItems.forEach(function(item) {
+            var idx = parseInt(item.getAttribute('data-index'));
+            var data = match.ingredients.find(function(d) { return d.index === idx; });
+            
+            if (data) {
+                console.log('UpdateSection: applying data to item ' + idx, data);
+                // Check if has content
+                var hasContent = (data.image || data.title);
+                item.style.display = hasContent ? 'flex' : 'none';
+
+                if (!hasContent) return;
+
+                // Update Image
+                var innerCircle = item.querySelector('.ing-circle');
+                var img = innerCircle.querySelector('img');
+                
+                if (data.image) {
+                    if (img) {
+                        img.src = data.image; 
+                        img.removeAttribute('srcset'); 
+                        img.style.display = '';
+                    } else {
+                        var newImg = document.createElement('img');
+                        newImg.src = data.image;
+                        newImg.className = 'ing-img-display';
+                        innerCircle.appendChild(newImg);
+                    }
+                } else {
+                     if (img) img.style.display = 'none';
+                }
+                
+                // Update Text
+                var label = item.querySelector('.ing-label');
+                if (label) label.innerHTML = data.title;
+
+                // Update Popup Data Attributes
+                item.setAttribute('data-popup-title', data.popup_title);
+                item.setAttribute('data-popup-desc', data.popup_desc);
+            }
+        });
+    }
+
+    // --- Popup Logic ---
+    var popupOverlay = document.getElementById('ingPopup');
+    
+    // Move popup to body to avoid stacking context issues
+    if (popupOverlay && popupOverlay.parentNode !== document.body) {
+        document.body.appendChild(popupOverlay);
+    }
+
+    var popupClose = popupOverlay ? popupOverlay.querySelector('.ing-popup-close') : null;
+    var popupImage = popupOverlay ? popupOverlay.querySelector('.js-popup-image') : null;
+    var popupTitle = popupOverlay ? popupOverlay.querySelector('.js-popup-title') : null;
+    var popupDesc = popupOverlay ? popupOverlay.querySelector('.js-popup-desc') : null;
+
+    console.log('Popup Elements:', { popupOverlay, popupClose, popupImage, popupTitle, popupDesc });
+
+    function openPopup(item) {
+        if (!popupOverlay) {
+            console.error('Popup overlay not found!');
+            return;
+        }
+
+        var imgUrl = item.querySelector('.ing-circle img')?.src;
+        var title = item.getAttribute('data-popup-title');
+        var desc = item.getAttribute('data-popup-desc');
+
+        console.log('Opening Popup - Raw Data:', { title: title, desc: desc, img: imgUrl });
+
+        if (popupImage) {
+             popupImage.src = imgUrl || '';
+             popupImage.style.display = imgUrl ? 'block' : 'none';
+        }
+        if (popupTitle) popupTitle.innerHTML = title || ''; // Use innerHTML to decoding entities if any
+        if (popupDesc) popupDesc.innerHTML = desc || '';
+
+        // Show logic
+        popupOverlay.style.display = 'flex';
+        // Force reflow
+        void popupOverlay.offsetWidth;
+        popupOverlay.style.opacity = '1'; 
+        popupOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden'; 
+    }
+
+    function closePopup() {
+        console.log('Closing popup');
+        if (!popupOverlay) return;
+        
+        popupOverlay.style.opacity = '0';
+        popupOverlay.classList.remove('active');
+        setTimeout(() => {
+            popupOverlay.style.display = 'none';
+        }, 300);
+        document.body.style.overflow = '';
+    }
+
+    // Event Delegation
+    sectionContainer.addEventListener('click', function(e) {
+        console.log('Click on section:', e.target);
+        var item = e.target.closest('.ing-item');
+        if (item) {
+            openPopup(item);
+        }
+    });
+
+    if (popupClose) popupClose.addEventListener('click', closePopup);
+    
+    if (popupOverlay) {
+        popupOverlay.addEventListener('click', function(e) {
+            if (e.target === popupOverlay) closePopup();
+        });
+    }
+    
+    // Close on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && popupOverlay && popupOverlay.classList.contains('active')) {
+            closePopup();
+        }
+    });
+
+    // --- Variant Change Listener ---
+    document.addEventListener('pp:variant:change', function(e) {
+        console.log('Variant changed:', e.detail);
+        if (e.detail && e.detail.variantId) {
+            updateSection(e.detail.variantId);
+        }
     });
   });
 </script>
