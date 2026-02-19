@@ -294,7 +294,7 @@
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 2000000000;
+    z-index: 9999;
     justify-content: center;
     align-items: center;
     padding: 20px;
@@ -306,12 +306,12 @@
 
   .cr-form-container {
     background: #fff;
-    max-width: 480px;
+    max-width: 560px;
     width: 100%;
     max-height: 90vh;
     overflow-y: auto;
-    border-radius: 16px;
-    padding: 28px 30px;
+    border-radius: 20px;
+    padding: 40px;
     position: relative;
     font-family: 'Plus Jakarta Sans', sans-serif;
   }
@@ -331,22 +331,22 @@
 
   .cr-form-heading {
     font-family: 'Playfair Display', serif;
-    font-size: 24px;
+    font-size: 28px;
     font-weight: 500;
-    margin-bottom: 18px;
+    margin-bottom: 30px;
     color: #000;
   }
 
   .cr-form-group {
-    margin-bottom: 14px;
+    margin-bottom: 20px;
   }
 
   .cr-form-group label {
     display: block;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     color: #333;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
@@ -354,10 +354,10 @@
   .cr-form-group input,
   .cr-form-group textarea {
     width: 100%;
-    padding: 10px 14px;
-    border: 1.5px solid #E0E0E0;
-    border-radius: 10px;
-    font-size: 14px;
+    padding: 12px 16px;
+    border: 2px solid #E0E0E0;
+    border-radius: 12px;
+    font-size: 15px;
     font-family: inherit;
     transition: border-color 0.2s;
     box-sizing: border-box;
@@ -371,7 +371,7 @@
 
   .cr-form-group textarea {
     resize: vertical;
-    min-height: 70px;
+    min-height: 100px;
   }
 
   .cr-form-group .cr-field-error {
@@ -399,7 +399,7 @@
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 24px;
+    font-size: 28px;
     color: #D4D4D4;
     padding: 0;
     line-height: 1;
@@ -425,16 +425,16 @@
     background: #000;
     color: #fff;
     border: none;
-    padding: 12px 28px;
+    padding: 14px 32px;
     border-radius: 50px;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     letter-spacing: 1px;
     text-transform: uppercase;
     cursor: pointer;
     font-family: inherit;
     width: 100%;
-    margin-top: 6px;
+    margin-top: 10px;
     transition: background-color 0.2s, opacity 0.2s;
   }
 
@@ -588,17 +588,17 @@
 
     /* Form mobile */
     .cr-form-container {
-      padding: 20px 16px;
-      border-radius: 14px;
+      padding: 24px 20px;
+      border-radius: 16px;
     }
 
     .cr-form-heading {
-      font-size: 20px;
-      margin-bottom: 14px;
+      font-size: 22px;
+      margin-bottom: 20px;
     }
 
     .cr-star-picker-btn {
-      font-size: 26px;
+      font-size: 32px;
     }
   }
 </style>
@@ -692,15 +692,43 @@
   </div>
 </div>
 
-<!-- Judge.me server-rendered widget HTML (contains review data, parsed by JS) -->
+<!-- Judge.me review_widget_data JSON (contains ALL reviews as structured data) -->
+{% if product.metafields.judgeme.review_widget_data %}
+  <script id="cr-jdgm-json-{{ section.id }}" type="application/json">
+    {{ product.metafields.judgeme.review_widget_data }}
+  </script>
+{% endif %}
+
+<!-- Judge.me legacy widget HTML fallback (cached, limited reviews) -->
+{% assign has_legacy = false %}
+{% if product.metafields.judgeme.widget.size > 20 %}
+  {% assign has_legacy = true %}
+{% endif %}
 <div id="cr-jdgm-data-{{ section.id }}" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;" aria-hidden="true">
-  {{ product.metafields.judgeme.widget }}
+  {% if has_legacy %}{{ product.metafields.judgeme.widget }}{% endif %}
 </div>
 
-<!-- Live Judge.me widget (in-flow but visually hidden; their script populates it) -->
-<div id="cr-jdgm-live-{{ section.id }}" style="height:1px;overflow:hidden;opacity:0;pointer-events:none;" aria-hidden="true">
-  <div class="jdgm-widget jdgm-review-widget" data-id="{{ product.id }}" data-product-title="{{ product.title | escape }}"></div>
+<!-- Hidden Judge.me widget mount (official widget code for live data) -->
+<div style='clear:both'></div>
+<div id="cr-jdgm-live-{{ section.id }}" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;" aria-hidden="true">
+  <div id='judgeme_product_reviews_{{ section.id }}'
+       class='jdgm-widget jdgm-review-widget'
+       data-product-title='{{ product.title | escape }}'
+       data-id='{{ product.id }}'
+       data-product-id='{{ product.id }}'
+       data-widget='review'
+       data-auto-install='false'
+       data-shop-reviews-count='{{ shop.metafields.judgeme.shop_reviews_count | default: 0 | escape }}'
+       data-entry-point='review_widget.js'
+       data-entry-key='review-widget/main.js'>
+    {% if has_legacy %}
+      <div class='jdgm-legacy-widget-content' style='display: none;'>{{ product.metafields.judgeme.widget }}</div>
+    {% endif %}
+  </div>
 </div>
+{% if product.metafields.judgeme.review_widget_data %}
+  <script>window.jdgm = window.jdgm || {}; jdgm.data = jdgm.data || {}; jdgm.data.reviewWidget = jdgm.data.reviewWidget || {}; jdgm.data.reviewWidget[{{ product.id }}] = {{ product.metafields.judgeme.review_widget_data }};</script>
+{% endif %}
 
 <script>
 (function() {
@@ -767,185 +795,372 @@
   }
 
   /* ===========================================================
-     FETCH REVIEWS - Multi-strategy approach:
-     1) Render instantly from server-side metafield (cached)
-     2) Load Judge.me widget script to get LIVE data
-     3) Always merge localStorage pending reviews on top
+     FETCH REVIEWS — Multi-strategy approach:
+
+     Strategy 1 (PRIMARY): Parse review_widget_data JSON metafield
+       → Contains ALL reviews as structured JSON
+       → Server-rendered by Liquid, zero network requests
+       → No CORS, no API keys, no scraping
+
+     Strategy 2 (FALLBACK): Parse jdgm.data.reviewWidget JS object
+       → Same data, populated by Judge.me's <script> tag
+       → Available if metafield JSON script tag missing
+
+     Strategy 3 (FALLBACK): Scrape legacy widget HTML metafield
+       → product.metafields.judgeme.widget (limited, ~1 review)
+
+     Strategy 4 (LIVE FALLBACK): Poll Judge.me widget for live data
+       → Judge.me's JS populates the hidden widget div
+       → Scrape .jdgm-rev elements from the rendered widget
+
+     Always: merge localStorage pending reviews on top
      =========================================================== */
   function fetchReviews() {
-    var dataDiv = document.getElementById('cr-jdgm-data-' + CONFIG.sectionId);
-    var metafieldCount = 0;
+    console.log('[Reviews] Starting review fetch for product ' + CONFIG.productId);
 
-    if (dataDiv) {
-      var revEls = dataDiv.querySelectorAll('.jdgm-rev');
-      if (revEls.length > 0) {
-        console.log('[Reviews] Metafield has ' + revEls.length + ' review(s) - rendering instantly');
-        parseReviewElements(revEls);
-        metafieldCount = revEls.length;
+    /* --- Strategy 1: review_widget_data JSON metafield --- */
+    var jsonEl = document.getElementById('cr-jdgm-json-' + CONFIG.sectionId);
+    if (jsonEl) {
+      try {
+        var jsonData = JSON.parse(jsonEl.textContent);
+        var parsed = parseJudgeMeJson(jsonData);
+        if (parsed.length > 0) {
+          console.log('[Reviews] Strategy 1 (JSON metafield): ' + parsed.length + ' review(s)');
+          allReviews = parsed;
+          mergePendingReviews();
+          updateHeroCounts();
+          totalPages = Math.ceil(allReviews.length / CONFIG.perPage);
+          showPage(1);
+          if (countEl) countEl.textContent = allReviews.length + ' Review' + (allReviews.length !== 1 ? 's' : '');
+          return; /* Success — no need for fallbacks */
+        }
+      } catch (e) {
+        console.warn('[Reviews] Strategy 1 failed to parse JSON:', e.message);
       }
     }
 
-    /* Now try to get fresher data from Judge.me live */
-    loadJudgeMeLive(metafieldCount);
+    /* --- Strategy 2: jdgm.data.reviewWidget JS object --- */
+    if (window.jdgm && jdgm.data && jdgm.data.reviewWidget && jdgm.data.reviewWidget[CONFIG.productId]) {
+      try {
+        var widgetData = jdgm.data.reviewWidget[CONFIG.productId];
+        var parsed2 = parseJudgeMeJson(widgetData);
+        if (parsed2.length > 0) {
+          console.log('[Reviews] Strategy 2 (jdgm.data): ' + parsed2.length + ' review(s)');
+          allReviews = parsed2;
+          mergePendingReviews();
+          updateHeroCounts();
+          totalPages = Math.ceil(allReviews.length / CONFIG.perPage);
+          showPage(1);
+          if (countEl) countEl.textContent = allReviews.length + ' Review' + (allReviews.length !== 1 ? 's' : '');
+          return; /* Success */
+        }
+      } catch (e) {
+        console.warn('[Reviews] Strategy 2 failed:', e.message);
+      }
+    }
+
+    /* --- Strategy 3: legacy widget HTML metafield --- */
+    var dataDiv = document.getElementById('cr-jdgm-data-' + CONFIG.sectionId);
+    if (dataDiv) {
+      var cachedEls = dataDiv.querySelectorAll('.jdgm-rev');
+      if (cachedEls.length > 0) {
+        console.log('[Reviews] Strategy 3 (legacy HTML): ' + cachedEls.length + ' review(s)');
+        parseReviewElements(cachedEls);
+        /* Don't return — try Strategy 4 for more reviews */
+      }
+    }
+
+    /* --- Strategy 4: live Judge.me widget scraping --- */
+    fetchViaWidgetScraping();
   }
 
   /* ===========================================================
-     LOAD JUDGE.ME WIDGET SCRIPT
-     Judge.me's widget JS (loaded via content_for_header) may
-     not be available yet, or may not be installed at all.
-     We load it ourselves and let it populate the live widget
-     div, then scrape the fresh review data.
+     PARSE JUDGE.ME review_widget_data JSON
+     The JSON structure from Judge.me can vary. Known formats:
 
-     The script at cdn.judge.me/assets/installed.js scans the
-     page for .jdgm-widget elements, fetches review data from
-     Judge.me servers, and renders .jdgm-rev elements inside.
+     Format A (reviews array at top level):
+     { "reviews": [ { "reviewer": {...}, "rating": 5, ... } ] }
+
+     Format B (nested under product):
+     { "product": { "reviews": [...] } }
+
+     Format C (HTML string containing reviews):
+     { "html": "<div class='jdgm-rev'>...</div>" }
+
+     Format D (reviews as 'data' key):
+     { "data": { "reviews": [...] } }
+
+     We try all formats and extract review objects.
      =========================================================== */
-  function loadJudgeMeLive(metafieldCount) {
+  function parseJudgeMeJson(data) {
+    if (!data) return [];
+
+    var reviews = [];
+
+    /* Try to find the reviews array in various JSON structures */
+    var rawReviews = null;
+
+    if (Array.isArray(data.reviews)) {
+      rawReviews = data.reviews;
+    } else if (data.product && Array.isArray(data.product.reviews)) {
+      rawReviews = data.product.reviews;
+    } else if (data.data && Array.isArray(data.data.reviews)) {
+      rawReviews = data.data.reviews;
+    } else if (Array.isArray(data)) {
+      rawReviews = data;
+    }
+
+    /* Format A/B/D: structured review objects */
+    if (rawReviews && rawReviews.length > 0) {
+      for (var i = 0; i < rawReviews.length; i++) {
+        var r = rawReviews[i];
+        if (!r) continue;
+
+        /* Handle various field naming conventions */
+        var name = 'Anonymous';
+        if (r.reviewer && r.reviewer.name) {
+          name = r.reviewer.name;
+        } else if (r.reviewer_name) {
+          name = r.reviewer_name;
+        } else if (r.author) {
+          name = r.author;
+        } else if (r.name) {
+          name = r.name;
+        }
+
+        var rating = parseInt(r.rating) || parseInt(r.score) || 5;
+        var body = r.body || r.content || r.review || r.text || '';
+        var title = r.title || r.heading || '';
+        var createdAt = r.created_at || r.date || r.timestamp || r.created || '';
+        var verified = '';
+        if (r.verified === 'buyer' || r.verified === true || r.verified_buyer || r.source === 'buyer') {
+          verified = 'buyer';
+        }
+
+        reviews.push({
+          reviewer: { name: name },
+          rating: Math.min(Math.max(rating, 1), 5),
+          body: body,
+          title: title,
+          created_at: createdAt,
+          verified: verified
+        });
+      }
+      console.log('[Reviews] Parsed ' + reviews.length + ' review(s) from JSON');
+      return reviews;
+    }
+
+    /* Format C: HTML string — parse DOM */
+    var htmlStr = data.html || data.widget_html || data.content_html || '';
+    if (typeof data === 'string' && data.indexOf('jdgm-rev') !== -1) {
+      htmlStr = data;
+    }
+    if (htmlStr && htmlStr.indexOf('jdgm-rev') !== -1) {
+      var doc = new DOMParser().parseFromString(htmlStr, 'text/html');
+      var revEls = doc.querySelectorAll('.jdgm-rev');
+      if (revEls.length > 0) {
+        console.log('[Reviews] Parsed ' + revEls.length + ' review(s) from JSON HTML');
+        for (var j = 0; j < revEls.length; j++) {
+          reviews.push(parseOneRevElement(revEls[j]));
+        }
+        return reviews;
+      }
+    }
+
+    /* If data has keys we don't recognize, log them for debugging */
+    if (typeof data === 'object') {
+      var keys = Object.keys(data);
+      console.log('[Reviews] JSON keys found: ' + keys.join(', '));
+
+      /* Last resort: look for any array property that might contain reviews */
+      for (var k = 0; k < keys.length; k++) {
+        var val = data[keys[k]];
+        if (Array.isArray(val) && val.length > 0 && val[0] && (val[0].rating || val[0].body || val[0].reviewer)) {
+          console.log('[Reviews] Found reviews in key: ' + keys[k]);
+          return parseJudgeMeJson({ reviews: val });
+        }
+      }
+    }
+
+    return reviews;
+  }
+
+  /* ===== Parse a single .jdgm-rev DOM element ===== */
+  function parseOneRevElement(el) {
+    var authorEl   = el.querySelector('.jdgm-rev__author');
+    var bodyEl     = el.querySelector('.jdgm-rev__body');
+    var ratingEl   = el.querySelector('.jdgm-rev__rating, [data-score]');
+    var titleEl    = el.querySelector('.jdgm-rev__title');
+    var dateEl     = el.querySelector('.jdgm-rev__timestamp');
+    var verifiedEl = el.querySelector('.jdgm-rev__buyer-badge, .jdgm-verified');
+
+    return {
+      reviewer:   { name: authorEl ? authorEl.textContent.trim() : 'Anonymous' },
+      rating:     ratingEl ? (parseInt(ratingEl.getAttribute('data-score')) || 5) : 5,
+      body:       bodyEl   ? bodyEl.textContent.trim()   : '',
+      title:      titleEl  ? titleEl.textContent.trim()  : '',
+      created_at: dateEl   ? (dateEl.getAttribute('data-content') || dateEl.getAttribute('datetime') || dateEl.textContent.trim()) : '',
+      verified:   verifiedEl ? 'buyer' : ''
+    };
+  }
+
+  /* ===========================================================
+     STRATEGY 4: JUDGE.ME WIDGET SCRAPING (LIVE FALLBACK)
+     Load Judge.me's widget script and wait for it to populate
+     the hidden widget div with .jdgm-rev elements.
+     =========================================================== */
+  function fetchViaWidgetScraping() {
     var liveDiv = document.getElementById('cr-jdgm-live-' + CONFIG.sectionId);
     if (!liveDiv) {
-      console.log('[Reviews] No live widget div found');
+      console.log('[Reviews] No live widget div — using existing data only');
+      finalizeFallback();
       return;
     }
 
-    console.log('[Reviews] Loading Judge.me widget script...');
+    console.log('[Reviews] Strategy 4: Loading Judge.me widget for live scraping...');
 
-    /* Set required Judge.me configuration before loading their script */
+    /* Ensure Judge.me knows the shop domain */
     window.JEYME_SHOP_DOMAIN = CONFIG.shopDomain;
 
-    /* Check if Judge.me script is already loaded */
+    /* If Judge.me script is already loaded, just init and poll */
     if (window.jdgm && typeof jdgm.init === 'function') {
       console.log('[Reviews] Judge.me already loaded, calling init()');
       try { jdgm.init(); } catch(e) {}
-      pollForLiveReviews(metafieldCount, liveDiv);
+      pollForWidgetReviews(liveDiv);
       return;
     }
 
-    /* Load Judge.me's widget script */
-    var script = document.createElement('script');
-    script.src = 'https://cdn.judge.me/widget_preloader.js';
-    script.async = true;
-    script.onload = function() {
+    /* Load Judge.me scripts */
+    loadScript('https://cdn.judge.me/widget_preloader.js', function() {
       console.log('[Reviews] widget_preloader.js loaded');
-      /* Give it 1s to initialize, then try loading the full widget */
       setTimeout(function() {
         if (window.jdgm && typeof jdgm.init === 'function') {
-          console.log('[Reviews] jdgm.init() available, calling it');
           try { jdgm.init(); } catch(e) {}
         }
-        /* Also load installed.js as a backup */
-        var script2 = document.createElement('script');
-        script2.src = 'https://cdn.judge.me/assets/installed.js';
-        script2.async = true;
-        script2.onload = function() {
+        loadScript('https://cdn.judge.me/assets/installed.js', function() {
           console.log('[Reviews] installed.js loaded');
           setTimeout(function() {
             if (window.jdgm && typeof jdgm.init === 'function') {
               try { jdgm.init(); } catch(e) {}
             }
           }, 500);
-        };
-        document.head.appendChild(script2);
-      }, 1000);
-      pollForLiveReviews(metafieldCount, liveDiv);
-    };
-    script.onerror = function() {
-      console.log('[Reviews] widget_preloader.js failed, trying installed.js...');
-      var fallbackScript = document.createElement('script');
-      fallbackScript.src = 'https://cdn.judge.me/assets/installed.js';
-      fallbackScript.async = true;
-      fallbackScript.onload = function() {
+        });
+      }, 800);
+      pollForWidgetReviews(liveDiv);
+    }, function() {
+      loadScript('https://cdn.judge.me/assets/installed.js', function() {
         console.log('[Reviews] installed.js loaded (fallback)');
         setTimeout(function() {
           if (window.jdgm && typeof jdgm.init === 'function') {
             try { jdgm.init(); } catch(e) {}
           }
         }, 500);
-        pollForLiveReviews(metafieldCount, liveDiv);
-      };
-      fallbackScript.onerror = function() {
-        console.log('[Reviews] Both Judge.me scripts failed to load');
-      };
-      document.head.appendChild(fallbackScript);
-    };
-    document.head.appendChild(script);
+        pollForWidgetReviews(liveDiv);
+      }, function() {
+        console.log('[Reviews] All Judge.me scripts failed');
+        finalizeFallback();
+      });
+    });
+  }
+
+  /* ===== Load an external script ===== */
+  function loadScript(src, onSuccess, onError) {
+    var s = document.createElement('script');
+    s.src = src;
+    s.async = true;
+    s.onload  = onSuccess;
+    s.onerror = onError || function() {};
+    document.head.appendChild(s);
   }
 
   /* ===========================================================
-     POLL for live reviews after Judge.me script loads.
-     Their script will populate .jdgm-widget divs with
-     .jdgm-rev elements containing review data.
+     POLL for live widget reviews.
+     After Judge.me renders, check for the JS data object first
+     (jdgm.data.reviewWidget), then fall back to DOM scraping.
      =========================================================== */
-  function pollForLiveReviews(metafieldCount, liveDiv) {
-    var maxAttempts = 30;  /* 30 x 1s = 30s (Judge.me can be slow) */
+  function pollForWidgetReviews(liveDiv) {
+    var maxAttempts = 30;
     var attempt = 0;
 
-    function check() {
-      /* Check the live widget div for Judge.me-populated reviews */
-      var revEls = liveDiv.querySelectorAll('.jdgm-rev');
+    function poll() {
+      /* Check if jdgm.data was populated by the widget script */
+      if (window.jdgm && jdgm.data && jdgm.data.reviewWidget && jdgm.data.reviewWidget[CONFIG.productId]) {
+        try {
+          var parsed = parseJudgeMeJson(jdgm.data.reviewWidget[CONFIG.productId]);
+          if (parsed.length > 0) {
+            console.log('[Reviews] Widget populated jdgm.data with ' + parsed.length + ' review(s)');
+            allReviews = parsed;
+            mergePendingReviews();
+            updateHeroCounts();
+            totalPages = Math.ceil(allReviews.length / CONFIG.perPage);
+            hasScrolled = false;
+            showPage(1);
+            if (countEl) countEl.textContent = allReviews.length + ' Review' + (allReviews.length !== 1 ? 's' : '');
+            return;
+          }
+        } catch(e) {}
+      }
 
-      /* Also check globally for any .jdgm-rev outside our data div */
+      /* Check for DOM-rendered .jdgm-rev elements */
+      var revEls = liveDiv.querySelectorAll('.jdgm-rev');
       if (revEls.length === 0) {
-        var allJdgm = document.querySelectorAll('.jdgm-rev');
+        /* Also check globally */
         var dataDiv = document.getElementById('cr-jdgm-data-' + CONFIG.sectionId);
-        var liveEls = [];
-        for (var i = 0; i < allJdgm.length; i++) {
-          if (!dataDiv || !dataDiv.contains(allJdgm[i])) {
-            liveEls.push(allJdgm[i]);
+        var allOnPage = document.querySelectorAll('.jdgm-rev');
+        var external = [];
+        for (var i = 0; i < allOnPage.length; i++) {
+          if (!dataDiv || !dataDiv.contains(allOnPage[i])) {
+            external.push(allOnPage[i]);
           }
         }
-        if (liveEls.length > 0) revEls = liveEls;
+        if (external.length > 0) revEls = external;
       }
 
       if (revEls.length > 0) {
-        var serverCount = allReviews.filter(function(r) { return !r.pending; }).length;
-        console.log('[Reviews] Live poll found ' + revEls.length + ' review(s), had ' + serverCount + ' from metafield');
-        if (revEls.length > serverCount || metafieldCount === 0) {
-          parseReviewElements(revEls);
+        var collected = [];
+        for (var j = 0; j < revEls.length; j++) {
+          collected.push(parseOneRevElement(revEls[j]));
         }
-        return; /* done */
-      }
-
-      if (++attempt < maxAttempts) {
-        setTimeout(check, 1000);
-      } else {
-        console.log('[Reviews] Live poll timed out after ' + maxAttempts + 's');
-        if (metafieldCount === 0) {
-          allReviews = [];
+        if (collected.length > allReviews.filter(function(r) { return !r.pending; }).length) {
+          console.log('[Reviews] Widget DOM has ' + collected.length + ' review(s)');
+          allReviews = collected;
           mergePendingReviews();
           updateHeroCounts();
           totalPages = Math.ceil(allReviews.length / CONFIG.perPage);
-          if (allReviews.length > 0) { showPage(1); }
-          else { renderEmpty(); }
+          hasScrolled = false;
+          showPage(1);
           if (countEl) countEl.textContent = allReviews.length + ' Review' + (allReviews.length !== 1 ? 's' : '');
         }
+        return;
+      }
+
+      if (++attempt < maxAttempts) {
+        setTimeout(poll, 1000);
+      } else {
+        console.log('[Reviews] Widget poll timed out after ' + maxAttempts + 's');
+        finalizeFallback();
       }
     }
 
-    check();
+    poll();
   }
 
-  /* ===== Parse .jdgm-rev elements into our review array ===== */
+  /* ===== Final fallback: use whatever we have ===== */
+  function finalizeFallback() {
+    mergePendingReviews();
+    updateHeroCounts();
+    totalPages = Math.ceil(allReviews.length / CONFIG.perPage);
+    if (allReviews.length > 0) { showPage(1); }
+    else { renderEmpty(); }
+    if (countEl) countEl.textContent = allReviews.length + ' Review' + (allReviews.length !== 1 ? 's' : '');
+  }
+
+  /* ===== Parse .jdgm-rev elements into our review array (legacy) ===== */
   function parseReviewElements(revEls) {
     allReviews = [];
     for (var i = 0; i < revEls.length; i++) {
-      var el = revEls[i];
-      var authorEl   = el.querySelector('.jdgm-rev__author');
-      var bodyEl     = el.querySelector('.jdgm-rev__body');
-      var ratingEl   = el.querySelector('.jdgm-rev__rating, [data-score]');
-      var titleEl    = el.querySelector('.jdgm-rev__title');
-      var dateEl     = el.querySelector('.jdgm-rev__timestamp');
-      var verifiedEl = el.querySelector('.jdgm-rev__buyer-badge, .jdgm-verified');
-
-      allReviews.push({
-        reviewer:   { name: authorEl ? authorEl.textContent.trim() : 'Anonymous' },
-        rating:     ratingEl ? (parseInt(ratingEl.getAttribute('data-score')) || 5) : 5,
-        body:       bodyEl   ? bodyEl.textContent.trim()   : '',
-        title:      titleEl  ? titleEl.textContent.trim()  : '',
-        created_at: dateEl   ? (dateEl.getAttribute('data-content') || dateEl.getAttribute('datetime') || dateEl.textContent.trim()) : '',
-        verified:   verifiedEl ? 'buyer' : ''
-      });
+      allReviews.push(parseOneRevElement(revEls[i]));
     }
-    /* Merge any pending reviews from localStorage */
     mergePendingReviews();
     updateHeroCounts();
     totalPages = Math.ceil(allReviews.length / CONFIG.perPage);
@@ -1311,10 +1526,6 @@
     params.append('title',                reviewData.title);
     params.append('body',                 reviewData.body);
     params.append('product_external_id',  String(CONFIG.productId));
-    params.append('id',                   String(CONFIG.productId));
-    params.append('product_url',          'https://' + CONFIG.shopDomain + CONFIG.productUrl);
-    params.append('product_handle',       CONFIG.productHandle);
-    params.append('product_title',        CONFIG.productTitle);
 
     fetch('https://judge.me/api/v1/reviews', {
       method: 'POST',

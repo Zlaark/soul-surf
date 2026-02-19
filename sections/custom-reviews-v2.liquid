@@ -1,0 +1,1136 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+
+  /* ===== Section Layout ===== */
+  .custom-reviews-section {
+    background-color: {{ section.settings.section_bg }};
+    padding: 80px 0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  .cr-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .cr-main-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    font-weight: 500;
+    text-align: center;
+    color: #000;
+    margin-bottom: 50px;
+    letter-spacing: -1px;
+  }
+
+  /* ===== Action Bar ===== */
+  .cr-action-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+
+  .cr-count {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1A1A1A;
+    opacity: 0.8;
+  }
+
+  .cr-write-btn {
+    background-color: #000;
+    color: #fff;
+    padding: 12px 28px;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-family: inherit;
+    transition: background-color 0.2s;
+  }
+
+  .cr-write-btn:hover {
+    background-color: #333;
+  }
+
+  /* =================================================================
+     JUDGE.ME WIDGET CSS OVERRIDES
+     Let Judge.me render its native widget (handles data fetching,
+     pagination, everything). We restyle it with CSS to match the
+     custom card design (two-panel layout, golden colors, etc.).
+     ================================================================= */
+
+  /* --- Reset Judge.me default styles --- */
+  .custom-reviews-section .jdgm-rev-widg {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+  }
+
+  /* --- Hide: header/summary, write-review link, built-in form, branding, actions, avatar --- */
+  .custom-reviews-section .jdgm-rev-widg__header,
+  .custom-reviews-section .jdgm-write-rev-link,
+  .custom-reviews-section .jdgm-form,
+  .custom-reviews-section .jdgm-form-wrapper,
+  .custom-reviews-section .jdgm-branding,
+  .custom-reviews-section .jdgm-rev-widg__summary,
+  .custom-reviews-section .jdgm-rev__actions,
+  .custom-reviews-section .jdgm-rev__icon,
+  .custom-reviews-section .jdgm-preview-badge,
+  .custom-reviews-section .jdgm-sort-wrapper,
+  .custom-reviews-section .jdgm-rev-widg__sort-wrapper,
+  .custom-reviews-section .jdgm-medal-icon,
+  .custom-reviews-section .jdgm-rev__pics {
+    display: none !important;
+  }
+
+  /* --- Reviews container (vertical stack with gaps) --- */
+  .custom-reviews-section .jdgm-rev-widg__body {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+    padding: 0 !important;
+  }
+
+  /* --- Individual review card: TWO-PANEL LAYOUT --- */
+  .custom-reviews-section .jdgm-rev {
+    display: flex !important;
+    flex-direction: row !important;
+    background-color: {{ section.settings.card_bg }} !important;
+    border-radius: 20px !important;
+    overflow: hidden !important;
+    min-height: 140px !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    position: relative !important;
+  }
+
+  /* --- LEFT PANEL: author, badge, stars, date --- */
+  .custom-reviews-section .jdgm-rev__header {
+    width: 250px !important;
+    min-width: 250px !important;
+    flex-shrink: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    padding: 30px !important;
+    border-right: 5px solid #FFFFFF !important;
+    border-bottom: none !important;
+    box-sizing: border-box !important;
+    background: transparent !important;
+    margin: 0 !important;
+    gap: 0 !important;
+  }
+
+  /* --- RIGHT PANEL: title + body --- */
+  .custom-reviews-section .jdgm-rev__body {
+    flex-grow: 1 !important;
+    padding: 30px 40px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    background: transparent !important;
+    margin: 0 !important;
+    border: none !important;
+  }
+
+  /* --- Author name --- */
+  .custom-reviews-section .jdgm-rev__author {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: #000 !important;
+    margin-bottom: 8px !important;
+    display: block !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    line-height: 1.3 !important;
+    order: 1 !important;
+  }
+
+  /* --- Verified buyer badge --- */
+  .custom-reviews-section .jdgm-rev__buyer-badge,
+  .custom-reviews-section .jdgm-rev__verified-badge {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    font-size: 14px !important;
+    color: #A37600 !important;
+    font-weight: 600 !important;
+    margin-bottom: 12px !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    order: 2 !important;
+  }
+
+  .custom-reviews-section .jdgm-rev__buyer-badge .jdgm-badge__icon,
+  .custom-reviews-section .jdgm-rev__verified-badge .jdgm-badge__icon {
+    color: #A37600 !important;
+    fill: #A37600 !important;
+  }
+
+  /* --- Star rating --- */
+  .custom-reviews-section .jdgm-rev__rating {
+    display: block !important;
+    margin-bottom: 0 !important;
+    order: 3 !important;
+  }
+
+  .custom-reviews-section .jdgm-rev__rating .jdgm-star,
+  .custom-reviews-section .jdgm-rev__rating .jdgm-star--on,
+  .custom-reviews-section .jdgm-rev__rating span,
+  .custom-reviews-section .jdgm-star {
+    color: #A37600 !important;
+    font-size: 20px !important;
+    letter-spacing: 2px !important;
+  }
+  .custom-reviews-section .jdgm-rev__rating .jdgm-star--off {
+    color: #D4B976 !important;
+  }
+
+  /* --- Timestamp (stays in left panel, below stars) --- */
+  .custom-reviews-section .jdgm-rev__timestamp {
+    font-size: 12px !important;
+    color: #888 !important;
+    margin-top: 8px !important;
+    display: block !important;
+    order: 4 !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+  }
+
+  /* --- Review title --- */
+  .custom-reviews-section .jdgm-rev__title {
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    color: #000 !important;
+    margin-bottom: 6px !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+  }
+
+  /* --- Review text --- */
+  .custom-reviews-section .jdgm-rev__text,
+  .custom-reviews-section .jdgm-rev__body p {
+    font-size: 15px !important;
+    line-height: 1.6 !important;
+    color: #333 !important;
+    font-weight: 500 !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    margin: 0 !important;
+  }
+
+  /* --- Pagination --- */
+  .custom-reviews-section .jdgm-rev-widg__pagination {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 15px !important;
+    margin-top: 50px !important;
+    font-weight: 600 !important;
+    font-size: 15px !important;
+    border: none !important;
+    padding: 0 !important;
+  }
+
+  .custom-reviews-section .jdgm-paginate__page {
+    text-decoration: none !important;
+    color: #000 !important;
+    padding: 5px !important;
+    cursor: pointer !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    background: transparent !important;
+    border: none !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+  }
+
+  .custom-reviews-section .jdgm-paginate__page.jdgm-paginate__active-page,
+  .custom-reviews-section .jdgm-paginate__page--active {
+    text-decoration: underline !important;
+  }
+
+  .custom-reviews-section .jdgm-paginate__last-page,
+  .custom-reviews-section .jdgm-paginate__first-page,
+  .custom-reviews-section .jdgm-paginate__next-page,
+  .custom-reviews-section .jdgm-paginate__prev-page {
+    font-size: 18px !important;
+    padding: 0 5px !important;
+  }
+
+  /* Empty state override */
+  .custom-reviews-section .jdgm-rev-widg__no-reviews,
+  .custom-reviews-section .jdgm-rev-widg--no-reviews .jdgm-rev-widg__body::after {
+    content: '' !important;
+    text-align: center !important;
+    padding: 60px 20px !important;
+    color: #666 !important;
+    font-size: 16px !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+  }
+
+  /* Loading skeleton */
+  .cr-skeleton-card {
+    background-color: {{ section.settings.card_bg }};
+    border-radius: 20px;
+    height: 140px;
+    animation: cr-pulse 1.5s ease-in-out infinite;
+  }
+  .cr-loading-placeholder {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .cr-loading-placeholder.cr-hidden {
+    display: none;
+  }
+
+  @keyframes cr-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ===== Review Form Modal ===== */
+  .cr-form-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+
+  .cr-form-overlay.active {
+    display: flex;
+  }
+
+  .cr-form-container {
+    background: #fff;
+    max-width: 560px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 20px;
+    padding: 40px;
+    position: relative;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  .cr-form-close {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: #000;
+    line-height: 1;
+    padding: 4px;
+  }
+
+  .cr-form-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 500;
+    margin-bottom: 30px;
+    color: #000;
+  }
+
+  .cr-form-group {
+    margin-bottom: 20px;
+  }
+
+  .cr-form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .cr-form-group input,
+  .cr-form-group textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #E0E0E0;
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: inherit;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+  }
+
+  .cr-form-group input:focus,
+  .cr-form-group textarea:focus {
+    outline: none;
+    border-color: #A37600;
+  }
+
+  .cr-form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+
+  .cr-form-group .cr-field-error {
+    border-color: #E53935;
+  }
+
+  .cr-error-msg {
+    color: #E53935;
+    font-size: 12px;
+    margin-top: 4px;
+    display: none;
+  }
+
+  .cr-error-msg.visible {
+    display: block;
+  }
+
+  /* Star Picker */
+  .cr-star-picker {
+    display: flex;
+    gap: 8px;
+  }
+
+  .cr-star-picker-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 28px;
+    color: #D4D4D4;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.15s;
+  }
+
+  .cr-star-picker-btn.filled {
+    color: #A37600;
+  }
+
+  /* Honeypot */
+  .cr-hp-field {
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+    height: 0;
+    width: 0;
+    overflow: hidden;
+  }
+
+  /* Submit button */
+  .cr-form-submit {
+    background: #000;
+    color: #fff;
+    border: none;
+    padding: 14px 32px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-family: inherit;
+    width: 100%;
+    margin-top: 10px;
+    transition: background-color 0.2s, opacity 0.2s;
+  }
+
+  .cr-form-submit:hover {
+    background: #333;
+  }
+
+  .cr-form-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .cr-form-submit .cr-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #fff;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: cr-spin 0.6s linear infinite;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+
+  @keyframes cr-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Form Messages */
+  .cr-form-message {
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    margin-top: 16px;
+    display: none;
+  }
+
+  .cr-form-message.success {
+    background: #E8F5E9;
+    color: #2E7D32;
+    display: block;
+  }
+
+  .cr-form-message.error {
+    background: #FFEBEE;
+    color: #C62828;
+    display: block;
+  }
+
+  /* ===== Mobile Responsive ===== */
+  @media (max-width: 768px) {
+    .custom-reviews-section {
+      padding: 50px 0;
+    }
+
+    .cr-container {
+      padding: 0 15px;
+    }
+
+    .cr-main-heading {
+      font-size: 32px;
+      margin-bottom: 30px;
+    }
+
+    .cr-action-bar {
+      margin-bottom: 20px;
+    }
+
+    .cr-count {
+      font-size: 14px;
+    }
+
+    .cr-write-btn {
+      padding: 10px 20px;
+      font-size: 11px;
+    }
+
+    /* Mobile two-panel cards (narrower left panel) */
+    .custom-reviews-section .jdgm-rev {
+      flex-direction: row !important;
+      border-radius: 15px !important;
+      min-height: 100px !important;
+    }
+
+    .custom-reviews-section .jdgm-rev__header {
+      width: 140px !important;
+      min-width: 140px !important;
+      padding: 15px !important;
+      border-right: 3px solid #FFFFFF !important;
+    }
+
+    .custom-reviews-section .jdgm-rev__body {
+      padding: 15px !important;
+    }
+
+    .custom-reviews-section .jdgm-rev__author {
+      font-size: 14px !important;
+      margin-bottom: 5px !important;
+    }
+
+    .custom-reviews-section .jdgm-rev__buyer-badge,
+    .custom-reviews-section .jdgm-rev__verified-badge {
+      font-size: 11px !important;
+      margin-bottom: 8px !important;
+      gap: 5px !important;
+    }
+
+    .custom-reviews-section .jdgm-rev__rating .jdgm-star,
+    .custom-reviews-section .jdgm-rev__rating .jdgm-star--on,
+    .custom-reviews-section .jdgm-rev__rating span {
+      font-size: 14px !important;
+      letter-spacing: 1px !important;
+    }
+
+    .custom-reviews-section .jdgm-rev__text,
+    .custom-reviews-section .jdgm-rev__body p {
+      font-size: 12px !important;
+      line-height: 1.5 !important;
+    }
+
+    .custom-reviews-section .jdgm-rev__title {
+      font-size: 13px !important;
+    }
+
+    .custom-reviews-section .cr-skeleton-card {
+      height: 100px;
+      border-radius: 15px;
+    }
+
+    .custom-reviews-section .jdgm-rev-widg__pagination {
+      margin-top: 30px !important;
+      gap: 10px !important;
+      font-size: 14px !important;
+    }
+
+    /* Form mobile */
+    .cr-form-container {
+      padding: 24px 20px;
+      border-radius: 16px;
+    }
+
+    .cr-form-heading {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+
+    .cr-star-picker-btn {
+      font-size: 32px;
+    }
+  }
+</style>
+
+{% if product %}
+<div class="custom-reviews-section" id="custom-reviews-{{ section.id }}">
+  <div class="cr-container">
+    <h2 class="cr-main-heading">{{ section.settings.heading }}</h2>
+
+    <div class="cr-action-bar">
+      <div class="cr-count">
+        <span id="cr-review-count-{{ section.id }}">Loading...</span>
+      </div>
+      <button type="button" class="cr-write-btn" id="cr-write-btn-{{ section.id }}">
+        {{ section.settings.button_text }}
+      </button>
+    </div>
+
+    <!-- Loading skeletons (hidden once Judge.me renders) -->
+    <div class="cr-loading-placeholder" id="cr-loading-{{ section.id }}">
+      <div class="cr-skeleton-card"></div>
+      <div class="cr-skeleton-card"></div>
+      <div class="cr-skeleton-card"></div>
+      <div class="cr-skeleton-card"></div>
+    </div>
+
+    <!--
+      Judge.me OFFICIAL widget mount point.
+      Judge.me's own scripts (loaded via content_for_header in theme.liquid)
+      will find this element, fetch all reviews, and render them inside it.
+      We restyle the output with CSS above — no custom JS data fetching needed.
+    -->
+    <div class="jdgm-widget jdgm-review-widget"
+         data-product-title="{{ product.title | escape }}"
+         data-id="{{ product.id }}">
+    </div>
+  </div>
+</div>
+
+<!-- ===== Review Form Modal ===== -->
+<div class="cr-form-overlay" id="cr-form-overlay-{{ section.id }}">
+  <div class="cr-form-container">
+    <button type="button" class="cr-form-close" id="cr-form-close-{{ section.id }}" aria-label="Close review form">&times;</button>
+    <div class="cr-form-heading">Write a Review</div>
+
+    <form id="cr-review-form-{{ section.id }}" novalidate>
+      <!-- Honeypot (spam prevention) -->
+      <div class="cr-hp-field">
+        <label for="cr-hp-{{ section.id }}">Leave this empty</label>
+        <input type="text" id="cr-hp-{{ section.id }}" name="website" tabindex="-1" autocomplete="off">
+      </div>
+
+      <!-- Rating -->
+      <div class="cr-form-group">
+        <label>Rating <span style="color:#E53935">*</span></label>
+        <div class="cr-star-picker" id="cr-star-picker-{{ section.id }}" role="radiogroup" aria-label="Rating">
+          <button type="button" class="cr-star-picker-btn" data-value="1" aria-label="1 star">&#9733;</button>
+          <button type="button" class="cr-star-picker-btn" data-value="2" aria-label="2 stars">&#9733;</button>
+          <button type="button" class="cr-star-picker-btn" data-value="3" aria-label="3 stars">&#9733;</button>
+          <button type="button" class="cr-star-picker-btn" data-value="4" aria-label="4 stars">&#9733;</button>
+          <button type="button" class="cr-star-picker-btn" data-value="5" aria-label="5 stars">&#9733;</button>
+        </div>
+        <input type="hidden" id="cr-rating-{{ section.id }}" value="0">
+        <div class="cr-error-msg" id="cr-rating-error-{{ section.id }}">Please select a rating</div>
+      </div>
+
+      <!-- Name -->
+      <div class="cr-form-group">
+        <label for="cr-name-{{ section.id }}">Name <span style="color:#E53935">*</span></label>
+        <input type="text" id="cr-name-{{ section.id }}" placeholder="Your name" maxlength="100" required>
+        <div class="cr-error-msg" id="cr-name-error-{{ section.id }}">Please enter your name</div>
+      </div>
+
+      <!-- Email -->
+      <div class="cr-form-group">
+        <label for="cr-email-{{ section.id }}">Email <span style="color:#E53935">*</span></label>
+        <input type="email" id="cr-email-{{ section.id }}" placeholder="your@email.com" required>
+        <div class="cr-error-msg" id="cr-email-error-{{ section.id }}">Please enter a valid email address</div>
+      </div>
+
+      <!-- Review Title (optional) -->
+      <div class="cr-form-group">
+        <label for="cr-title-{{ section.id }}">Review Title</label>
+        <input type="text" id="cr-title-{{ section.id }}" placeholder="Summarize your experience" maxlength="150">
+      </div>
+
+      <!-- Review Body -->
+      <div class="cr-form-group">
+        <label for="cr-body-{{ section.id }}">Review <span style="color:#E53935">*</span></label>
+        <textarea id="cr-body-{{ section.id }}" placeholder="Tell us about your experience..." maxlength="5000" required></textarea>
+        <div class="cr-error-msg" id="cr-body-error-{{ section.id }}">Review must be at least 10 characters</div>
+      </div>
+
+      <button type="submit" class="cr-form-submit" id="cr-form-submit-{{ section.id }}">
+        Submit Review
+      </button>
+    </form>
+
+    <div class="cr-form-message" id="cr-form-message-{{ section.id }}"></div>
+  </div>
+</div>
+
+<script>
+(function() {
+  /* ===== Configuration ===== */
+  var CONFIG = {
+    sectionId:     {{ section.id | json }},
+    shopDomain:    {{ shop.permanent_domain | json }},
+    apiToken:      {{ section.settings.api_token | json }},
+    productId:     {{ product.id | json }},
+    productHandle: {{ product.handle | json }},
+    productTitle:  {{ product.title | json }},
+    productUrl:    {{ product.url | json }},
+    perPage:       {{ section.settings.reviews_per_page | json }}
+  };
+
+  /* ===== DOM References ===== */
+  var sectionEl   = document.getElementById('custom-reviews-' + CONFIG.sectionId);
+  if (!sectionEl) return;
+
+  var countEl     = document.getElementById('cr-review-count-' + CONFIG.sectionId);
+  var writeBtn    = document.getElementById('cr-write-btn-' + CONFIG.sectionId);
+  var overlay     = document.getElementById('cr-form-overlay-' + CONFIG.sectionId);
+  var closeBtn    = document.getElementById('cr-form-close-' + CONFIG.sectionId);
+  var form        = document.getElementById('cr-review-form-' + CONFIG.sectionId);
+  var submitBtn   = document.getElementById('cr-form-submit-' + CONFIG.sectionId);
+  var formMessage = document.getElementById('cr-form-message-' + CONFIG.sectionId);
+  var starPicker  = document.getElementById('cr-star-picker-' + CONFIG.sectionId);
+  var starBtns    = starPicker ? starPicker.querySelectorAll('.cr-star-picker-btn') : [];
+  var ratingInput = document.getElementById('cr-rating-' + CONFIG.sectionId);
+  var loadingEl   = document.getElementById('cr-loading-' + CONFIG.sectionId);
+
+  var isSubmitting = false;
+
+  /* ===========================================================
+     JUDGE.ME WIDGET INITIALIZATION
+     Judge.me's scripts are loaded via content-for-header
+     in theme.liquid. They automatically find .jdgm-widget
+     elements and render reviews inside them.
+
+     We just need to:
+     1. Trigger re-init if our section loads after Judge.me
+     2. Watch for the widget to render, then update our count
+     =========================================================== */
+  function initJudgeMeWidget() {
+    console.log('[Reviews] Initializing Judge.me widget for product ' + CONFIG.productId);
+
+    /* If Judge.me is already loaded, trigger init to process our widget */
+    if (window.jdgm && typeof jdgm.init === 'function') {
+      console.log('[Reviews] Judge.me already loaded — calling jdgm.init()');
+      try { jdgm.init(); } catch(e) { console.warn('[Reviews] jdgm.init() error:', e); }
+    }
+
+    /* Watch for Judge.me to render the widget */
+    watchForWidget();
+  }
+
+  /* ===== Watch for Judge.me widget render ===== */
+  function watchForWidget() {
+    /* Check immediately */
+    var widget = sectionEl.querySelector('.jdgm-rev-widg');
+    if (widget) {
+      onWidgetRendered(widget);
+      return;
+    }
+
+    /* Poll + MutationObserver (double strategy for reliability) */
+    var resolved = false;
+    var attempts = 0;
+
+    var timer = setInterval(function() {
+      if (resolved) { clearInterval(timer); return; }
+      var w = sectionEl.querySelector('.jdgm-rev-widg');
+      if (w) {
+        resolved = true;
+        clearInterval(timer);
+        onWidgetRendered(w);
+        return;
+      }
+
+      /* Retry jdgm.init() periodically in case Judge.me loaded late */
+      if (attempts % 5 === 4 && window.jdgm && typeof jdgm.init === 'function') {
+        try { jdgm.init(); } catch(e) {}
+      }
+
+      if (++attempts > 120) { /* ~60 seconds */
+        clearInterval(timer);
+        console.log('[Reviews] Judge.me widget did not render after 60s');
+        onWidgetTimeout();
+      }
+    }, 500);
+
+    var observer = new MutationObserver(function() {
+      if (resolved) { observer.disconnect(); return; }
+      var w = sectionEl.querySelector('.jdgm-rev-widg');
+      if (w) {
+        resolved = true;
+        clearInterval(timer);
+        observer.disconnect();
+        onWidgetRendered(w);
+      }
+    });
+    observer.observe(sectionEl, { childList: true, subtree: true });
+  }
+
+  /* ===== Widget rendered — extract review count and update UI ===== */
+  function onWidgetRendered(widget) {
+    console.log('[Reviews] Judge.me widget rendered!');
+
+    /* Hide loading skeletons */
+    if (loadingEl) loadingEl.classList.add('cr-hidden');
+
+    /* Initial count update */
+    updateReviewCount(widget);
+
+    /* Watch for pagination (review count may change when user clicks pages) */
+    var bodyObserver = new MutationObserver(function() {
+      updateReviewCount(widget);
+    });
+    bodyObserver.observe(widget, { childList: true, subtree: true });
+  }
+
+  function onWidgetTimeout() {
+    /* Hide loading skeletons and show empty state */
+    if (loadingEl) loadingEl.classList.add('cr-hidden');
+    if (countEl) countEl.textContent = '0 Reviews';
+    console.log('[Reviews] Timeout — Judge.me widget may not be installed or product has no reviews');
+  }
+
+  /* ===== Update review count in action bar + hero section ===== */
+  function updateReviewCount(widget) {
+    var reviews = widget.querySelectorAll('.jdgm-rev');
+    /* Judge.me stores total count in data attribute */
+    var numAttr  = widget.getAttribute('data-number-of-reviews');
+    var count = numAttr ? parseInt(numAttr) : reviews.length;
+    if (isNaN(count)) count = reviews.length;
+
+    /* Update our custom count display */
+    if (countEl) {
+      countEl.textContent = count + ' Review' + (count !== 1 ? 's' : '');
+    }
+
+    /* Update hero section (in main-product.liquid) */
+    var heroCount = document.querySelector('.pp-review-count');
+    if (heroCount) heroCount.textContent = count + ' Review' + (count !== 1 ? 's' : '');
+
+    /* Calculate average rating from visible reviews */
+    if (reviews.length > 0) {
+      var sum = 0;
+      for (var i = 0; i < reviews.length; i++) {
+        var rEl = reviews[i].querySelector('[data-score]');
+        sum += rEl ? (parseInt(rEl.getAttribute('data-score')) || 5) : 5;
+      }
+      var avg = Math.round(sum / reviews.length);
+      var heroStars = document.querySelector('.pp-stars');
+      if (heroStars) {
+        var s = '';
+        for (var j = 0; j < avg; j++) s += '\u2605';
+        for (var k = avg; k < 5; k++) s += '\u2606';
+        heroStars.textContent = s;
+      }
+    }
+  }
+
+  /* ===========================================================
+     FORM MODAL — Open / Close
+     =========================================================== */
+  function openForm() {
+    if (!overlay) return;
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    if (form) form.style.display = '';
+    if (formMessage) {
+      formMessage.className = 'cr-form-message';
+      formMessage.style.display = 'none';
+    }
+  }
+
+  function closeForm() {
+    if (!overlay) return;
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  if (writeBtn) writeBtn.addEventListener('click', openForm);
+  if (closeBtn) closeBtn.addEventListener('click', closeForm);
+  if (overlay) {
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) closeForm();
+    });
+  }
+
+  /* Escape key */
+  if (!window._crEscapeListenerAdded) {
+    window._crEscapeListenerAdded = true;
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        var active = document.querySelector('.cr-form-overlay.active');
+        if (active) {
+          active.classList.remove('active');
+          document.body.style.overflow = '';
+        }
+      }
+    });
+  }
+
+  /* ===========================================================
+     STAR PICKER
+     =========================================================== */
+  function initStarPicker() {
+    if (!starPicker || !starBtns.length) return;
+
+    starBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var val = parseInt(btn.getAttribute('data-value'));
+        ratingInput.value = val;
+        updateStars(val);
+        var err = document.getElementById('cr-rating-error-' + CONFIG.sectionId);
+        if (err) err.classList.remove('visible');
+      });
+
+      btn.addEventListener('mouseenter', function() {
+        updateStars(parseInt(btn.getAttribute('data-value')));
+      });
+    });
+
+    starPicker.addEventListener('mouseleave', function() {
+      updateStars(parseInt(ratingInput.value) || 0);
+    });
+
+    starPicker.addEventListener('keydown', function(e) {
+      var cur = parseInt(ratingInput.value) || 0;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        var nxt = Math.min(cur + 1, 5);
+        ratingInput.value = nxt;
+        updateStars(nxt);
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        var prv = Math.max(cur - 1, 1);
+        ratingInput.value = prv;
+        updateStars(prv);
+      }
+    });
+  }
+
+  function updateStars(val) {
+    starBtns.forEach(function(btn) {
+      var v = parseInt(btn.getAttribute('data-value'));
+      btn.classList.toggle('filled', v <= val);
+    });
+  }
+
+  /* ===========================================================
+     FORM VALIDATION
+     =========================================================== */
+  function validateForm() {
+    var valid = true;
+
+    var rating = parseInt(ratingInput.value);
+    var ratingErr = document.getElementById('cr-rating-error-' + CONFIG.sectionId);
+    if (!rating || rating < 1 || rating > 5) {
+      if (ratingErr) ratingErr.classList.add('visible');
+      valid = false;
+    } else {
+      if (ratingErr) ratingErr.classList.remove('visible');
+    }
+
+    var nameEl  = document.getElementById('cr-name-' + CONFIG.sectionId);
+    var nameErr = document.getElementById('cr-name-error-' + CONFIG.sectionId);
+    if (!nameEl.value.trim()) {
+      nameEl.classList.add('cr-field-error');
+      if (nameErr) nameErr.classList.add('visible');
+      valid = false;
+    } else {
+      nameEl.classList.remove('cr-field-error');
+      if (nameErr) nameErr.classList.remove('visible');
+    }
+
+    var emailEl  = document.getElementById('cr-email-' + CONFIG.sectionId);
+    var emailErr = document.getElementById('cr-email-error-' + CONFIG.sectionId);
+    var emailRe  = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRe.test(emailEl.value.trim())) {
+      emailEl.classList.add('cr-field-error');
+      if (emailErr) emailErr.classList.add('visible');
+      valid = false;
+    } else {
+      emailEl.classList.remove('cr-field-error');
+      if (emailErr) emailErr.classList.remove('visible');
+    }
+
+    var bodyEl  = document.getElementById('cr-body-' + CONFIG.sectionId);
+    var bodyErr = document.getElementById('cr-body-error-' + CONFIG.sectionId);
+    if (bodyEl.value.trim().length < 10) {
+      bodyEl.classList.add('cr-field-error');
+      if (bodyErr) bodyErr.classList.add('visible');
+      valid = false;
+    } else {
+      bodyEl.classList.remove('cr-field-error');
+      if (bodyErr) bodyErr.classList.remove('visible');
+    }
+
+    var hp = document.getElementById('cr-hp-' + CONFIG.sectionId);
+    if (hp && hp.value) valid = false;
+
+    return valid;
+  }
+
+  /* ===========================================================
+     SUBMIT REVIEW
+     Uses fetch() with mode:'no-cors' and form-urlencoded body.
+     =========================================================== */
+  function handleSubmit(e) {
+    e.preventDefault();
+    if (isSubmitting) return;
+
+    formMessage.className = 'cr-form-message';
+    formMessage.style.display = 'none';
+
+    if (!validateForm()) return;
+
+    isSubmitting = true;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="cr-spinner"></span> Submitting...';
+
+    var params = new URLSearchParams();
+    params.append('api_token',           CONFIG.apiToken);
+    params.append('shop_domain',         CONFIG.shopDomain);
+    params.append('platform',            'shopify');
+    params.append('name',                document.getElementById('cr-name-'  + CONFIG.sectionId).value.trim());
+    params.append('email',               document.getElementById('cr-email-' + CONFIG.sectionId).value.trim());
+    params.append('rating',              ratingInput.value);
+    params.append('title',               document.getElementById('cr-title-' + CONFIG.sectionId).value.trim());
+    params.append('body',                document.getElementById('cr-body-'  + CONFIG.sectionId).value.trim());
+    params.append('product_external_id', String(CONFIG.productId));
+
+    fetch('https://judge.me/api/v1/reviews', {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: params.toString()
+    })
+    .then(function() {
+      onSubmitSuccess();
+    })
+    .catch(function() {
+      formMessage.className = 'cr-form-message error';
+      formMessage.textContent = 'Network error. Please check your connection and try again.';
+      formMessage.style.display = 'block';
+      isSubmitting = false;
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Review';
+    });
+  }
+
+  function onSubmitSuccess() {
+    form.style.display = 'none';
+    formMessage.className = 'cr-form-message success';
+    formMessage.textContent = 'Thank you! Your review has been submitted and will appear shortly.';
+    formMessage.style.display = 'block';
+
+    form.reset();
+    ratingInput.value = '0';
+    updateStars(0);
+    isSubmitting = false;
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit Review';
+
+    setTimeout(function() {
+      closeForm();
+    }, 2500);
+  }
+
+  if (form) form.addEventListener('submit', handleSubmit);
+
+  /* ===== INIT ===== */
+  initStarPicker();
+
+  /* Initialize Judge.me widget on DOMContentLoaded or immediately if DOM is ready */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initJudgeMeWidget);
+  } else {
+    /* Small delay to ensure Judge.me's scripts have had time to load */
+    setTimeout(initJudgeMeWidget, 100);
+  }
+})();
+</script>
+
+{% else %}
+  <!-- Custom Reviews section requires a product context -->
+{% endif %}
+
+{% schema %}
+{
+  "name": "Custom Reviews",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Taste worth raving about"
+    },
+    {
+      "type": "text",
+      "id": "api_token",
+      "label": "Judge.me Public API Token",
+      "info": "Found in Judge.me dashboard → Settings → General"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Write Review Button Text",
+      "default": "WRITE A REVIEW"
+    },
+    {
+      "type": "range",
+      "id": "reviews_per_page",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "label": "Reviews Per Page",
+      "default": 4
+    },
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "Section Background",
+      "default": "#FFF9F2"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card Background",
+      "default": "#FCDBA3"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Reviews"
+    }
+  ]
+}
+{% endschema %}
