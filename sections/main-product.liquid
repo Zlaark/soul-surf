@@ -12,71 +12,48 @@
 {% endcomment %}
 {% assign selected_variant = product.selected_or_first_available_variant %}
 {% assign variant_bg_color = selected_variant.metafields.custom.background_color.value %}
-{% assign bg_color = variant_bg_color | default: product.metafields.custom.background_color.value | default: '#E6F4EA' %}
+{% assign bg_color = variant_bg_color
+  | default: product.metafields.custom.background_color.value
+  | default: '#E6F4EA'
+%}
 {% assign variant_feature_color = selected_variant.metafields.custom.feature_color.value %}
-{% assign feature_color = variant_feature_color | default: product.metafields.custom.feature_color.value | default: '#1A4D3E' %}
+{% assign feature_color = variant_feature_color
+  | default: product.metafields.custom.feature_color.value
+  | default: '#1A4D3E'
+%}
 
 {% assign variant_heading_color = selected_variant.metafields.custom.heading_color.value %}
-{% assign heading_color = variant_heading_color | default: product.metafields.custom.heading_color.value | default: '#000000' %}
+{% assign heading_color = variant_heading_color
+  | default: product.metafields.custom.heading_color.value
+  | default: '#000000'
+%}
 {% assign variant_feature_bg = selected_variant.metafields.custom.feature_background_color.value %}
-{% assign feature_bg = variant_feature_bg | default: product.metafields.custom.feature_background_color.value | default: '#ffffff' %}
+{% assign feature_bg = variant_feature_bg
+  | default: product.metafields.custom.feature_background_color.value
+  | default: '#ffffff'
+%}
 
-<section class="pp-product-section" style="--pp-bg: {{ bg_color }}; --pp-feature-color: {{ feature_color }}; --pp-heading-color: {{ heading_color }}; --pp-feature-bg: {{ feature_bg }};" data-section-id="{{ section.id }}" data-variant-config='{
-  {% for variant in product.variants %}
-    "{{ variant.id }}": {
-      "bg": "{{ variant.metafields.custom.background_color.value | default: bg_color }}",
-      "feature": "{{ variant.metafields.custom.feature_color.value | default: feature_color }}",
-      "heading": "{{ variant.metafields.custom.heading_color.value | default: heading_color }}",
-      "heading_text": "{{ variant.metafields.custom.product_heading | default: product.title | escape }}",
-      "feature_bg": "{{ variant.metafields.custom.feature_background_color.value | default: feature_bg }}",
-      "price": {{ variant.price }},
-      "compare_at_price": {{ variant.compare_at_price | default: 0 }},
-      "available": {{ variant.available }},
-      "images": [
-        {% assign image_list = variant.metafields.custom.variant_images.value %}
-        {% if image_list %}
-          {% for img in image_list %}
-            "{{ img | image_url: width: 1000 }}"{% unless forloop.last %},{% endunless %}
-          {% endfor %}
-        {% endif %}
-      ],
-      "feature_icons": [
-        {% assign icon_list = variant.metafields.custom.feature_icons.value %}
-        {% if icon_list %}
-          {% for icon in icon_list %}
-            "{{ icon | image_url }}"{% unless forloop.last %},{% endunless %}
-          {% endfor %}
-        {% endif %}
-      ],
-      "feature_texts": [
-        {% assign text_list = variant.metafields.custom.feature_texts.value %}
-        {% if text_list %}
-          {% for txt in text_list %}
-            {{ txt | json }}{% unless forloop.last %},{% endunless %}
-          {% endfor %}
-        {% endif %}
-      ]
-    }{% unless forloop.last %},{% endunless %}
-  {% endfor %}
-}'>
+<section
+  class="pp-product-section"
+  style="--pp-bg: {{ bg_color }}; --pp-feature-color: {{ feature_color }}; --pp-heading-color: {{ heading_color }}; --pp-feature-bg: {{ feature_bg }};"
+  data-section-id="{{ section.id }}"
+>
   <div class="pp-container">
     <div class="pp-grid">
-      
       <!-- LEFT COLUMN: Simple Vertical Gallery -->
       <div class="pp-gallery">
         <div class="pp-gallery-inner">
-          
           <!-- Thumbnails (Vertical Left) -->
           {% if product.images.size > 1 %}
             <div class="pp-thumbnails">
               {% for image in product.images %}
                 {% unless image.alt contains 'variant-swatch-img' %}
-                <div 
-                  class="pp-thumbnail {% if forloop.first %}active{% endif %}"
-                  data-target-image="{{ image | image_url: width: 800 }}"
-                >
-                  <img src="{{ image | image_url: width: 150 }}" alt="{{ image.alt | escape }}" loading="lazy">
-                </div>
+                  <div
+                    class="pp-thumbnail {% if forloop.first %}active{% endif %}"
+                    data-target-image="{{ image | image_url: width: 800 }}"
+                  >
+                    <img src="{{ image | image_url: width: 150 }}" alt="{{ image.alt | escape }}" loading="lazy">
+                  </div>
                 {% endunless %}
               {% endfor %}
             </div>
@@ -84,30 +61,35 @@
 
           <!-- Main Image -->
           <div class="pp-main-image-wrapper">
-             <img 
-               id="MainProductImage-{{ section.id }}"
-               src="{{ product.featured_image | image_url: width: 1000 }}" 
-               alt="{{ product.title | escape }}"
-               class="pp-main-image"
-               style="border-radius: 19px;"
-               loading="eager"
-             >
+            <img
+              id="MainProductImage-{{ section.id }}"
+              src="{{ product.featured_image | image_url: width: 1000 }}"
+              alt="{{ product.title | escape }}"
+              class="pp-main-image"
+              style="border-radius: 19px;"
+              loading="eager"
+            >
           </div>
         </div>
       </div>
 
       <!-- RIGHT COLUMN: Product Info -->
       <div class="pp-info">
-        
         <!-- Star Rating (populated by Judge.me metafields + JS fallback from custom-reviews API) -->
-        <div class="pp-rating">
-          {%- assign jm_count = product.metafields.judgeme.review_count | default: 0 -%}
-          <span class="pp-stars">★★★★★</span>
-          <span class="pp-review-count">{{ jm_count }} Review{% if jm_count != 1 %}s{% endif %}</span>
-        </div>
+        {% if section.settings.show_reviews %}
+          <div class="pp-rating">
+            {%- assign jm_count = product.metafields.judgeme.review_count | default: 0 -%}
+            <span class="pp-stars">★★★★★</span>
+            <span class="pp-review-count">
+              {{- jm_count }} Review{% if jm_count != 1 %}s{% endif -%}
+            </span>
+          </div>
+        {% endif %}
 
         <!-- Title & Tagline -->
-        <h1 class="pp-title" style="color: var(--pp-heading-color);">{{ product.selected_or_first_available_variant.metafields.custom.product_heading | default: product.title }}</h1>
+        <h1 class="pp-title" style="color: var(--pp-heading-color);">
+          {{ product.selected_or_first_available_variant.metafields.custom.product_heading | default: product.title }}
+        </h1>
 
         {%- comment -%} Short description: read from VARIANT metafield (custom.short_description) {%- endcomment -%}
         {%- assign pp_short_desc = selected_variant.metafields.custom.short_description.value -%}
@@ -130,30 +112,58 @@
         {% assign ft3 = ft_list[3] | default: 'No Artificial Additives' %}
 
         <div class="pp-features-row">
-            <div class="pp-feature-item">
-                <div class="pp-feature-icon" style="background: var(--pp-feature-bg);">
-                    <img class="pp-feature-icon-img" data-index="0" src="{{ 'spfeature1.svg' | asset_url }}" alt="{{ ft0 }}" width="24" height="24">
-                </div>
-                <span class="pp-feature-text" data-index="0">{{ ft0 }}</span>
+          <div class="pp-feature-item">
+            <div class="pp-feature-icon" style="background: var(--pp-feature-bg);">
+              <img
+                class="pp-feature-icon-img"
+                data-index="0"
+                src="{{ 'spfeature1.svg' | asset_url }}"
+                alt="{{ ft0 }}"
+                width="24"
+                height="24"
+              >
             </div>
-            <div class="pp-feature-item">
-                <div class="pp-feature-icon" style="background: var(--pp-feature-bg);">
-                    <img class="pp-feature-icon-img" data-index="1" src="{{ 'spfeature2.svg' | asset_url }}" alt="{{ ft1 }}" width="24" height="24">
-                </div>
-                <span class="pp-feature-text" data-index="1">{{ ft1 }}</span>
+            <span class="pp-feature-text" data-index="0">{{ ft0 }}</span>
+          </div>
+          <div class="pp-feature-item">
+            <div class="pp-feature-icon" style="background: var(--pp-feature-bg);">
+              <img
+                class="pp-feature-icon-img"
+                data-index="1"
+                src="{{ 'spfeature2.svg' | asset_url }}"
+                alt="{{ ft1 }}"
+                width="24"
+                height="24"
+              >
             </div>
-            <div class="pp-feature-item">
-                <div class="pp-feature-icon" style="background: var(--pp-feature-bg);">
-                    <img class="pp-feature-icon-img" data-index="2" src="{{ 'spfeature2.svg' | asset_url }}" alt="{{ ft2 }}" width="24" height="24">
-                </div>
-                <span class="pp-feature-text" data-index="2">{{ ft2 }}</span>
+            <span class="pp-feature-text" data-index="1">{{ ft1 }}</span>
+          </div>
+          <div class="pp-feature-item">
+            <div class="pp-feature-icon" style="background: var(--pp-feature-bg);">
+              <img
+                class="pp-feature-icon-img"
+                data-index="2"
+                src="{{ 'spfeature2.svg' | asset_url }}"
+                alt="{{ ft2 }}"
+                width="24"
+                height="24"
+              >
             </div>
-            <div class="pp-feature-item">
-                <div class="pp-feature-icon" style="background: var(--pp-feature-bg);">
-                    <img class="pp-feature-icon-img" data-index="3" src="{{ 'spfeature4.svg' | asset_url }}" alt="{{ ft3 }}" width="24" height="24">
-                </div>
-                <span class="pp-feature-text" data-index="3">{{ ft3 }}</span>
+            <span class="pp-feature-text" data-index="2">{{ ft2 }}</span>
+          </div>
+          <div class="pp-feature-item">
+            <div class="pp-feature-icon" style="background: var(--pp-feature-bg);">
+              <img
+                class="pp-feature-icon-img"
+                data-index="3"
+                src="{{ 'spfeature4.svg' | asset_url }}"
+                alt="{{ ft3 }}"
+                width="24"
+                height="24"
+              >
             </div>
+            <span class="pp-feature-text" data-index="3">{{ ft3 }}</span>
+          </div>
         </div>
 
         <div class="pp-separator"></div>
@@ -162,69 +172,79 @@
           <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
 
           <!-- Variant Switcher 1: Flavor (Circular) -->
-          {% assign flavour_option = product.options_with_values | where: "name", "Flavour" | first %}
+          {% assign flavour_option = product.options_with_values | where: 'name', 'Flavour' | first %}
           {% unless flavour_option %}
-             {% assign flavour_option = product.options_with_values | where: "name", "Flavor" | first %}
+            {% assign flavour_option = product.options_with_values | where: 'name', 'Flavor' | first %}
           {% endunless %}
           {% unless flavour_option %}
-             {% assign flavour_option = product.options_with_values | where: "name", "Color" | first %}
+            {% assign flavour_option = product.options_with_values | where: 'name', 'Color' | first %}
           {% endunless %}
           {% unless flavour_option %}
-             {% assign flavour_option = product.options_with_values | where: "name", "Colour" | first %}
+            {% assign flavour_option = product.options_with_values | where: 'name', 'Colour' | first %}
           {% endunless %}
-          
+
           {% if flavour_option %}
             <div class="pp-option-group">
-                <label class="pp-option-label">Flavour: <span class="pp-flavor-label-val">{{ flavour_option.selected_value }}</span></label>
-                <div class="pp-swatches-flavor">
-                    {% for value in flavour_option.values %}
-                        {% comment %} Find the variant with this flavor value {% endcomment %}
-                        {% assign flavor_variant = false %}
-                        {% assign found_flavor = false %}
-                        {% for variant in product.variants %}
-                            {% if variant.option1 == value or variant.option2 == value or variant.option3 == value %}
-                                {% assign flavor_variant = variant %}
-                                {% assign found_flavor = true %}
-                                {% break %}
-                            {% endif %}
-                        {% endfor %}
-                        
-                        {% comment %} Reset image variable, then check swatch metafield {% endcomment %}
-                        {% assign variant_img = '' %}
-                        {% assign swatch_img = '' %}
-                        {% assign meta_images = '' %}
+              <label class="pp-option-label"
+                >Flavour: <span class="pp-flavor-label-val">{{ flavour_option.selected_value }}</span></label
+              >
+              <div class="pp-swatches-flavor">
+                {% for value in flavour_option.values %}
+                  {% comment %} Find the variant with this flavor value {% endcomment %}
+                  {% assign flavor_variant = false %}
+                  {% assign found_flavor = false %}
+                  {% for variant in product.variants %}
+                    {% if variant.option1 == value or variant.option2 == value or variant.option3 == value %}
+                      {% assign flavor_variant = variant %}
+                      {% assign found_flavor = true %}
+                      {% break %}
+                    {% endif %}
+                  {% endfor %}
 
-                        {% if found_flavor %}
-                            {% assign swatch_img = flavor_variant.metafields.custom.variant_swatch_image.value %}
-                            {% assign meta_images = flavor_variant.metafields.custom.variant_images.value %}
-                        {% endif %}
+                  {% comment %} Reset image variable, then check swatch metafield {% endcomment %}
+                  {% assign variant_img = '' %}
+                  {% assign swatch_img = '' %}
+                  {% assign meta_images = '' %}
 
-                        {% if swatch_img != blank %}
-                            {% assign variant_img = swatch_img | image_url: width: 150 %}
-                        {% elsif meta_images != blank and meta_images.size > 0 %}
-                            {% assign variant_img = meta_images[0] | image_url: width: 150 %}
-                        {% elsif found_flavor and flavor_variant.featured_image %}
-                            {% assign variant_img = flavor_variant.featured_image | image_url: width: 150 %}
-                        {% elsif product.featured_image %}
-                            {% assign variant_img = product.featured_image | image_url: width: 150 %}
-                        {% else %}
-                            {% assign variant_img = 'can1.png' | asset_url %}
-                        {% endif %}
-                        
-                        <label class="pp-swatch-flavor-item {% if flavour_option.selected_value == value %}selected{% endif %}">
-                            <input type="radio" name="{{ flavour_option.name }}" value="{{ value }}" data-variant-id="{{ flavor_variant.id }}" {% if flavour_option.selected_value == value %}checked{% endif %}>
-                            <div class="pp-flavor-circle">
-                                <img src="{{ variant_img }}" alt="{{ value }}" class="pp-flavor-img" loading="lazy">
-                            </div>
-                            <span class="pp-flavor-name">{{ value }}</span>
-                        </label>
-                    {% endfor %}
-                </div>
+                  {% if found_flavor %}
+                    {% assign swatch_img = flavor_variant.metafields.custom.variant_swatch_image.value %}
+                    {% assign meta_images = flavor_variant.metafields.custom.variant_images.value %}
+                  {% endif %}
+
+                  {% if swatch_img != blank %}
+                    {% assign variant_img = swatch_img | image_url: width: 150 %}
+                  {% elsif meta_images != blank and meta_images.size > 0 %}
+                    {% assign variant_img = meta_images[0] | image_url: width: 150 %}
+                  {% elsif found_flavor and flavor_variant.featured_image %}
+                    {% assign variant_img = flavor_variant.featured_image | image_url: width: 150 %}
+                  {% elsif product.featured_image %}
+                    {% assign variant_img = product.featured_image | image_url: width: 150 %}
+                  {% else %}
+                    {% assign variant_img = 'can1.png' | asset_url %}
+                  {% endif %}
+
+                  <label class="pp-swatch-flavor-item {% if flavour_option.selected_value == value %}selected{% endif %}">
+                    <input
+                      type="radio"
+                      name="{{ flavour_option.name }}"
+                      value="{{ value }}"
+                      data-variant-id="{{ flavor_variant.id }}"
+                      {% if flavour_option.selected_value == value %}
+                        checked
+                      {% endif %}
+                    >
+                    <div class="pp-flavor-circle">
+                      <img src="{{ variant_img }}" alt="{{ value }}" class="pp-flavor-img" loading="lazy">
+                    </div>
+                    <span class="pp-flavor-name">{{ value }}</span>
+                  </label>
+                {% endfor %}
+              </div>
             </div>
           {% endif %}
 
           <!-- Variant Switcher 2: Pack Size (Pills) -->
-          {% assign pack_option = nil %}
+          {% assign pack_option = null %}
           {% for option in product.options_with_values %}
             {% assign opt_name = option.name | downcase %}
             {% if opt_name contains 'pack' or opt_name contains 'size' or opt_name contains 'quantity' %}
@@ -234,108 +254,199 @@
 
           {% if pack_option %}
             <div class="pp-option-group">
-                <label class="pp-option-label">Select Pack Size</label>
-                <div class="pp-swatches-pack">
-                    {% for value in pack_option.values %}
-                        {% comment %} Find variant for this pack size to get price {% endcomment %}
-                        {% assign variant_for_pack = product.variants | where: "option2", value | first %}
-                        {% if variant_for_pack == blank %}
-                             {% assign variant_for_pack = product.variants | where: "option1", value | first %}
-                        {% endif %}
-                        
-                        <!-- NOTE: Assuming price is dependent on pack size primarily -->
-                        
-                         <label class="pp-swatch-pack-item {% if pack_option.selected_value == value %}selected{% endif %}">
-                             <input type="radio" name="{{ pack_option.name }}" value="{{ value }}" data-variant-id="{{ variant_for_pack.id }}" {% if pack_option.selected_value == value %}checked{% endif %}>
-                             <span class="pp-pack-name">{% unless value contains 'Pack' %}Pack of {% endunless %}{{ value }}</span>
-                             <div class="pp-pack-price-box">
-                                 <span class="pp-pack-price">{{ variant_for_pack.price | money_without_trailing_zeros }}</span>
-                                 {% if variant_for_pack.compare_at_price > variant_for_pack.price %}
-                                    <span class="pp-pack-compare">{{ variant_for_pack.compare_at_price | money_without_trailing_zeros }}</span>
-                                 {% endif %}
-                             </div>
-                        </label>
-                    {% endfor %}
-                </div>
+              <label class="pp-option-label">Select Pack Size</label>
+              <div class="pp-swatches-pack">
+                {% for value in pack_option.values %}
+                  {% comment %} Find variant for this pack size to get price {% endcomment %}
+                  {% assign variant_for_pack = product.variants | where: 'option2', value | first %}
+                  {% if variant_for_pack == blank %}
+                    {% assign variant_for_pack = product.variants | where: 'option1', value | first %}
+                  {% endif %}
+
+                  <!-- NOTE: Assuming price is dependent on pack size primarily -->
+
+                  <label class="pp-swatch-pack-item {% if pack_option.selected_value == value %}selected{% endif %}">
+                    <input
+                      type="radio"
+                      name="{{ pack_option.name }}"
+                      value="{{ value }}"
+                      data-variant-id="{{ variant_for_pack.id }}"
+                      {% if pack_option.selected_value == value %}
+                        checked
+                      {% endif %}
+                    >
+                    <span class="pp-pack-name">
+                      {%- unless value contains 'Pack' %}Pack of {% endunless -%}
+                      {{- value -}}
+                    </span>
+                    <div class="pp-pack-price-box">
+                      <span class="pp-pack-price">{{ variant_for_pack.price | money_without_trailing_zeros }}</span>
+                      {% if variant_for_pack.compare_at_price > variant_for_pack.price %}
+                        <span class="pp-pack-compare">
+                          {{- variant_for_pack.compare_at_price | money_without_trailing_zeros -}}
+                        </span>
+                      {% endif %}
+                    </div>
+                  </label>
+                {% endfor %}
+              </div>
             </div>
           {% endif %}
 
           <!-- Fallback for other options -->
           {% for option in product.options_with_values %}
             {% assign opt_name_down = option.name | downcase %}
-            {% unless opt_name_down contains 'flavour' or opt_name_down contains 'flavor' or opt_name_down contains 'color' or opt_name_down contains 'colour' or opt_name_down contains 'size' or opt_name_down contains 'pack' %}
+            {% unless opt_name_down contains 'flavour'
+              or opt_name_down contains 'flavor'
+              or opt_name_down contains 'color'
+              or opt_name_down contains 'colour'
+              or opt_name_down contains 'size'
+              or opt_name_down contains 'pack'
+            %}
               <div class="pp-option-group">
-                  <label class="pp-option-label">{{ option.name }}: <span class="pp-flavor-label-val">{{ option.selected_value }}</span></label>
-                  <div class="pp-swatches-pack">
-                      {% for value in option.values %}
-                          <label class="pp-swatch-pack-item {% if option.selected_value == value %}selected{% endif %}" style="justify-content: center; width: auto; min-width: 60px;">
-                               <input type="radio" name="{{ option.name }}" value="{{ value }}" {% if option.selected_value == value %}checked{% endif %}>
-                               <span class="pp-pack-name">{{ value }}</span>
-                          </label>
-                      {% endfor %}
-                  </div>
+                <label class="pp-option-label">
+                  {{- option.name }}: <span class="pp-flavor-label-val">{{ option.selected_value }}</span></label
+                >
+                <div class="pp-swatches-pack">
+                  {% for value in option.values %}
+                    <label
+                      class="pp-swatch-pack-item {% if option.selected_value == value %}selected{% endif %}"
+                      style="justify-content: center; width: auto; min-width: 60px;"
+                    >
+                      <input
+                        type="radio"
+                        name="{{ option.name }}"
+                        value="{{ value }}"
+                        {% if option.selected_value == value %}
+                          checked
+                        {% endif %}
+                      >
+                      <span class="pp-pack-name">{{ value }}</span>
+                    </label>
+                  {% endfor %}
+                </div>
               </div>
             {% endunless %}
           {% endfor %}
 
           {% if product.variants.size <= 1 and product.has_only_default_variant %}
-             <p style="color: red; font-size: 14px; margin-bottom: 20px; font-weight: bold; background: #ffe6e6; padding: 10px; border-radius: 8px; border: 1px solid red;">
-               [Debug: No variants found. Please add options in Shopify Admin > Products > Variants.]
-             </p>
+            <p style="color: red; font-size: 14px; margin-bottom: 20px; font-weight: bold; background: #ffe6e6; padding: 10px; border-radius: 8px; border: 1px solid red;">
+              [Debug: No variants found. Please add options in Shopify Admin > Products > Variants.]
+            </p>
           {% endif %}
 
           <!-- Add to Cart (Full width black pill) -->
-          <button type="submit" name="add" class="pp-add-to-cart" {% unless product.available %}disabled{% endunless %}>
+          <button
+            type="submit"
+            name="add"
+            class="pp-add-to-cart"
+            {% unless product.available %}
+              disabled
+            {% endunless %}
+          >
             {% if product.available %}
-             ADD TO CART – {{ product.selected_or_first_available_variant.price | money_without_trailing_zeros }}
+              ADD TO CART – {{ product.selected_or_first_available_variant.price | money_without_trailing_zeros }}
             {% else %}
-             SOLD OUT
+              SOLD OUT
             {% endif %}
           </button>
-          
+
           {% if section.settings.delivery_text != blank %}
             <p class="pp-delivery-note">{{ section.settings.delivery_text }}</p>
           {% endif %}
-
         {%- endform -%}
 
         <!-- Accordions -->
         <div class="pp-accordions">
-            <details class="pp-accordion-item">
-                <summary>
-                    <span class="pp-accordion-title">Description</span>
-                    <span class="pp-icon-chevron"><svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                </summary>
-                <div class="pp-accordion-content">
-                    {{ product.description }}
-                </div>
-            </details>
-            
-            <details class="pp-accordion-item">
-                <summary>
-                    <span class="pp-accordion-title">Storage Tips for Maximum Freshness</span>
-                    <span class="pp-icon-chevron"><svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                </summary>
-                <div class="pp-accordion-content">
-                    <p>Keep refrigerated. Serve chilled.</p>
-                </div>
-            </details>
+          <details class="pp-accordion-item">
+            <summary>
+              <span class="pp-accordion-title">Description</span>
+              <span class="pp-icon-chevron">
+                <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
+                  <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </summary>
+            <div class="pp-accordion-content">
+              {{ product.description }}
+            </div>
+          </details>
 
-            <details class="pp-accordion-item">
-                <summary>
-                    <span class="pp-accordion-title">Ingredients & Nutrition</span>
-                    <span class="pp-icon-chevron"><svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                </summary>
-                <div class="pp-accordion-content">
-                    <p>Carbonated Water, Sugar, Fruit Juice Concentrate...</p>
-                </div>
-            </details>
+          <details class="pp-accordion-item">
+            <summary>
+              <span class="pp-accordion-title">Storage Tips for Maximum Freshness</span>
+              <span class="pp-icon-chevron">
+                <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
+                  <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </summary>
+            <div class="pp-accordion-content">
+              <p>Keep refrigerated. Serve chilled.</p>
+            </div>
+          </details>
+
+          <details class="pp-accordion-item">
+            <summary>
+              <span class="pp-accordion-title">Ingredients & Nutrition</span>
+              <span class="pp-icon-chevron">
+                <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
+                  <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </summary>
+            <div class="pp-accordion-content">
+              <p>Carbonated Water, Sugar, Fruit Juice Concentrate...</p>
+            </div>
+          </details>
         </div>
-
       </div>
     </div>
   </div>
 </section>
+
+<!-- Variant Config JSON (rendered as script to avoid HTML attribute escaping issues) -->
+<script id="pp-variant-config-{{ section.id }}" type="application/json">
+  {
+    {% for variant in product.variants %}
+      "{{ variant.id }}": {
+        "bg": {{ variant.metafields.custom.background_color.value | default: bg_color | json }},
+        "feature": {{ variant.metafields.custom.feature_color.value | default: feature_color | json }},
+        "heading": {{ variant.metafields.custom.heading_color.value | default: heading_color | json }},
+        "heading_text": {{ variant.metafields.custom.product_heading | default: product.title | json }},
+        "feature_bg": {{ variant.metafields.custom.feature_background_color.value | default: feature_bg | json }},
+        "short_description": {{ variant.metafields.custom.short_description.value | default: '' | json }},
+        "price": {{ variant.price }},
+        "compare_at_price": {{ variant.compare_at_price | default: 0 }},
+        "available": {{ variant.available }},
+        "images": [
+          {% assign image_list = variant.metafields.custom.variant_images.value %}
+          {% if image_list %}
+            {% for img in image_list %}
+              {{ img | image_url: width: 1000 | json }}{% unless forloop.last %},{% endunless %}
+            {% endfor %}
+          {% endif %}
+        ],
+        "feature_icons": [
+          {% assign icon_list = variant.metafields.custom.feature_icons.value %}
+          {% if icon_list %}
+            {% for icon in icon_list %}
+              {{ icon | image_url | json }}{% unless forloop.last %},{% endunless %}
+            {% endfor %}
+          {% endif %}
+        ],
+        "feature_texts": [
+          {% assign text_list = variant.metafields.custom.feature_texts.value %}
+          {% if text_list %}
+            {% for txt in text_list %}
+              {{ txt | json }}{% unless forloop.last %},{% endunless %}
+            {% endfor %}
+          {% endif %}
+        ]
+      }{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  }
+</script>
 
 <!-- Hidden Variant Content for Rich Text -->
 <div id="pp-variant-content-store" style="display: none;">
@@ -356,7 +467,7 @@
 </div>
 
 <style>
-/* 
+  /* 
   Ideally move to assets/section-main-product.css
   Keeping here for instant atomic preview if desired, 
   but will move to CSS file in next step.
@@ -417,7 +528,8 @@ document.addEventListener('DOMContentLoaded', function() {
   const priceBtn = section.querySelector('.pp-add-to-cart');
   
   // Parse variant config for dynamic background, feature color, and images
-  const variantConfigData = section.dataset.variantConfig;
+  const variantConfigEl = document.getElementById('pp-variant-config-{{ section.id }}');
+  const variantConfigData = variantConfigEl ? variantConfigEl.textContent : '{}';
   let variantConfig = {};
   try {
       variantConfig = JSON.parse(variantConfigData);
@@ -501,9 +613,8 @@ document.addEventListener('DOMContentLoaded', function() {
           // 2.2 Update Short Description / Tagline
           try {
               const taglineEl = document.querySelector('#pp-short-desc');
-              const shortDescDiv = document.getElementById('variant-short-desc-' + variantId);
-              if (taglineEl && shortDescDiv && shortDescDiv.innerHTML.trim()) {
-                  taglineEl.innerHTML = shortDescDiv.innerHTML.trim();
+              if (taglineEl && config.short_description) {
+                  taglineEl.innerHTML = config.short_description.replace(/\n/g, '<br>');
               }
           } catch(e) { /* short desc update failed, continue */ }
 
@@ -653,6 +764,13 @@ document.addEventListener('DOMContentLoaded', function() {
 {
   "name": "Main Product (Pixel)",
   "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_reviews",
+      "label": "Show Review Stars",
+      "default": true,
+      "info": "Enable or disable the star rating above the product title."
+    },
     {
       "type": "text",
       "id": "short_description",

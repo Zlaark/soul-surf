@@ -78,64 +78,94 @@
           "default": "CRISP. SHARP. REFRESHING."
         },
         {
-           "type": "textarea",
-           "id": "description",
-           "label": "Description",
-           "default": "For everyday cravings and clean finishes."
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "For everyday cravings and clean finishes."
         },
         {
-            "type": "color",
-            "id": "card_bg",
-            "label": "Card Background Color",
-            "default": "#FBD569"
+          "type": "color",
+          "id": "card_bg",
+          "label": "Card Background Color",
+          "default": "#FBD569"
         },
         {
-            "type": "color",
-            "id": "text_color",
-            "label": "Text Color",
-            "default": "#000000"
+          "type": "color",
+          "id": "text_color",
+          "label": "Text Color",
+          "default": "#000000"
         },
         {
-            "type": "color",
-            "id": "button_bg",
-            "label": "Button Background",
-            "default": "#FFFAF0"
+          "type": "color",
+          "id": "button_bg",
+          "label": "Button Background",
+          "default": "#FFFAF0"
         },
         {
-            "type": "color",
-            "id": "button_text",
-            "label": "Button Text Color",
-            "default": "#000000"
+          "type": "color",
+          "id": "button_text",
+          "label": "Button Text Color",
+          "default": "#000000"
         },
         {
-            "type": "text",
-            "id": "button_label",
-            "label": "Add to Cart Label",
-            "default": "ADD TO CART"
+          "type": "text",
+          "id": "button_label",
+          "label": "Add to Cart Label",
+          "default": "ADD TO CART"
         },
         {
-             "type": "image_picker",
-             "id": "custom_image",
-             "label": "Custom Image",
-             "info": "Overrides product image. Important."
+          "type": "image_picker",
+          "id": "custom_image",
+          "label": "Custom Image",
+          "info": "Overrides product image. Important."
         },
         {
-             "type": "image_picker",
-             "id": "floating_icon",
-             "label": "Custom Floating Icon (Fruit)",
-             "info": "Small icon top right"
+          "type": "image_picker",
+          "id": "floating_icon",
+          "label": "Custom Floating Icon (Fruit)",
+          "info": "Small icon top right"
         },
         {
-             "type": "text",
-             "id": "product_url",
-             "label": "Product URL (Full Link)",
-             "info": "Optional: Paste the full product URL with variant (e.g., /products/lemon-lime?variant=123). This is used for the card click link."
+          "type": "text",
+          "id": "product_url",
+          "label": "Product URL (Full Link)",
+          "info": "Optional: Paste the full product URL with variant (e.g., /products/lemon-lime?variant=123). This is used for the card click link."
         },
         {
-             "type": "text",
-             "id": "variant_id",
-             "label": "Variant ID (Numeric Only)",
-             "info": "Required for Add to Cart: Enter ONLY the numeric variant ID (e.g., 12345678). Find it at the end of the variant URL in your admin."
+          "type": "text",
+          "id": "pack_6_label",
+          "label": "Pack of 6 Label",
+          "default": "Pack of 6"
+        },
+        {
+          "type": "text",
+          "id": "variant_id_pack_6",
+          "label": "Pack of 6 — Variant ID",
+          "info": "Numeric variant ID for the 6-pack (e.g., 12345678)."
+        },
+        {
+          "type": "text",
+          "id": "pack_6_price",
+          "label": "Pack of 6 — Price",
+          "info": "Display price (e.g., Rs. 599.00). Auto-detected if product is linked."
+        },
+        {
+          "type": "text",
+          "id": "pack_12_label",
+          "label": "Pack of 12 Label",
+          "default": "Pack of 12"
+        },
+        {
+          "type": "text",
+          "id": "variant_id_pack_12",
+          "label": "Pack of 12 — Variant ID",
+          "info": "Numeric variant ID for the 12-pack (e.g., 87654321)."
+        },
+        {
+          "type": "text",
+          "id": "pack_12_price",
+          "label": "Pack of 12 — Price",
+          "info": "Display price (e.g., Rs. 1099.00). Auto-detected if product is linked."
         }
       ]
     }
@@ -147,29 +177,29 @@
         {
           "type": "product_card",
           "settings": {
-              "title": "Quirky Lemon Lime",
-              "card_bg": "#FFD75E"
+            "title": "Quirky Lemon Lime",
+            "card_bg": "#FFD75E"
           }
         },
         {
           "type": "product_card",
           "settings": {
-              "title": "Refreshing Orange",
-              "card_bg": "#FABD6C"
+            "title": "Refreshing Orange",
+            "card_bg": "#FABD6C"
           }
         },
         {
           "type": "product_card",
           "settings": {
-              "title": "Fizzy Aam Panna",
-              "card_bg": "#96D0B7"
+            "title": "Fizzy Aam Panna",
+            "card_bg": "#96D0B7"
           }
         },
         {
           "type": "product_card",
           "settings": {
-              "title": "Nostalgic Masala Cola",
-              "card_bg": "rgba(115, 30, 7, 0.27)"
+            "title": "Nostalgic Masala Cola",
+            "card_bg": "rgba(115, 30, 7, 0.27)"
           }
         }
       ]
@@ -221,7 +251,7 @@
       height: 31px;
     }
   }
-  
+
   /* Spacer to push content down below wave */
   .pg-spacer {
     display: none; /* No longer needed if wave is pulled up */
@@ -236,7 +266,7 @@
   /* Header Section - CSS Grid Layout */
   .pg-header {
     display: grid;
-    grid-template-areas: 
+    grid-template-areas:
       "heading button"
       "subheading subheading";
     grid-template-columns: 1fr auto;
@@ -245,9 +275,9 @@
     margin-bottom: 60px;
   }
 
-  /* No explicit container needed for left side anymore in this grid layout, 
+  /* No explicit container needed for left side anymore in this grid layout,
      but we need to handle the elements directly */
-  
+
   .pg-heading {
     grid-area: heading;
     font-family: 'Playfair Display', serif;
@@ -286,7 +316,7 @@
     justify-self: end; /* Align button to right */
     height: fit-content;
     margin-top: 16px; /* Fine-tune alignment */
-    
+
     /* Animation Properties */
     position: relative;
     overflow: hidden;
@@ -294,7 +324,7 @@
     border: 1px solid rgba(208, 151, 0, 0); /* Transparent border of target color */
     outline: none;
   }
-  
+
   .pg-view-btn span,
   .pg-view-btn-mobile span {
     position: relative;
@@ -309,7 +339,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #D09700; 
+    background-color: #D09700;
     transform-origin: bottom center;
     transition: transform 1000ms cubic-bezier(0.48, 0, 0.12, 1);
     transform: skewY(9.3deg) scaleY(0);
@@ -328,7 +358,7 @@
       transform-origin: bottom center;
       transform: skewY(9.3deg) scaleY(2);
   }
-  
+
   .pg-view-btn-mobile {
     display: none; /* Hidden on desktop */
   }
@@ -360,12 +390,12 @@
     flex-direction: column;
     min-height: 543px; /* Increased by 2px again */
     /* transition: transform 0.3s ease; - Removed to defer to animation, restored in hover if needed or kept generic */
-    transition: transform 0.3s ease, opacity 0.3s ease; 
+    transition: transform 0.3s ease, opacity 0.3s ease;
     overflow: visible; /* Allow button to hang out */
     margin-bottom: 20px;
     opacity: 0; /* Initial hidden state for animation */
   }
-  
+
   /* Animation Triggers */
   .pg-grid.in-view .pg-card:nth-child(odd) {
     animation: fadeSlideDown 1s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
@@ -395,7 +425,7 @@
     text-decoration: none;
     color: inherit;
   }
-  
+
   .pg-card-content {
     /* Remove flex:1 to let image expand naturally */
     z-index: 2;
@@ -459,7 +489,7 @@
     height: 75px;
     z-index: 2;
   }
-  
+
   .pg-icon-float img {
     width: 100%;
     height: 100%;
@@ -534,11 +564,144 @@
     color: var(--btn-bg);
     border-color: #000000;
   }
-  
+
   .pg-atc-btn:disabled {
       cursor: not-allowed;
       background-color: var(--btn-bg);
       color: var(--btn-text);
+  }
+
+  /* ── Pack Size Popup ── */
+  .pg-pack-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    backdrop-filter: blur(4px);
+  }
+
+  .pg-pack-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .pg-pack-modal {
+    background: #fff;
+    border-radius: 20px;
+    padding: 36px 32px 30px;
+    max-width: 380px;
+    width: 90vw;
+    position: relative;
+    transform: scale(0.92) translateY(12px);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+  }
+
+  .pg-pack-overlay.active .pg-pack-modal {
+    transform: scale(1) translateY(0);
+  }
+
+  .pg-pack-close {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: #999;
+    line-height: 1;
+    padding: 4px;
+    transition: color 0.2s;
+  }
+
+  .pg-pack-close:hover {
+    color: #000;
+  }
+
+  .pg-pack-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0 0 8px;
+    color: #111;
+    padding-right: 30px;
+  }
+
+  .pg-pack-subtitle {
+    font-size: 14px;
+    color: #666;
+    margin: 0 0 24px;
+    line-height: 1.4;
+  }
+
+  .pg-pack-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .pg-pack-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: nowrap;
+    gap: 4px;
+    width: 100%;
+    padding: 13px 18px;
+    border-radius: 50px;
+    border: 2px solid transparent;
+    background: var(--popup-card-bg, #f5f5f5);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    color: #222;
+    white-space: nowrap;
+  }
+
+  .pg-pack-option .pg-pack-price {
+    font-size: 11px;
+    font-weight: 800;
+    color: #111;
+  }
+
+  .pg-pack-option .pg-pack-compare {
+    font-size: 11px;
+    font-weight: 400;
+    text-decoration: line-through;
+    opacity: 0.55;
+  }
+
+  .pg-pack-option:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    border-color: #222;
+  }
+
+  .pg-pack-option:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    filter: grayscale(0.4);
+  }
+
+  .pg-pack-option .pg-pack-check {
+    display: none;
+    color: #16a34a;
+    font-weight: bold;
+  }
+
+  .pg-pack-option.added .pg-pack-check {
+    display: inline;
   }
 
   @media (max-width: 1200px) {
@@ -555,7 +718,7 @@
     .pg-container {
         padding: 50px 0 0; /* Remove horizontal padding for full-width carousel */
     }
-    
+
     .pg-header {
       display: flex;
       flex-direction: column;
@@ -564,21 +727,21 @@
       margin-bottom: 40px;
       padding: 0 20px; /* Add padding back for header only */
     }
-    
+
     .pg-header .pg-view-btn {
       display: none; /* Hide button in header on mobile */
     }
-    
+
     .pg-heading {
       font-size: 36px; /* Slightly smaller for mobile */
     }
-    
+
     .pg-view-btn-mobile {
       display: block;
       margin: 30px auto 0;
       max-width: calc(100% - 40px);
     }
-    
+
     /* Convert grid to carousel on mobile */
     .pg-grid {
       display: flex !important; /* Override grid layout */
@@ -591,11 +754,11 @@
       scrollbar-width: none; /* Firefox */
       -ms-overflow-style: none; /* IE 10+ */
     }
-    
+
     .pg-grid::-webkit-scrollbar {
       display: none; /* Chrome, Safari, Opera */
     }
-    
+
     .pg-card {
       min-width: 85vw; /* Show one full card + peek of next */
       max-width: 85vw;
@@ -610,24 +773,24 @@
       opacity: 1; /* Always visible in carousel */
       animation: none !important; /* Disable entry animations on mobile */
     }
-    
+
     .pg-card-tagline {
         border-left: none;
         padding-left: 0;
         position: relative;
         margin-bottom: 5px;
     }
-    
+
     .pg-icon-float {
         right: 20px;
         width: 60px; /* Smaller icon */
         height: 60px;
     }
-    
+
     .pg-card-title {
         margin: 0 0 15px; /* Left align title */
     }
-    
+
     .pg-product-img {
       max-height: 300px; /* Slightly smaller for mobile */
     }
@@ -699,7 +862,7 @@
 
   @media (max-width: 768px) {
     .nav-button { display: none; } /* Hide on mobile, use swipe */
-    
+
     /* Mobile carousel overrides for slider mode */
     .pg-grid.pg-slider-mode {
       display: flex !important;
@@ -710,7 +873,7 @@
       padding: 0 20px 30px 20px; /* Symmetric padding for centering */
       grid-template-columns: none !important;
     }
-    
+
     .pg-grid.pg-slider-mode .pg-card {
       min-width: 75vw;
       max-width: 75vw;
@@ -724,18 +887,18 @@
 <div class="product-grid-section">
   <!-- Top Wave: Inverted wave to create the curve effect from top -->
   {%- if section.settings.show_wave -%}
-  <div class="pg-top-wave">
-    <!-- Desktop Wave -->
-    <svg class="desktop-wave" viewBox="0 0 1440 100" preserveAspectRatio="none">
-       <path d="M0,100 C32.73,100 32.73,40 65.45,40 S98.18,100 130.91,100 S163.64,40 196.36,40 S229.09,100 261.82,100 S294.55,40 327.27,40 S360.00,100 392.73,100 S425.45,40 458.18,40 S490.91,100 523.64,100 S556.36,40 589.09,40 S621.82,100 654.55,100 S687.27,40 720.00,40 S752.73,100 785.45,100 S818.18,40 850.91,40 S883.64,100 916.36,100 S949.09,40 981.82,40 S1014.55,100 1047.27,100 S1080.00,40 1112.73,40 S1145.45,100 1178.18,100 S1210.91,40 1243.64,40 S1276.36,100 1309.09,100 S1341.82,40 1374.55,40 S1407.27,100 1440.00,100 L1440,100 L0,100 Z" fill="{{ section.settings.section_bg }}"></path>
-    </svg>
-    <!-- Mobile Wave (4.5 cycles, 5 peaks, ends at valley) -->
-    <svg class="mobile-wave" viewBox="65.45 0 589.1 100" preserveAspectRatio="none">
-       <path d="M0,100 C32.73,100 32.73,40 65.45,40 S98.18,100 130.91,100 S163.64,40 196.36,40 S229.09,100 261.82,100 S294.55,40 327.27,40 S360.00,100 392.73,100 S425.45,40 458.18,40 S490.91,100 523.64,100 S556.36,40 589.09,40 S621.82,100 654.55,100 S687.27,40 720.00,40 S752.73,100 785.45,100 S818.18,40 850.91,40 S883.64,100 916.36,100 S949.09,40 981.82,40 S1014.55,100 1047.27,100 S1080.00,40 1112.73,40 S1145.45,100 1178.18,100 S1210.91,40 1243.64,40 S1276.36,100 1309.09,100 S1341.82,40 1374.55,40 S1407.27,100 1440.00,100 L1440,100 L0,100 Z" fill="{{ section.settings.section_bg }}"></path>
-    </svg>
-  </div>
+    <div class="pg-top-wave">
+      <!-- Desktop Wave -->
+      <svg class="desktop-wave" viewBox="0 0 1440 100" preserveAspectRatio="none">
+        <path d="M0,100 C32.73,100 32.73,40 65.45,40 S98.18,100 130.91,100 S163.64,40 196.36,40 S229.09,100 261.82,100 S294.55,40 327.27,40 S360.00,100 392.73,100 S425.45,40 458.18,40 S490.91,100 523.64,100 S556.36,40 589.09,40 S621.82,100 654.55,100 S687.27,40 720.00,40 S752.73,100 785.45,100 S818.18,40 850.91,40 S883.64,100 916.36,100 S949.09,40 981.82,40 S1014.55,100 1047.27,100 S1080.00,40 1112.73,40 S1145.45,100 1178.18,100 S1210.91,40 1243.64,40 S1276.36,100 1309.09,100 S1341.82,40 1374.55,40 S1407.27,100 1440.00,100 L1440,100 L0,100 Z" fill="{{ section.settings.section_bg }}"></path>
+      </svg>
+      <!-- Mobile Wave (4.5 cycles, 5 peaks, ends at valley) -->
+      <svg class="mobile-wave" viewBox="65.45 0 589.1 100" preserveAspectRatio="none">
+        <path d="M0,100 C32.73,100 32.73,40 65.45,40 S98.18,100 130.91,100 S163.64,40 196.36,40 S229.09,100 261.82,100 S294.55,40 327.27,40 S360.00,100 392.73,100 S425.45,40 458.18,40 S490.91,100 523.64,100 S556.36,40 589.09,40 S621.82,100 654.55,100 S687.27,40 720.00,40 S752.73,100 785.45,100 S818.18,40 850.91,40 S883.64,100 916.36,100 S949.09,40 981.82,40 S1014.55,100 1047.27,100 S1080.00,40 1112.73,40 S1145.45,100 1178.18,100 S1210.91,40 1243.64,40 S1276.36,100 1309.09,100 S1341.82,40 1374.55,40 S1407.27,100 1440.00,100 L1440,100 L0,100 Z" fill="{{ section.settings.section_bg }}"></path>
+      </svg>
+    </div>
   {%- endif -%}
-  
+
   <div class="pg-spacer"></div>
 
   <div class="pg-container">
@@ -757,141 +920,223 @@
     {%- endif -%}
 
     {%- if slider_active -%}
-    <div class="pg-slider-wrapper">
-       {%- if section.settings.enable_slider_nav -%}
-       <button class="nav-button nav-prev" onclick="scrollProductGrid('{{ section.id }}', -1)">
-          <img src="{{ 'left.svg' | asset_url }}" alt="Previous" class="nav-icon" width="12" height="20">
-       </button>
-       {%- endif -%}
+      <div class="pg-slider-wrapper">
+        {%- if section.settings.enable_slider_nav -%}
+          <button class="nav-button nav-prev" onclick="scrollProductGrid('{{ section.id }}', -1)">
+            <img src="{{ 'left.svg' | asset_url }}" alt="Previous" class="nav-icon" width="12" height="20">
+          </button>
+        {%- endif -%}
     {%- endif -%}
 
     <div class="pg-grid {% if slider_active %}pg-slider-mode{% endif %}" id="productGrid-{{ section.id }}">
       {% for block in section.blocks %}
         {% assign product = block.settings.product %}
-        
+
         {% assign card_bg = block.settings.card_bg %}
         {% comment %} Auto-migration for old default colors to new requested colors {% endcomment %}
-        {% if card_bg == '#FBD569' or card_bg == '#FFBF73' or card_bg == '#96D3BB' or card_bg == '#DDBCA8' or card_bg == blank %}
-           {% case forloop.index %}
-             {% when 1 %}{% assign card_bg = '#FFD75E' %}
-             {% when 2 %}{% assign card_bg = '#FABD6C' %}
-             {% when 3 %}{% assign card_bg = '#96D0B7' %}
-             {% when 4 %}{% assign card_bg = 'rgba(115, 30, 7, 0.27)' %}
-           {% endcase %}
+        {% if card_bg == '#FBD569'
+          or card_bg == '#FFBF73'
+          or card_bg == '#96D3BB'
+          or card_bg == '#DDBCA8'
+          or card_bg == blank
+        %}
+          {% case forloop.index %}
+            {% when 1 -%}
+              {%- assign card_bg = '#FFD75E' %}
+            {% when 2 -%}
+              {%- assign card_bg = '#FABD6C' %}
+            {% when 3 -%}
+              {%- assign card_bg = '#96D0B7' %}
+            {% when 4 -%}
+              {%- assign card_bg = 'rgba(115, 30, 7, 0.27)' %}
+          {% endcase %}
         {% endif %}
 
         {% assign text_color = block.settings.text_color | default: '#000000' %}
         {% assign btn_bg = block.settings.button_bg | default: '#FFFAF0' %}
         {% if btn_bg == 'rgba(0,0,0,0)' or btn_bg == blank %}
-            {% assign btn_bg = '#FFFAF0' %}
+          {% assign btn_bg = '#FFFAF0' %}
         {% endif %}
         {% assign btn_text = block.settings.button_text | default: '#000000' %}
-        
-        <div class="pg-card" style="--bg: {{ card_bg }}; --text: {{ text_color }}; --btn-bg: {{ btn_bg }}; --btn-text: {{ btn_text }};" data-index="{{ forloop.index }}">
-           
-           {% comment %} Clickable card area — links to product page with selected variant {% endcomment %}
-           {% liquid
-             assign card_url = '#'
-             
-             if block.settings.product_url != blank
-               assign card_url = block.settings.product_url
-             elsif product != blank
-               assign card_url = product.url
-               if block.settings.variant_id != blank
-                 assign card_url = product.url | append: '?variant=' | append: block.settings.variant_id
-               endif
-             endif
-           %}
-           <a href="{{ card_url }}" class="pg-card-link">
 
-           <div class="pg-icon-float">
+        <div
+          class="pg-card"
+          style="--bg: {{ card_bg }}; --text: {{ text_color }}; --btn-bg: {{ btn_bg }}; --btn-text: {{ btn_text }};"
+          data-index="{{ forloop.index }}"
+        >
+          {% comment %} Clickable card area — links to product page with selected variant {% endcomment %}
+          {% liquid
+            assign card_url = '#'
+            assign link_variant = block.settings.variant_id_pack_6 | default: block.settings.variant_id_pack_12
+
+            if block.settings.product_url != blank
+              assign card_url = block.settings.product_url
+            elsif product != blank
+              assign card_url = product.url
+              if link_variant != blank
+                assign card_url = product.url | append: '?variant=' | append: link_variant
+              endif
+            endif
+          %}
+          <a href="{{ card_url }}" class="pg-card-link">
+            <div class="pg-icon-float">
               {% if block.settings.floating_icon != blank %}
-                {{ block.settings.floating_icon | image_url: width: 150 | image_tag: loading: "lazy", width: 75, height: 75 }}
+                {{
+                  block.settings.floating_icon
+                  | image_url: width: 150
+                  | image_tag: loading: 'lazy', width: 75, height: 75
+                }}
               {% else %}
-                {% assign fallback_icon = "icon-apple.svg" %}
+                {% assign fallback_icon = 'icon-apple.svg' %}
                 {% case forloop.index %}
-                  {% when 1 %}{% assign fallback_icon = "pg1.png" %}
-                  {% when 2 %}{% assign fallback_icon = "pg2.png" %}
-                  {% when 3 %}{% assign fallback_icon = "pg3.png" %}
-                  {% when 4 %}{% assign fallback_icon = "pg4.png" %}
+                  {% when 1 -%}
+                    {%- assign fallback_icon = 'pg1.png' %}
+                  {% when 2 -%}
+                    {%- assign fallback_icon = 'pg2.png' %}
+                  {% when 3 -%}
+                    {%- assign fallback_icon = 'pg3.png' %}
+                  {% when 4 -%}
+                    {%- assign fallback_icon = 'pg4.png' %}
                 {% endcase %}
                 <img src="{{ fallback_icon | asset_url }}" alt="Fruit Icon" width="75" height="75" loading="lazy">
               {% endif %}
-           </div>
+            </div>
 
-           <div class="pg-card-content">
+            <div class="pg-card-content">
               <div class="pg-card-title-group">
-                  {% if product != blank %}
-                    <h3 class="pg-card-title">{{ product.metafields.custom.product_heading | default: product.title }}</h3>
-                    <div class="pg-card-tagline">{{ product.metafields.custom.tagline | default: block.settings.tagline }}</div>
-                    <p class="pg-card-desc">{{ product.metafields.custom.grid_description | default: block.settings.description }}</p>
-                  {% else %}
-                    <h3 class="pg-card-title">{{ block.settings.title }}</h3>
-                    <div class="pg-card-tagline">{{ block.settings.tagline }}</div>
-                    <p class="pg-card-desc">{{ block.settings.description }}</p>
-                  {% endif %}
+                {% if product != blank %}
+                  <h3 class="pg-card-title">
+                    {{ product.metafields.custom.product_heading | default: product.title }}
+                  </h3>
+                  <div class="pg-card-tagline">
+                    {{ product.metafields.custom.tagline | default: block.settings.tagline }}
+                  </div>
+                  <p class="pg-card-desc">
+                    {{ product.metafields.custom.grid_description | default: block.settings.description }}
+                  </p>
+                {% else %}
+                  <h3 class="pg-card-title">{{ block.settings.title }}</h3>
+                  <div class="pg-card-tagline">{{ block.settings.tagline }}</div>
+                  <p class="pg-card-desc">{{ block.settings.description }}</p>
+                {% endif %}
               </div>
-           </div>
+            </div>
 
-           <div class="pg-image-container">
-             {% comment %} Priority: 1. Custom Image (uploaded in Shopify), 2. Product Featured Image, 3. Fallback Asset {% endcomment %}
-             {% if block.settings.custom_image != blank %}
-                {{ block.settings.custom_image | image_url: width: 400 | image_tag: class: 'pg-product-img', loading: 'lazy' }}
-             {% elsif product.featured_image != blank %}
-                {{ product.featured_image | image_url: width: 400 | image_tag: class: 'pg-product-img', loading: 'lazy' }}
-             {% else %}
+            <div class="pg-image-container">
+              {% comment %} Priority: 1. Custom Image (uploaded in Shopify), 2. Product Featured Image, 3. Fallback Asset {% endcomment %}
+              {% if block.settings.custom_image != blank %}
+                {{
+                  block.settings.custom_image
+                  | image_url: width: 400
+                  | image_tag: class: 'pg-product-img', loading: 'lazy'
+                }}
+              {% elsif product.featured_image != blank %}
+                {{
+                  product.featured_image
+                  | image_url: width: 400
+                  | image_tag: class: 'pg-product-img', loading: 'lazy'
+                }}
+              {% else %}
                 {% comment %} Fallback to default asset images if nothing is set {% endcomment %}
                 {% assign fallback_image = 'can2.png' %}
                 {% case forloop.index %}
-                  {% when 1 %}{% assign fallback_image = 'lemoncan.png' %}
-                  {% when 2 %}{% assign fallback_image = 'orgcan.png' %}
-                  {% when 3 %}{% assign fallback_image = 'mangocan.png' %}
-                  {% when 4 %}{% assign fallback_image = 'chercan.png' %}
+                  {% when 1 -%}
+                    {%- assign fallback_image = 'lemoncan.png' %}
+                  {% when 2 -%}
+                    {%- assign fallback_image = 'orgcan.png' %}
+                  {% when 3 -%}
+                    {%- assign fallback_image = 'mangocan.png' %}
+                  {% when 4 -%}
+                    {%- assign fallback_image = 'chercan.png' %}
                 {% endcase %}
-                <img src="{{ fallback_image | asset_url }}" class="pg-product-img" alt="{{ block.settings.title }}" loading="lazy" width="400" height="auto">
-             {% endif %}
-           </div>
+                <img
+                  src="{{ fallback_image | asset_url }}"
+                  class="pg-product-img"
+                  alt="{{ block.settings.title }}"
+                  loading="lazy"
+                  width="400"
+                  height="auto"
+                >
+              {% endif %}
+            </div>
+          </a>
+          {% comment %} End of pg-card-link {% endcomment %}
 
-           </a>{% comment %} End of pg-card-link {% endcomment %}
+          <div class="pg-atc-wrapper">
+            {% assign has_any_pack = false %}
+            {% if block.settings.variant_id_pack_6 != blank or block.settings.variant_id_pack_12 != blank %}
+              {% assign has_any_pack = true %}
+            {% endif %}
 
-           <div class="pg-atc-wrapper">
-             {% assign show_atc = false %}
-             {% if block.settings.variant_id != blank %}
-               {% assign show_atc = true %}
-             {% elsif product != blank and product.available %}
-               {% assign show_atc = true %}
-             {% endif %}
-             
-             {% if show_atc %}
-             <form method="post" action="/cart/add" class="pg-atc-form">
-                {% if block.settings.variant_id != blank %}
-                  <input type="hidden" name="id" value="{{ block.settings.variant_id }}">
-                {% else %}
-                  <input type="hidden" name="id" value="{{ product.variants.first.id }}">
+            {% comment %} Check availability of each pack variant {% endcomment %}
+            {% assign pack6_available = false %}
+            {% assign pack12_available = false %}
+
+            {% if product != blank %}
+              {% assign vid6_str = block.settings.variant_id_pack_6 | strip %}
+              {% assign vid12_str = block.settings.variant_id_pack_12 | strip %}
+              {% for variant in product.variants %}
+                {% assign current_vid = variant.id | append: '' %}
+                {% if vid6_str != blank and current_vid == vid6_str and variant.available %}
+                  {% assign pack6_available = true %}
                 {% endif %}
-                <button type="submit" class="pg-atc-btn">
-                  {{ block.settings.button_label }}
-                </button>
-             </form>
-             {% else %}
-               <button type="button" class="pg-atc-btn" disabled>
-                  {% if product != blank %}SOLD OUT{% else %}{{ block.settings.button_label }}{% endif %}
-               </button>
-             {% endif %}
-           </div>
+                {% if vid12_str != blank and current_vid == vid12_str and variant.available %}
+                  {% assign pack12_available = true %}
+                {% endif %}
+              {% endfor %}
+            {% else %}
+              {% if block.settings.variant_id_pack_6 != blank %}
+                {% assign pack6_available = true %}
+              {% endif %}
+              {% if block.settings.variant_id_pack_12 != blank %}
+                {% assign pack12_available = true %}
+              {% endif %}
+            {% endif %}
+
+            {% assign show_atc = false %}
+            {% if has_any_pack and pack6_available or pack12_available %}
+              {% assign show_atc = true %}
+            {% elsif product != blank and product.available and has_any_pack == false %}
+              {% assign show_atc = true %}
+            {% endif %}
+
+            {% if show_atc %}
+              <button
+                type="button"
+                class="pg-atc-btn pg-atc-popup-trigger"
+                data-pack6-id="{{ block.settings.variant_id_pack_6 }}"
+                data-pack6-label="{{ block.settings.pack_6_label | default: 'Pack of 6' }}"
+                data-pack6-available="{{ pack6_available }}"
+                data-pack6-price="{{ block.settings.pack_6_price }}"
+                data-pack12-id="{{ block.settings.variant_id_pack_12 }}"
+                data-pack12-label="{{ block.settings.pack_12_label | default: 'Pack of 12' }}"
+                data-pack12-available="{{ pack12_available }}"
+                data-pack12-price="{{ block.settings.pack_12_price }}"
+                data-card-bg="{{ card_bg }}"
+                data-product-handle="{% if product != blank %}{{ product.handle }}{% endif %}"
+                data-product-title="{% if product != blank %}{{ product.title }}{% else %}{{ block.settings.title }}{% endif %}"
+              >
+                {{ block.settings.button_label }}
+              </button>
+            {% else %}
+              <button type="button" class="pg-atc-btn" disabled>
+                {% if product != blank %}SOLD OUT{% else %}{{ block.settings.button_label }}{% endif %}
+              </button>
+            {% endif %}
+          </div>
         </div>
       {% endfor %}
     </div>
 
     {%- if slider_active -%}
-       {%- if section.settings.enable_slider_nav -%}
-       <button class="nav-button nav-next" onclick="scrollProductGrid('{{ section.id }}', 1)">
+      {%- if section.settings.enable_slider_nav -%}
+        <button class="nav-button nav-next" onclick="scrollProductGrid('{{ section.id }}', 1)">
           <img src="{{ 'right.svg' | asset_url }}" alt="Next" class="nav-icon" width="12" height="20">
-       </button>
-       {%- endif -%}
-    </div>
+        </button>
+      {%- endif -%}
+      </div>
     {%- endif -%}
-    
+
     <!-- Mobile Button (shows below grid on mobile only) -->
     <a href="{{ section.settings.button_link | default: '#' }}" class="pg-view-btn-mobile">
       <span>{{ section.settings.button_text }}</span>
@@ -899,79 +1144,248 @@
   </div>
 </div>
 
+<!-- Pack Size Selection Popup -->
+<div class="pg-pack-overlay" id="pgPackOverlay">
+  <div class="pg-pack-modal">
+    <button class="pg-pack-close" id="pgPackClose" aria-label="Close">&times;</button>
+    <h3 class="pg-pack-title" id="pgPackTitle"></h3>
+    <p class="pg-pack-subtitle">Choose your pack size</p>
+    <div class="pg-pack-options" id="pgPackOptions"></div>
+  </div>
+</div>
+
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('in-view');
-        observer.unobserve(entry.target); // Play once
+  document.addEventListener('DOMContentLoaded', function () {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    const grids = document.querySelectorAll('.pg-grid');
+    grids.forEach((grid) => observer.observe(grid));
+
+    /* -- Pack Size Popup Logic -- */
+    var overlay = document.getElementById('pgPackOverlay');
+    var optionsContainer = document.getElementById('pgPackOptions');
+    var popupTitle = document.getElementById('pgPackTitle');
+    var closeBtn = document.getElementById('pgPackClose');
+
+    function renderPackButtons(packs, cardBg) {
+      optionsContainer.innerHTML = '';
+      optionsContainer.style.setProperty('--popup-card-bg', cardBg);
+      packs.forEach(function (pack) {
+        if (!pack.id) return;
+        var price = pack.price || '';
+        var btn = document.createElement('button');
+        btn.className = 'pg-pack-option';
+        btn.setAttribute('data-variant-id', pack.id);
+
+        /* Build price HTML — show compare-at price with strikethrough if present */
+        var priceHtml = '';
+        if (price) {
+          if (pack.comparePrice) {
+            priceHtml = ' — <span class="pg-pack-compare">' + pack.comparePrice + '</span> <span class="pg-pack-price">' + price + '</span>';
+          } else {
+            priceHtml = ' — <span class="pg-pack-price">' + price + '</span>';
+          }
+        }
+
+        if (!pack.available) {
+          btn.disabled = true;
+          btn.innerHTML = '<span class="pg-pack-label">' + pack.label + ' — Sold Out</span>' + priceHtml;
+        } else {
+          btn.innerHTML = '<span class="pg-pack-label">' + pack.label + '</span>' + priceHtml;
+          btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            addPackToCart(btn);
+          });
+        }
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function openPackPopup(triggerBtn) {
+      var title = triggerBtn.getAttribute('data-product-title') || 'Select Pack';
+      var cardBg = triggerBtn.getAttribute('data-card-bg') || '#f5f5f5';
+      var handle = triggerBtn.getAttribute('data-product-handle');
+      popupTitle.textContent = title;
+      optionsContainer.innerHTML = '<p style="text-align:center;color:#888;font-size:14px;">Loading...</p>';
+      overlay.classList.add('active');
+
+      var packs = [
+        {
+          id: triggerBtn.getAttribute('data-pack6-id'),
+          label: triggerBtn.getAttribute('data-pack6-label'),
+          available: true,
+          price: triggerBtn.getAttribute('data-pack6-price'),
+        },
+        {
+          id: triggerBtn.getAttribute('data-pack12-id'),
+          label: triggerBtn.getAttribute('data-pack12-label'),
+          available: true,
+          price: triggerBtn.getAttribute('data-pack12-price'),
+        },
+      ];
+
+      if (handle) {
+        fetch('/products/' + handle + '.js')
+          .then(function (res) {
+            return res.json();
+          })
+          .then(function (data) {
+            packs.forEach(function (pack) {
+              if (!pack.id) return;
+              var vid = parseInt(pack.id, 10);
+              var variant = data.variants.find(function (v) {
+                return v.id === vid;
+              });
+              if (variant) {
+                pack.available = variant.available;
+                /* Fetch price from variant data (price is in smallest currency unit) */
+                var amount = (variant.price / 100).toFixed(2);
+                pack.price = 'Rs. ' + amount;
+                /* Use compare_at_price for strike-through if available */
+                if (variant.compare_at_price && variant.compare_at_price > variant.price) {
+                  var compareAmount = (variant.compare_at_price / 100).toFixed(2);
+                  pack.comparePrice = 'Rs. ' + compareAmount;
+                }
+              } else {
+                pack.available = false;
+              }
+            });
+            renderPackButtons(packs, cardBg);
+          })
+          .catch(function () {
+            renderPackButtons(packs, cardBg);
+          });
+      } else {
+        /* No product handle — try fetching price per variant ID directly */
+        var variantIds = packs.map(function(p) { return p.id; }).filter(Boolean);
+        if (variantIds.length > 0) {
+          Promise.all(variantIds.map(function(vid) {
+            return fetch('/variants/' + vid + '.js')
+              .then(function(r) { return r.json(); })
+              .catch(function() { return null; });
+          })).then(function(results) {
+            results.forEach(function(variant, i) {
+              if (!variant) return;
+              var pack = packs.find(function(p) { return p.id === String(variant.id) || parseInt(p.id, 10) === variant.id; });
+              if (pack && variant.price) {
+                var amount = (variant.price / 100).toFixed(2);
+                pack.price = 'Rs. ' + amount;
+                pack.available = variant.available !== false;
+                if (variant.compare_at_price && variant.compare_at_price > variant.price) {
+                  pack.comparePrice = 'Rs. ' + (variant.compare_at_price / 100).toFixed(2);
+                }
+              }
+            });
+            renderPackButtons(packs, cardBg);
+          }).catch(function() {
+            renderPackButtons(packs, cardBg);
+          });
+        } else {
+          renderPackButtons(packs, cardBg);
+        }
       }
-    });
-  }, { threshold: 0.1 });
+    }
 
-  const grids = document.querySelectorAll('.pg-grid');
-  grids.forEach(grid => observer.observe(grid));
+    function closePackPopup() {
+      overlay.classList.remove('active');
+    }
 
-  /* ── AJAX Add to Cart for Custom Product Grid ── */
-  document.querySelectorAll('.pg-atc-form').forEach(function(form) {
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      var btn = form.querySelector('.pg-atc-btn');
-      var variantId = form.querySelector('input[name="id"]').value;
-      var originalLabel = btn.textContent;
+    function addPackToCart(btn) {
+      var variantId = parseInt(btn.getAttribute('data-variant-id'), 10);
+      var labelEl = btn.querySelector('.pg-pack-label');
+      var originalLabel = labelEl.textContent;
 
       btn.disabled = true;
-      btn.textContent = 'ADDING...';
+      labelEl.textContent = 'ADDING...';
 
       fetch('/cart/add.js', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: [{ id: parseInt(variantId), quantity: 1 }] })
+        body: JSON.stringify({ items: [{ id: variantId, quantity: 1 }] }),
       })
-      .then(function(res) { return res.json(); })
-      .then(function() {
-        btn.textContent = 'ADDED ✓';
-        /* Update cart bubble / drawer */
-        return fetch('/cart.js').then(function(r) { return r.json(); }).then(function(cart) {
-          document.querySelectorAll('.cart-count-bubble span[aria-hidden]').forEach(function(el) { el.textContent = cart.item_count; });
-          document.dispatchEvent(new CustomEvent('cart:updated', { detail: { cart: cart } }));
+        .then(function (res) {
+          return res.json();
+        })
+        .then(function (data) {
+          if (data.status && data.status !== 200) {
+            throw new Error(data.description || 'Could not add to cart');
+          }
+          labelEl.textContent = 'ADDED ✓';
+          btn.classList.add('added');
+          btn.disabled = false;
+
+          return fetch('/cart.js')
+            .then(function (r) {
+              return r.json();
+            })
+            .then(function (cart) {
+              document.querySelectorAll('.cart-count-bubble span[aria-hidden]').forEach(function (el) {
+                el.textContent = cart.item_count;
+              });
+              document.dispatchEvent(new CustomEvent('cart:updated', { detail: { cart: cart } }));
+            });
+        })
+        .then(function () {
+          setTimeout(function () {
+            closePackPopup();
+          }, 1200);
+        })
+        .catch(function (err) {
+          console.error('Add to cart error:', err);
+          var msg = (err.message || '').toLowerCase();
+          if (
+            msg.indexOf('sold out') !== -1 ||
+            msg.indexOf('not available') !== -1 ||
+            msg.indexOf('inventory') !== -1 ||
+            msg.indexOf('not enough') !== -1
+          ) {
+            labelEl.textContent = 'OUT OF STOCK';
+            btn.disabled = true;
+            btn.style.opacity = '0.45';
+            btn.style.cursor = 'not-allowed';
+          } else {
+            labelEl.textContent = 'ERROR';
+            setTimeout(function () {
+              labelEl.textContent = originalLabel;
+              btn.disabled = false;
+            }, 2000);
+          }
         });
-      })
-      .then(function() {
-        setTimeout(function() {
-          btn.textContent = originalLabel;
-          btn.disabled = false;
-        }, 1500);
-      })
-      .catch(function(err) {
-        console.error('Add to cart error:', err);
-        btn.textContent = 'ERROR';
-        setTimeout(function() {
-          btn.textContent = originalLabel;
-          btn.disabled = false;
-        }, 2000);
+    }
+
+    /* Attach click handlers to all popup trigger buttons */
+    document.querySelectorAll('.pg-atc-popup-trigger').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        openPackPopup(btn);
       });
     });
 
-    /* Stop button click from bubbling up to the card link */
-    form.addEventListener('click', function(e) { e.stopPropagation(); });
+    /* Close popup */
+    closeBtn.addEventListener('click', closePackPopup);
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) closePackPopup();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closePackPopup();
+    });
   });
-});
 
-function scrollProductGrid(sectionId, direction) {
-  const track = document.getElementById(`productGrid-${sectionId}`);
-  if (!track) return;
-  
-  // Calculate scroll amount (card width + gap)
-  // We assume card width approx 320px + 30px gap based on CSS
-  const scrollAmount = 350;
-
-  track.scrollBy({
-      left: direction * scrollAmount,
-      behavior: 'smooth'
-  });
-}
+  function scrollProductGrid(sectionId, direction) {
+    const track = document.getElementById('productGrid-' + sectionId);
+    if (!track) return;
+    const scrollAmount = 350;
+    track.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+  }
 </script>

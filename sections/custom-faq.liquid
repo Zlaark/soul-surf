@@ -14,7 +14,7 @@
       "label": "Top Wave Color (Previous Section BG)",
       "default": "#FFF9F2"
     },
-     {
+    {
       "type": "color",
       "id": "wave_color_bottom",
       "label": "Bottom Wave Color (Next Section BG)",
@@ -44,44 +44,16 @@
       "label": "Button Link"
     }
   ],
-  "blocks": [
-    {
-      "type": "faq_item",
-      "name": "FAQ Item",
-      "settings": [
-        {
-          "type": "text",
-          "id": "question",
-          "label": "Question",
-          "default": "What exactly is SoulSurf?"
-        },
-        {
-          "type": "richtext",
-          "id": "answer",
-          "label": "Answer",
-          "default": "<p>SoulSurf is a modern soda crafted with natural ingredients, prebiotics, and low sugar.</p>"
-        }
-      ]
-    }
-  ],
+  "blocks": [],
   "presets": [
     {
-      "name": "Custom FAQ Section",
-      "blocks": [
-        { "type": "faq_item" },
-        { "type": "faq_item" },
-        { "type": "faq_item" },
-        { "type": "faq_item" },
-        { "type": "faq_item" }
-      ]
+      "name": "Custom FAQ Section"
     }
   ]
 }
 {% endschema %}
 
 <div class="custom-faq-section">
-
-
   <div class="faq-container">
     <div class="faq-header">
       <h2 class="faq-heading">
@@ -91,10 +63,10 @@
     </div>
 
     <div class="faq-list">
-      {% for block in section.blocks %}
+      {% for faq in shop.metaobjects.faq.values %}
         <details class="faq-item">
           <summary class="faq-question">
-            {{ block.settings.question }}
+            {{ faq.question | escape }}
             <span class="faq-icon">
               <svg width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M1 1L7 7L13 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -102,16 +74,12 @@
             </span>
           </summary>
           <div class="faq-answer">
-            {{ block.settings.answer }}
+            {{ faq.answer }}
           </div>
         </details>
       {% endfor %}
     </div>
-
-
   </div>
-
-
 </div>
 
 <style>
@@ -147,7 +115,7 @@
   .faq-bottom-wave {
     bottom: -1px;
   }
-  
+
   /* Show/Hide waves based on device */
   .mobile-wave { display: none !important; }
   .desktop-wave { display: block !important; }
@@ -193,7 +161,7 @@
     border-radius: 4px;
     opacity: 0.7;
   }
-  
+
   /* Alternative visual approach if it's just a line */
 
 
@@ -259,11 +227,11 @@
     line-height: 1.6;
     border-top: 1px solid transparent; /* Placeholder for transition */
   }
-  
+
   .faq-item[open] .faq-answer {
      animation: fadeIn 0.3s ease-in;
   }
-  
+
   @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-5px); }
       to { opacity: 1; transform: translateY(0); }
@@ -296,12 +264,12 @@
     .faq-heading {
       font-size: 36px;
     }
-    
+
     .faq-question {
       padding: 15px 20px;
       font-size: 14px;
     }
-    
+
     .faq-answer {
       padding: 0 20px 20px;
       font-size: 14px;
